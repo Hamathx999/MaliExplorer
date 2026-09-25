@@ -1,8 +1,8 @@
-package com.maliexplorer_backend.Controllers;
+package com.maliexplorer_backend.controller;
 
 
-import com.maliexplorer_backend.Models.AdministrateurModel;
-import com.maliexplorer_backend.Services.AdministrateurService;
+import com.maliexplorer_backend.model.AdministrateurModel;
+import com.maliexplorer_backend.service.AdministrateurService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

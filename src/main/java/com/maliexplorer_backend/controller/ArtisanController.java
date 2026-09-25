@@ -1,7 +1,7 @@
-package com.maliexplorer_backend.Controllers;
+package com.maliexplorer_backend.controller;
 
-import com.maliexplorer_backend.Models.ArtisanModel;
-import com.maliexplorer_backend.Services.ArtisanService;
+import com.maliexplorer_backend.model.ArtisanModel;
+import com.maliexplorer_backend.service.ArtisanService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

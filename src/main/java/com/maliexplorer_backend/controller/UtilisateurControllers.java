@@ -1,7 +1,7 @@
-package com.maliexplorer_backend.Controllers;
+package com.maliexplorer_backend.controller;
 
-import com.maliexplorer_backend.Models.utilisateurModel;
-import com.maliexplorer_backend.Services.UtilisateurService;
+import com.maliexplorer_backend.model.utilisateurModel;
+import com.maliexplorer_backend.service.UtilisateurService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

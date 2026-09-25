@@ -1,7 +1,7 @@
-package com.maliexplorer_backend.Controllers;
+package com.maliexplorer_backend.controller;
 
-import com.maliexplorer_backend.Models.PromoteurModel;
-import com.maliexplorer_backend.Services.PromoteurService;
+import com.maliexplorer_backend.model.PromoteurModel;
+import com.maliexplorer_backend.service.PromoteurService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,8 +1,8 @@
-package com.maliexplorer_backend.Services;
+package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.Models.GuideModel;
-import com.maliexplorer_backend.Models.Role;
-import com.maliexplorer_backend.Repository.GuideRepository;
+import com.maliexplorer_backend.model.GuideModel;
+import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.repository.GuideRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;

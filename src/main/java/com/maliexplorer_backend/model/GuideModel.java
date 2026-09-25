@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.Models;
+package com.maliexplorer_backend.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,7 +1,7 @@
-package com.maliexplorer_backend.Controllers;
+package com.maliexplorer_backend.controller;
 
-import com.maliexplorer_backend.Models.GuideModel;
-import com.maliexplorer_backend.Services.GuideService;
+import com.maliexplorer_backend.model.GuideModel;
+import com.maliexplorer_backend.service.GuideService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
