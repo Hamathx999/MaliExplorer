@@ -1,5 +1,6 @@
 package com.maliexplorer_backend.Controllers;
 
+
 import com.maliexplorer_backend.Models.AdministrateurModel;
 import com.maliexplorer_backend.Services.AdministrateurService;
 import jakarta.validation.Valid;
