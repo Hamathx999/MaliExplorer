@@ -1,8 +1,8 @@
-package com.maliexplorer_backend.Services;
+package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.Models.ArtisanModel;
-import com.maliexplorer_backend.Models.Role;
-import com.maliexplorer_backend.Repository.ArtisanRepository;
+import com.maliexplorer_backend.model.ArtisanModel;
+import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.repository.ArtisanRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;

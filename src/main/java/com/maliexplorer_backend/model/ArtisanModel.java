@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.Models;
+package com.maliexplorer_backend.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -9,15 +9,13 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "promoteurs")
+@Table(name = "artisans")
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class PromoteurModel extends utilisateurModel {
+public class ArtisanModel extends utilisateurModel {
 
-    @NotBlank(message = "Le nom de l'organisation est obligatoire !")
-    private String nomOrganisation;
-
-    private String pieceIdentite;
+    @NotBlank(message = "Le type d'artisanat est obligatoire !")
+    private String typeArtisanat;
 }

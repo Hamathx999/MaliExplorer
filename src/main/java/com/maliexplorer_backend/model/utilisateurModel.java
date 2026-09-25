@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.Models;
+package com.maliexplorer_backend.model;
 
 import java.sql.Date;
 import jakarta.persistence.*;

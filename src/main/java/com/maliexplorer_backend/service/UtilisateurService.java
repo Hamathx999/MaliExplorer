@@ -1,7 +1,7 @@
-package com.maliexplorer_backend.Services;
+package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.Models.utilisateurModel;
-import com.maliexplorer_backend.Repository.utilisateurRepository;
+import com.maliexplorer_backend.model.utilisateurModel;
+import com.maliexplorer_backend.repository.utilisateurRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;

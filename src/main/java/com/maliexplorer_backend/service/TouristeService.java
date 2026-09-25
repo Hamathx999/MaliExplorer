@@ -1,8 +1,8 @@
-package com.maliexplorer_backend.Services;
+package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.Models.Role;
-import com.maliexplorer_backend.Models.TouristeModel;
-import com.maliexplorer_backend.Repository.TouristeRepository;
+import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.TouristeModel;
+import com.maliexplorer_backend.repository.TouristeRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
