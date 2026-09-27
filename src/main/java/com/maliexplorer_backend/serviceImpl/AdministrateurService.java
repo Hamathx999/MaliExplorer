@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.Services;
+package com.maliexplorer_backend.serviceImpl;
 
 import com.maliexplorer_backend.Models.AdministrateurModel;
 import com.maliexplorer_backend.Models.Role;

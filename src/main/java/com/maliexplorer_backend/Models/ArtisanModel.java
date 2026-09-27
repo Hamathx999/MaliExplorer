@@ -1,5 +1,6 @@
 package com.maliexplorer_backend.Models;
 
+import com.maliexplorer_backend.Models.utilisateurModel;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;

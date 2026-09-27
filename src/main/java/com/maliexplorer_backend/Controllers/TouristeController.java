@@ -1,7 +1,7 @@
 package com.maliexplorer_backend.Controllers;
 
 import com.maliexplorer_backend.Models.TouristeModel;
-import com.maliexplorer_backend.Services.TouristeService;
+import com.maliexplorer_backend.serviceImpl.TouristeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
