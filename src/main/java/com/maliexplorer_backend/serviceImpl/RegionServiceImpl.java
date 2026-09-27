@@ -3,9 +3,9 @@ package com.maliexplorer_backend.serviceImpl;
 import com.maliexplorer_backend.dto.*;
 import com.maliexplorer_backend.exception.BadRequestException;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Region;
-import com.maliexplorer_backend.repository.RegionRepository;
-import com.maliexplorer_backend.service.RegionService;
+import com.maliexplorer_backend.Models.Region;
+import com.maliexplorer_backend.Repository.RegionRepository;
+import com.maliexplorer_backend.Services.RegionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,8 +112,8 @@ public class RegionServiceImpl implements RegionService {
     }
 
     private RegionResponseDTO mapToResponseDTO(Region region) {
-        List<VilleSummaryDTO> villes = region.getVilles() == null ? Collections.emptyList() :
-                region.getVilles().stream()
+        List<VilleSummaryDTO> villes = region.getVilles() == null ? Collections.emptyList()
+                : region.getVilles().stream()
                         .map(v -> VilleSummaryDTO.builder()
                                 .id(v.getIdVille())
                                 .nom(v.getNomVille())
@@ -122,8 +122,8 @@ public class RegionServiceImpl implements RegionService {
                                 .build())
                         .collect(Collectors.toList());
 
-        List<EthnieSummaryDTO> ethnies = region.getEthnies() == null ? Collections.emptyList() :
-                region.getEthnies().stream()
+        List<EthnieSummaryDTO> ethnies = region.getEthnies() == null ? Collections.emptyList()
+                : region.getEthnies().stream()
                         .map(e -> EthnieSummaryDTO.builder()
                                 .id(e.getIdEthnie())
                                 .nom(e.getNomEthnie())
@@ -131,8 +131,8 @@ public class RegionServiceImpl implements RegionService {
                                 .build())
                         .collect(Collectors.toList());
 
-        List<PlatSummaryDTO> plats = region.getPlats() == null ? Collections.emptyList() :
-                region.getPlats().stream()
+        List<PlatSummaryDTO> plats = region.getPlats() == null ? Collections.emptyList()
+                : region.getPlats().stream()
                         .map(p -> PlatSummaryDTO.builder()
                                 .id(p.getIdPlat())
                                 .nom(p.getNomPlat())

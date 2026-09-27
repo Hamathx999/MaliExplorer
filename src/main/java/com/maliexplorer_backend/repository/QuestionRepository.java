@@ -1,6 +1,6 @@
-package com.maliexplorer_backend.repository;
+package com.maliexplorer_backend.Repository;
 
-import com.maliexplorer_backend.model.Question;
+import com.maliexplorer_backend.Models.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,13 +1,15 @@
 package com.maliexplorer_backend.serviceImpl;
 
+import com.maliexplorer_backend.dto.LieuHistoriqueSummaryDTO;
+import com.maliexplorer_backend.dto.RegionSummaryDTO;
 import com.maliexplorer_backend.dto.VilleRequestDTO;
 import com.maliexplorer_backend.dto.VilleResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Region;
-import com.maliexplorer_backend.model.Ville;
-import com.maliexplorer_backend.repository.RegionRepository;
-import com.maliexplorer_backend.repository.VilleRepository;
-import com.maliexplorer_backend.service.VilleService;
+import com.maliexplorer_backend.Models.Region;
+import com.maliexplorer_backend.Models.Ville;
+import com.maliexplorer_backend.Repository.RegionRepository;
+import com.maliexplorer_backend.Repository.VilleRepository;
+import com.maliexplorer_backend.Services.VilleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +55,8 @@ public class VilleServiceImpl implements VilleService {
         Region regionParent = null;
         if (requestDTO.getRegionId() != null) {
             regionParent = regionRepository.findById(requestDTO.getRegionId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Région introuvable avec l'ID : " + requestDTO.getRegionId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Région introuvable avec l'ID : " + requestDTO.getRegionId()));
         }
 
         Ville ville = Ville.builder()
@@ -80,7 +83,8 @@ public class VilleServiceImpl implements VilleService {
 
         if (requestDTO.getRegionId() != null) {
             Region regionParent = regionRepository.findById(requestDTO.getRegionId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Région introuvable avec l'ID : " + requestDTO.getRegionId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Région introuvable avec l'ID : " + requestDTO.getRegionId()));
             ville.setRegionParent(regionParent);
         } else {
             ville.setRegionParent(null);
@@ -134,8 +138,8 @@ public class VilleServiceImpl implements VilleService {
                     .build();
         }
 
-        List<LieuHistoriqueSummaryDTO> lieux = ville.getLieuxHistoriques() == null ? java.util.Collections.emptyList() :
-                ville.getLieuxHistoriques().stream()
+        List<LieuHistoriqueSummaryDTO> lieux = ville.getLieuxHistoriques() == null ? java.util.Collections.emptyList()
+                : ville.getLieuxHistoriques().stream()
                         .map(l -> LieuHistoriqueSummaryDTO.builder()
                                 .idLieu(l.getIdLieu())
                                 .nomHistoire(l.getNomHistoire())

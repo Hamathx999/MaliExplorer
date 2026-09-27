@@ -4,9 +4,9 @@ import com.maliexplorer_backend.dto.ArticleRequestDTO;
 import com.maliexplorer_backend.dto.ArticleResponseDTO;
 import com.maliexplorer_backend.dto.ArticleSummaryDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Article;
-import com.maliexplorer_backend.repository.ArticleRepository;
-import com.maliexplorer_backend.service.ArticleService;
+import com.maliexplorer_backend.Models.Article;
+import com.maliexplorer_backend.Repository.ArticleRepository;
+import com.maliexplorer_backend.Services.ArticleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -83,7 +83,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Transactional(readOnly = true)
     public Page<ArticleResponseDTO> searchArticles(String keyword, Pageable pageable) {
         return articleRepository.findByNomArticleContainingIgnoreCaseOrContenuContainingIgnoreCase(
-                        keyword, keyword, pageable)
+                keyword, keyword, pageable)
                 .map(this::mapToResponseDTO);
     }
 

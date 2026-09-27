@@ -5,13 +5,13 @@ import com.maliexplorer_backend.dto.PlatRequestDTO;
 import com.maliexplorer_backend.dto.PlatResponseDTO;
 import com.maliexplorer_backend.dto.RegionSummaryDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Ethnie;
-import com.maliexplorer_backend.model.Plat;
-import com.maliexplorer_backend.model.Region;
-import com.maliexplorer_backend.repository.EthnieRepository;
-import com.maliexplorer_backend.repository.PlatRepository;
-import com.maliexplorer_backend.repository.RegionRepository;
-import com.maliexplorer_backend.service.PlatService;
+import com.maliexplorer_backend.Models.Ethnie;
+import com.maliexplorer_backend.Models.Plat;
+import com.maliexplorer_backend.Models.Region;
+import com.maliexplorer_backend.Repository.EthnieRepository;
+import com.maliexplorer_backend.Repository.PlatRepository;
+import com.maliexplorer_backend.Repository.RegionRepository;
+import com.maliexplorer_backend.Services.PlatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -143,8 +143,8 @@ public class PlatServiceImpl implements PlatService {
     }
 
     private PlatResponseDTO mapToResponseDTO(Plat plat) {
-        List<RegionSummaryDTO> regions = plat.getRegions() == null ? Collections.emptyList() :
-                plat.getRegions().stream()
+        List<RegionSummaryDTO> regions = plat.getRegions() == null ? Collections.emptyList()
+                : plat.getRegions().stream()
                         .map(r -> RegionSummaryDTO.builder()
                                 .id(r.getIdRegion())
                                 .nom(r.getNomRegion())
@@ -153,8 +153,8 @@ public class PlatServiceImpl implements PlatService {
                                 .build())
                         .collect(Collectors.toList());
 
-        List<EthnieSummaryDTO> ethnies = plat.getEthnies() == null ? Collections.emptyList() :
-                plat.getEthnies().stream()
+        List<EthnieSummaryDTO> ethnies = plat.getEthnies() == null ? Collections.emptyList()
+                : plat.getEthnies().stream()
                         .map(e -> EthnieSummaryDTO.builder()
                                 .id(e.getIdEthnie())
                                 .nom(e.getNomEthnie())
