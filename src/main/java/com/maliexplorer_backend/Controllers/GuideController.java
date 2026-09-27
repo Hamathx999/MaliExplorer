@@ -1,6 +1,6 @@
-package com.maliexplorer_backend.controller;
+package com.maliexplorer_backend.Controllers;
 
-import com.maliexplorer_backend.model.GuideModel;
+import com.maliexplorer_backend.Models.GuideModel;
 import com.maliexplorer_backend.serviceImpl.GuideService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
