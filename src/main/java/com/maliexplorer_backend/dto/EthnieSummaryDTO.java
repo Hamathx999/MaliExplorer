@@ -13,6 +13,4 @@ public class EthnieSummaryDTO {
     private Long id;
     private String nom;
     private String region;
-    private String langue;
-    private String imageUrl;
-}
+    }

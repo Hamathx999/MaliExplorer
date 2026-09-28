@@ -17,10 +17,7 @@ public class EthnieResponseDTO {
     private String nom;
     private String region;
     private String population;
-    private String langue;
     private String description;
-    private String imageUrl;
-    private Long idUsers;
     private List<RegionSummaryDTO> regions;
     private List<PlatSummaryDTO> plats;
 }

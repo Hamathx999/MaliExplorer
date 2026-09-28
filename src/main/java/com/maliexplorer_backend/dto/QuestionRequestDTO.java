@@ -22,15 +22,9 @@ public class QuestionRequestDTO {
     @NotBlank(message = "La réponse correcte est obligatoire")
     private String reponse;
 
-    private String explication;
-
     @NotNull(message = "Le nombre de points est obligatoire")
-    private Integer point;
-
     private Integer duree;
 
     @NotEmpty(message = "Au moins une proposition de réponse est requise")
-    private List<String> propositions;
-
     private Long quizId;
 }

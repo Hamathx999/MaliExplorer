@@ -10,6 +10,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.maliexplorer_backend.model.Role;
+
 @Entity
 @Table(name = "utilisateurs")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class utilisateurModel {
+public class Utilisateur {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

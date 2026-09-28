@@ -28,19 +28,10 @@ public class Quiz {
     @Builder.Default
     private Integer point = 100;
 
-    @Column(length = 50)
-    private String niveauDifficulte; // FACILE, MOYEN, DIFFICILE
-
     @Column(length = 500)
-    private String imageUrl;
+    private String imageQuiz;
 
-    @Column(length = 100)
-    private String categorie; // Histoire, Culture, Gastronomie, Géographie
-
-    private Long idUsers;
-
-    private Long referenceId; // ex: idRegion ou idLieu associé si quiz thématique
-
+  
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Question> questions = new ArrayList<>();

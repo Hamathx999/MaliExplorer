@@ -13,15 +13,10 @@ import lombok.NoArgsConstructor;
 public class LieuHistoriqueRequestDTO {
 
     @NotBlank(message = "Le nom du lieu historique est obligatoire")
-    private String nomHistoire;
+    private String nomLieuHisto;
 
     private String description;
     private String epoque;
     private String cordonnees;
-    private Double latitude;
-    private Double longitude;
-    private String imageUrl;
-    private String panorama360Url;
-    private Long idUsers;
     private Long villeId;
 }

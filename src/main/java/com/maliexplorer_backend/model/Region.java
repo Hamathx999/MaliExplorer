@@ -22,23 +22,7 @@ public class Region {
     @Column(nullable = false, unique = true, length = 100)
     private String nomRegion;
 
-    @Column(unique = true, length = 10)
-    private String code;
-
-    @Column(columnDefinition = "TEXT")
-    private String description;
-
-    private Double superficie;
-
-    private Long population;
-
-    @Column(length = 100)
-    private String chefLieu;
-
-    @Column(length = 500)
-    private String imageUrl;
-
-    private Long idUsers;
+    private Long nbreHbt;
 
     @OneToMany(mappedBy = "regionParent", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

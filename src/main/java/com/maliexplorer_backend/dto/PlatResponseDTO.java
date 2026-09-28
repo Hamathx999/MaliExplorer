@@ -15,12 +15,8 @@ public class PlatResponseDTO {
 
     private Long id;
     private String nom;
-    private String nomAlternatif;
     private String description;
-    private String ingredients;
-    private Integer tempsPreparation;
-    private String imageUrl;
-    private Long idAdministrateur;
-    private List<RegionSummaryDTO> regions;
+    private Integer nbrePersonnes;
+private List<RegionSummaryDTO> regions;
     private List<EthnieSummaryDTO> ethnies;
 }

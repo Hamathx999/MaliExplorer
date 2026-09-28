@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.*;
 import com.maliexplorer_backend.exception.BadRequestException;
@@ -42,19 +42,19 @@ public class RegionServiceImpl implements RegionService {
         if (regionRepository.existsByNomRegionIgnoreCase(requestDTO.getNom())) {
             throw new BadRequestException("Une région avec le nom '" + requestDTO.getNom() + "' existe déjà");
         }
-        if (requestDTO.getCode() != null && regionRepository.existsByCodeIgnoreCase(requestDTO.getCode())) {
-            throw new BadRequestException("Une région avec le code '" + requestDTO.getCode() + "' existe déjà");
+        if ("" != null && regionRepository.existsByCodeIgnoreCase("")) {
+            throw new BadRequestException("Une région avec le code '" + "" + "' existe déjà");
         }
 
         Region region = Region.builder()
                 .nomRegion(requestDTO.getNom())
-                .code(requestDTO.getCode())
-                .description(requestDTO.getDescription())
-                .superficie(requestDTO.getSuperficie())
-                .population(requestDTO.getPopulation())
-                .chefLieu(requestDTO.getChefLieu())
-                .imageUrl(requestDTO.getImageUrl())
-                .idUsers(requestDTO.getIdUsers())
+                
+                
+                
+                .nbreHbt(requestDTO.getNbreHbt())
+                
+                
+                
                 .build();
 
         Region saved = regionRepository.save(region);
@@ -70,22 +70,20 @@ public class RegionServiceImpl implements RegionService {
             throw new BadRequestException("Une région avec le nom '" + requestDTO.getNom() + "' existe déjà");
         }
 
-        if (requestDTO.getCode() != null
-                && !requestDTO.getCode().equalsIgnoreCase(region.getCode())
-                && regionRepository.existsByCodeIgnoreCase(requestDTO.getCode())) {
-            throw new BadRequestException("Une région avec le code '" + requestDTO.getCode() + "' existe déjà");
+        if ("" != null
+                && !"".equalsIgnoreCase("")
+                && regionRepository.existsByCodeIgnoreCase("")) {
+            throw new BadRequestException("Une région avec le code '" + "" + "' existe déjà");
         }
 
         region.setNomRegion(requestDTO.getNom());
-        region.setCode(requestDTO.getCode());
-        region.setDescription(requestDTO.getDescription());
-        region.setSuperficie(requestDTO.getSuperficie());
-        region.setPopulation(requestDTO.getPopulation());
-        region.setChefLieu(requestDTO.getChefLieu());
-        region.setImageUrl(requestDTO.getImageUrl());
-        if (requestDTO.getIdUsers() != null) {
-            region.setIdUsers(requestDTO.getIdUsers());
-        }
+        
+        
+        
+        region.setNbreHbt(requestDTO.getNbreHbt());
+        
+        
+        
 
         Region updated = regionRepository.save(region);
         return mapToResponseDTO(updated);
@@ -117,8 +115,8 @@ public class RegionServiceImpl implements RegionService {
                         .map(v -> VilleSummaryDTO.builder()
                                 .id(v.getIdVille())
                                 .nom(v.getNomVille())
-                                .estCapitale(v.getEstCapitale())
-                                .imageUrl(v.getImageUrl())
+                                
+                                
                                 .build())
                         .collect(Collectors.toList());
 
@@ -127,7 +125,7 @@ public class RegionServiceImpl implements RegionService {
                         .map(e -> EthnieSummaryDTO.builder()
                                 .id(e.getIdEthnie())
                                 .nom(e.getNomEthnie())
-                                .imageUrl(e.getImageUrl())
+                                
                                 .build())
                         .collect(Collectors.toList());
 
@@ -136,20 +134,20 @@ public class RegionServiceImpl implements RegionService {
                         .map(p -> PlatSummaryDTO.builder()
                                 .id(p.getIdPlat())
                                 .nom(p.getNomPlat())
-                                .imageUrl(p.getImageUrl())
+                                
                                 .build())
                         .collect(Collectors.toList());
 
         return RegionResponseDTO.builder()
                 .id(region.getIdRegion())
                 .nom(region.getNomRegion())
-                .code(region.getCode())
-                .description(region.getDescription())
-                .superficie(region.getSuperficie())
-                .population(region.getPopulation())
-                .chefLieu(region.getChefLieu())
-                .imageUrl(region.getImageUrl())
-                .idUsers(region.getIdUsers())
+                
+                
+                
+                .nbreHbt(region.getNbreHbt())
+                
+                
+                
                 .villes(villes)
                 .ethnies(ethnies)
                 .plats(plats)

@@ -12,9 +12,6 @@ import lombok.NoArgsConstructor;
 public class LieuHistoriqueSummaryDTO {
 
     private Long idLieu;
-    private String nomHistoire;
+    private String nomLieuHisto;
     private String epoque;
-    private String imageUrl;
-    private Double latitude;
-    private Double longitude;
-}
+    }

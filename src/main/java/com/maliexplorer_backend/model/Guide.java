@@ -16,7 +16,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class GuideModel extends utilisateurModel {
+public class Guide extends Utilisateur {
+
+    private Long idGuide;
 
     @Min(value = 0, message = "L'expérience ne peut pas être négative !")
     private int experience;

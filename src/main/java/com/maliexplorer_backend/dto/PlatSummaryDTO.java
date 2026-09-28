@@ -12,7 +12,4 @@ import lombok.NoArgsConstructor;
 public class PlatSummaryDTO {
     private Long id;
     private String nom;
-    private String nomAlternatif;
-    private Integer tempsPreparation;
-    private String imageUrl;
-}
+    }
