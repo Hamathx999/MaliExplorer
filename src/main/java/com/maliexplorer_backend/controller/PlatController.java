@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,14 +47,16 @@ public class PlatController {
     }
 
     @PostMapping
-    @Operation(summary = "Créer un nouveau plat")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Créer un nouveau plat (Admin uniquement)")
     public ResponseEntity<PlatResponseDTO> createPlat(@Valid @RequestBody PlatRequestDTO requestDTO) {
         PlatResponseDTO created = platService.createPlat(requestDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Modifier un plat existant")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Modifier un plat existant (Admin uniquement)")
     public ResponseEntity<PlatResponseDTO> updatePlat(
             @PathVariable Long id,
             @Valid @RequestBody PlatRequestDTO requestDTO) {
@@ -61,7 +64,8 @@ public class PlatController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Supprimer un plat")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Supprimer un plat (Admin uniquement)")
     public ResponseEntity<Void> deletePlat(@PathVariable Long id) {
         platService.deletePlat(id);
         return ResponseEntity.noContent().build();

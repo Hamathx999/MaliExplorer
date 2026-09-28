@@ -1,11 +1,11 @@
 package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.dto.PlatResponseDTO;
-import com.maliexplorer_backend.model.Plat;
+import com.maliexplorer_backend.model.PlatModel;
 import com.maliexplorer_backend.repository.EthnieRepository;
 import com.maliexplorer_backend.repository.PlatRepository;
 import com.maliexplorer_backend.repository.RegionRepository;
-import com.maliexplorer_backend.serviceImpl.PlatServiceImpl;
+import com.maliexplorer_backend.serviceimpl.PlatServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,11 +36,11 @@ class PlatServiceTest {
 
     @Test
     void testGetAllPlats() {
-        Plat plat = Plat.builder()
+        PlatModel plat = PlatModel.builder()
                 .idPlat(1L)
                 .nomPlat("Tigalèguèna")
-                .nomAlternatif("Mafé")
-                .ingredients("Pâte d'arachide, viande, légumes")
+                .description("Plat traditionnel malien")
+                .nbrePersonnes(4)
                 .regions(new ArrayList<>())
                 .ethnies(new ArrayList<>())
                 .build();

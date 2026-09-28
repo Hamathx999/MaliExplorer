@@ -21,6 +21,7 @@ public class PromoteurController {
     }
 
     @PostMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PromoteurModel> creerPromoteur(@Valid @RequestBody PromoteurModel promoteur) {
         PromoteurModel nouveau = service.creerPromoteur(promoteur);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
@@ -42,12 +43,14 @@ public class PromoteurController {
     }
 
     @PutMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PromoteurModel> mettreAJourPromoteur(@PathVariable int id,
             @Valid @RequestBody PromoteurModel promoteur) {
         return ResponseEntity.ok(service.mettreAJourPromoteur(id, promoteur));
     }
 
     @DeleteMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> supprimerPromoteur(@PathVariable int id) {
         service.supprimerPromoteur(id);
         return ResponseEntity.noContent().build();

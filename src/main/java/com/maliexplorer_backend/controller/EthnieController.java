@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,14 +41,16 @@ public class EthnieController {
     }
 
     @PostMapping
-    @Operation(summary = "Créer une nouvelle ethnie")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Créer une nouvelle ethnie (Admin uniquement)")
     public ResponseEntity<EthnieResponseDTO> createEthnie(@Valid @RequestBody EthnieRequestDTO requestDTO) {
         EthnieResponseDTO created = ethnieService.createEthnie(requestDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Modifier une ethnie existante")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Modifier une ethnie existante (Admin uniquement)")
     public ResponseEntity<EthnieResponseDTO> updateEthnie(
             @PathVariable Long id,
             @Valid @RequestBody EthnieRequestDTO requestDTO) {
@@ -55,7 +58,8 @@ public class EthnieController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Supprimer une ethnie")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Supprimer une ethnie (Admin uniquement)")
     public ResponseEntity<Void> deleteEthnie(@PathVariable Long id) {
         ethnieService.deleteEthnie(id);
         return ResponseEntity.noContent().build();

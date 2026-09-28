@@ -2,9 +2,9 @@ package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.dto.RegionRequestDTO;
 import com.maliexplorer_backend.dto.RegionResponseDTO;
-import com.maliexplorer_backend.model.Region;
+import com.maliexplorer_backend.model.RegionModel;
 import com.maliexplorer_backend.repository.RegionRepository;
-import com.maliexplorer_backend.serviceImpl.RegionServiceImpl;
+import com.maliexplorer_backend.serviceimpl.RegionServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,18 +29,14 @@ class RegionServiceTest {
     @InjectMocks
     private RegionServiceImpl regionService;
 
-    private Region testRegion;
+    private RegionModel testRegion;
 
     @BeforeEach
     void setUp() {
-        testRegion = Region.builder()
+        testRegion = RegionModel.builder()
                 .idRegion(1L)
                 .nomRegion("Bamako")
-                .code("BKO")
-                .description("District de Bamako")
-                .superficie(252.0)
-                .population(2500000L)
-                .chefLieu("Bamako")
+                .nbreHbt(2500000L)
                 .villes(new ArrayList<>())
                 .ethnies(new ArrayList<>())
                 .plats(new ArrayList<>())
@@ -68,38 +64,33 @@ class RegionServiceTest {
         assertNotNull(result);
         assertEquals(1L, result.getId());
         assertEquals("Bamako", result.getNom());
-        assertEquals("BKO", result.getCode());
+        assertEquals(2500000L, result.getNbreHbt());
     }
 
     @Test
     void testCreateRegion() {
         RegionRequestDTO request = RegionRequestDTO.builder()
                 .nom("Sikasso")
-                .code("SKO")
-                .superficie(70280.0)
-                .population(2600000L)
+                .nbreHbt(2600000L)
                 .build();
 
-        Region savedRegion = Region.builder()
+        RegionModel savedRegion = RegionModel.builder()
                 .idRegion(2L)
                 .nomRegion("Sikasso")
-                .code("SKO")
-                .superficie(70280.0)
-                .population(2600000L)
+                .nbreHbt(2600000L)
                 .villes(new ArrayList<>())
                 .ethnies(new ArrayList<>())
                 .plats(new ArrayList<>())
                 .build();
 
         when(regionRepository.existsByNomRegionIgnoreCase("Sikasso")).thenReturn(false);
-        when(regionRepository.existsByCodeIgnoreCase("SKO")).thenReturn(false);
-        when(regionRepository.save(any(Region.class))).thenReturn(savedRegion);
+        when(regionRepository.save(any(RegionModel.class))).thenReturn(savedRegion);
 
         RegionResponseDTO created = regionService.createRegion(request);
 
         assertNotNull(created);
         assertEquals(2L, created.getId());
         assertEquals("Sikasso", created.getNom());
-        verify(regionRepository, times(1)).save(any(Region.class));
+        verify(regionRepository, times(1)).save(any(RegionModel.class));
     }
 }

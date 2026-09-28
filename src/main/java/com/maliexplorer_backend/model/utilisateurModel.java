@@ -4,18 +4,17 @@ import java.sql.Date;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import com.maliexplorer_backend.model.RoleModel;
 
 @Entity
 @Table(name = "utilisateurs")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class utilisateurModel {
@@ -23,6 +22,9 @@ public class utilisateurModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idUsers;
+
+    @Column(unique = true)
+    private String firebaseUid;
 
     @NotBlank(message = "Le prénom est obligatoire !")
     @Size(min = 2, max = 50, message = "Le prénom doit contenir entre 2 et 50 caractères !")
@@ -37,8 +39,6 @@ public class utilisateurModel {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @NotBlank(message = "Le mot de passe est obligatoire !")
-    @Size(min = 6, message = "Le mot de passe doit contenir au moins 6 caractères !")
     private String motDePasse;
 
     private String adresse;

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -45,13 +46,13 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.getRecentArticles());
     }
 
-    @GetMapping("/categorie/{categorie}")
-    @Operation(summary = "Lister les articles filtrés par catégorie avec pagination")
-    public ResponseEntity<Page<ArticleResponseDTO>> getArticlesByCategorie(
-            @PathVariable String categorie,
-            @PageableDefault(size = 10, sort = "datePublication", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(articleService.getArticlesByCategorie(categorie, pageable));
-    }
+//    @GetMapping("/categorie/{categorie}")
+//    @Operation(summary = "Lister les articles filtrés par catégorie avec pagination")
+//    public ResponseEntity<Page<ArticleResponseDTO>> getArticlesByCategorie(
+//            @PathVariable String categorie,
+//            @PageableDefault(size = 10, sort = "datePublication", direction = Sort.Direction.DESC) Pageable pageable) {
+//        return ResponseEntity.ok(articleService.getArticlesByCategorie(categorie, pageable));
+//    }
 
     @GetMapping("/search")
     @Operation(summary = "Rechercher des articles par mot-clé (titre ou contenu) avec pagination")
@@ -62,14 +63,16 @@ public class ArticleController {
     }
 
     @PostMapping
-    @Operation(summary = "Publier un nouvel article")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Publier un nouvel article (Admin uniquement)")
     public ResponseEntity<ArticleResponseDTO> createArticle(@Valid @RequestBody ArticleRequestDTO requestDTO) {
         ArticleResponseDTO created = articleService.createArticle(requestDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Modifier un article existant")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Modifier un article existant (Admin uniquement)")
     public ResponseEntity<ArticleResponseDTO> updateArticle(
             @PathVariable Long id,
             @Valid @RequestBody ArticleRequestDTO requestDTO) {
@@ -77,7 +80,8 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Supprimer un article")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Supprimer un article (Admin uniquement)")
     public ResponseEntity<Void> deleteArticle(@PathVariable Long id) {
         articleService.deleteArticle(id);
         return ResponseEntity.noContent().build();

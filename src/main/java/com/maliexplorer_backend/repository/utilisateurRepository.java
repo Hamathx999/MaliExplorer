@@ -9,8 +9,11 @@ import java.util.Optional;
 @Repository
 public interface utilisateurRepository extends JpaRepository<utilisateurModel, Integer> {
 
-    // Méthodes utiles pour le CRUD et la vérification d'unicité
     Optional<utilisateurModel> findByEmail(String email);
 
     boolean existsByEmail(String email);
+
+    Optional<utilisateurModel> findByFirebaseUid(String firebaseUid);
+
+    boolean existsByFirebaseUid(String firebaseUid);
 }

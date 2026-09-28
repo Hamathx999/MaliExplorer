@@ -19,138 +19,115 @@ import java.util.stream.Collectors;
 @Transactional
 public class RegionServiceImpl implements RegionService {
 
-    private final RegionRepository regionRepository;
+        private final RegionRepository regionRepository;
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<RegionResponseDTO> getAllRegions() {
-        return regionRepository.findAll()
-                .stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public RegionResponseDTO getRegionById(Long id) {
-        RegionModel region = findRegionOrThrow(id);
-        return mapToResponseDTO(region);
-    }
-
-    @Override
-    public RegionResponseDTO createRegion(RegionRequestDTO requestDTO) {
-        if (regionRepository.existsByNomRegionIgnoreCase(requestDTO.getNom())) {
-            throw new BadRequestException("Une région avec le nom '" + requestDTO.getNom() + "' existe déjà");
-        }
-        if ("" != null && regionRepository.existsByCodeIgnoreCase("")) {
-            throw new BadRequestException("Une région avec le code '" + "" + "' existe déjà");
+        @Override
+        @Transactional(readOnly = true)
+        public List<RegionResponseDTO> getAllRegions() {
+                return regionRepository.findAll()
+                                .stream()
+                                .map(this::mapToResponseDTO)
+                                .collect(Collectors.toList());
         }
 
-        RegionModel region = RegionModel.builder()
-                .nomRegion(requestDTO.getNom())
-                
-                
-                
-                .nbreHbt(requestDTO.getNbreHbt())
-                
-                
-                
-                .build();
-
-        RegionModel saved = regionRepository.save(region);
-        return mapToResponseDTO(saved);
-    }
-
-    @Override
-    public RegionResponseDTO updateRegion(Long id, RegionRequestDTO requestDTO) {
-        RegionModel region = findRegionOrThrow(id);
-
-        if (!region.getNomRegion().equalsIgnoreCase(requestDTO.getNom())
-                && regionRepository.existsByNomRegionIgnoreCase(requestDTO.getNom())) {
-            throw new BadRequestException("Une région avec le nom '" + requestDTO.getNom() + "' existe déjà");
+        @Override
+        @Transactional(readOnly = true)
+        public RegionResponseDTO getRegionById(Long id) {
+                RegionModel region = findRegionOrThrow(id);
+                return mapToResponseDTO(region);
         }
 
-        if ("" != null
-                && !"".equalsIgnoreCase("")
-                && regionRepository.existsByCodeIgnoreCase("")) {
-            throw new BadRequestException("Une région avec le code '" + "" + "' existe déjà");
+        @Override
+        public RegionResponseDTO createRegion(RegionRequestDTO requestDTO) {
+                if (regionRepository.existsByNomRegionIgnoreCase(requestDTO.getNom())) {
+                        throw new BadRequestException(
+                                        "Une région avec le nom '" + requestDTO.getNom() + "' existe déjà");
+                }
+
+                RegionModel region = RegionModel.builder()
+                                .nomRegion(requestDTO.getNom())
+                                .nbreHbt(requestDTO.getNbreHbt())
+                                .build();
+
+                RegionModel saved = regionRepository.save(region);
+                return mapToResponseDTO(saved);
         }
 
-        region.setNomRegion(requestDTO.getNom());
-        
-        
-        
-        region.setNbreHbt(requestDTO.getNbreHbt());
-        
-        
-        
+        @Override
+        public RegionResponseDTO updateRegion(Long id, RegionRequestDTO requestDTO) {
+                RegionModel region = findRegionOrThrow(id);
 
-        RegionModel updated = regionRepository.save(region);
-        return mapToResponseDTO(updated);
-    }
+                if (!region.getNomRegion().equalsIgnoreCase(requestDTO.getNom())
+                                && regionRepository.existsByNomRegionIgnoreCase(requestDTO.getNom())) {
+                        throw new BadRequestException(
+                                        "Une région avec le nom '" + requestDTO.getNom() + "' existe déjà");
+                }
 
-    @Override
-    public void deleteRegion(Long id) {
-        RegionModel region = findRegionOrThrow(id);
-        regionRepository.delete(region);
-    }
+                region.setNomRegion(requestDTO.getNom());
+                region.setNbreHbt(requestDTO.getNbreHbt());
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<RegionResponseDTO> searchRegions(String keyword) {
-        return regionRepository.findByNomRegionContainingIgnoreCase(keyword)
-                .stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
-    }
+                RegionModel updated = regionRepository.save(region);
+                return mapToResponseDTO(updated);
+        }
 
-    private RegionModel findRegionOrThrow(Long id) {
-        return regionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Région introuvable avec l'ID : " + id));
-    }
+        @Override
+        public void deleteRegion(Long id) {
+                RegionModel region = findRegionOrThrow(id);
+                regionRepository.delete(region);
+        }
 
-    private RegionResponseDTO mapToResponseDTO(RegionModel region) {
-        List<VilleSummaryDTO> villes = region.getVilles() == null ? Collections.emptyList() :
-                region.getVilles().stream()
-                        .map(v -> VilleSummaryDTO.builder()
-                                .id(v.getIdVille())
-                                .nom(v.getNomVille())
-                                
-                                
-                                .build())
-                        .collect(Collectors.toList());
+        @Override
+        @Transactional(readOnly = true)
+        public List<RegionResponseDTO> searchRegions(String keyword) {
+                return regionRepository.findByNomRegionContainingIgnoreCase(keyword)
+                                .stream()
+                                .map(this::mapToResponseDTO)
+                                .collect(Collectors.toList());
+        }
 
-        List<EthnieSummaryDTO> ethnies = region.getEthnies() == null ? Collections.emptyList() :
-                region.getEthnies().stream()
-                        .map(e -> EthnieSummaryDTO.builder()
-                                .id(e.getIdEthnie())
-                                .nom(e.getNomEthnie())
-                                
-                                .build())
-                        .collect(Collectors.toList());
+        private RegionModel findRegionOrThrow(Long id) {
+                return regionRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Région introuvable avec l'ID : " + id));
+        }
 
-        List<PlatSummaryDTO> plats = region.getPlats() == null ? Collections.emptyList() :
-                region.getPlats().stream()
-                        .map(p -> PlatSummaryDTO.builder()
-                                .id(p.getIdPlat())
-                                .nom(p.getNomPlat())
-                                
-                                .build())
-                        .collect(Collectors.toList());
+        private RegionResponseDTO mapToResponseDTO(RegionModel region) {
+                List<VilleSummaryDTO> villes = region.getVilles() == null ? Collections.emptyList()
+                                : region.getVilles().stream()
+                                                .map(v -> VilleSummaryDTO.builder()
+                                                                .id(v.getIdVille())
+                                                                .nom(v.getNomVille())
 
-        return RegionResponseDTO.builder()
-                .id(region.getIdRegion())
-                .nom(region.getNomRegion())
-                
-                
-                
-                .nbreHbt(region.getNbreHbt())
-                
-                
-                
-                .villes(villes)
-                .ethnies(ethnies)
-                .plats(plats)
-                .build();
-    }
+                                                                .build())
+                                                .collect(Collectors.toList());
+
+                List<EthnieSummaryDTO> ethnies = region.getEthnies() == null ? Collections.emptyList()
+                                : region.getEthnies().stream()
+                                                .map(e -> EthnieSummaryDTO.builder()
+                                                                .id(e.getIdEthnie())
+                                                                .nom(e.getNomEthnie())
+
+                                                                .build())
+                                                .collect(Collectors.toList());
+
+                List<PlatSummaryDTO> plats = region.getPlats() == null ? Collections.emptyList()
+                                : region.getPlats().stream()
+                                                .map(p -> PlatSummaryDTO.builder()
+                                                                .id(p.getIdPlat())
+                                                                .nom(p.getNomPlat())
+
+                                                                .build())
+                                                .collect(Collectors.toList());
+
+                return RegionResponseDTO.builder()
+                                .id(region.getIdRegion())
+                                .nom(region.getNomRegion())
+
+                                .nbreHbt(region.getNbreHbt())
+
+                                .villes(villes)
+                                .ethnies(ethnies)
+                                .plats(plats)
+                                .build();
+        }
 }

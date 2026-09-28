@@ -21,6 +21,7 @@ public class TouristeController {
     }
 
     @PostMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TouristeModel> creerTouriste(@Valid @RequestBody TouristeModel touriste) {
         TouristeModel nouveau = service.creerTouriste(touriste);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
@@ -37,12 +38,14 @@ public class TouristeController {
     }
 
     @PutMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TouristeModel> mettreAJourTouriste(@PathVariable int id,
             @Valid @RequestBody TouristeModel touriste) {
         return ResponseEntity.ok(service.mettreAJourTouriste(id, touriste));
     }
 
     @DeleteMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> supprimerTouriste(@PathVariable int id) {
         service.supprimerTouriste(id);
         return ResponseEntity.noContent().build();

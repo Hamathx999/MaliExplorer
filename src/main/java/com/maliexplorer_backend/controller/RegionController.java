@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,14 +35,16 @@ public class RegionController {
     }
 
     @PostMapping
-    @Operation(summary = "Créer une nouvelle région")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Créer une nouvelle région (Admin uniquement)")
     public ResponseEntity<RegionResponseDTO> createRegion(@Valid @RequestBody RegionRequestDTO requestDTO) {
         RegionResponseDTO created = regionService.createRegion(requestDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Modifier une région existante")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Modifier une région existante (Admin uniquement)")
     public ResponseEntity<RegionResponseDTO> updateRegion(
             @PathVariable Long id,
             @Valid @RequestBody RegionRequestDTO requestDTO) {
@@ -49,7 +52,8 @@ public class RegionController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Supprimer une région")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Supprimer une région (Admin uniquement)")
     public ResponseEntity<Void> deleteRegion(@PathVariable Long id) {
         regionService.deleteRegion(id);
         return ResponseEntity.noContent().build();

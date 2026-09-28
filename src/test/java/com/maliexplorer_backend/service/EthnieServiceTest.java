@@ -1,10 +1,10 @@
 package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.dto.EthnieResponseDTO;
-import com.maliexplorer_backend.model.Ethnie;
+import com.maliexplorer_backend.model.EthnieModel;
 import com.maliexplorer_backend.repository.EthnieRepository;
 import com.maliexplorer_backend.repository.RegionRepository;
-import com.maliexplorer_backend.serviceImpl.EthnieServiceImpl;
+import com.maliexplorer_backend.serviceimpl.EthnieServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,10 +32,12 @@ class EthnieServiceTest {
 
     @Test
     void testGetAllEthnies() {
-        Ethnie ethnie = Ethnie.builder()
+        EthnieModel ethnie = EthnieModel.builder()
                 .idEthnie(1L)
                 .nomEthnie("Bambara")
-                .langue("Bamanankan")
+                .region("Ségou, Koulikoro")
+                .population("6 000 000")
+                .description("Ethnie mandingue majoritaire au Mali")
                 .regions(new ArrayList<>())
                 .plats(new ArrayList<>())
                 .build();

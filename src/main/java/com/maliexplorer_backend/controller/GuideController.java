@@ -21,6 +21,7 @@ public class GuideController {
     }
 
     @PostMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GuideModel> creerGuide(@Valid @RequestBody GuideModel guide) {
         GuideModel nouveau = service.creerGuide(guide);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
@@ -42,11 +43,13 @@ public class GuideController {
     }
 
     @PutMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GuideModel> mettreAJourGuide(@PathVariable int id, @Valid @RequestBody GuideModel guide) {
         return ResponseEntity.ok(service.mettreAJourGuide(id, guide));
     }
 
     @DeleteMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> supprimerGuide(@PathVariable int id) {
         service.supprimerGuide(id);
         return ResponseEntity.noContent().build();

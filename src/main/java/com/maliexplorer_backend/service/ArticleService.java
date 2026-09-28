@@ -22,7 +22,7 @@ public interface ArticleService {
 
     Page<ArticleResponseDTO> searchArticles(String keyword, Pageable pageable);
 
-    Page<ArticleResponseDTO> getArticlesByCategorie(String categorie, Pageable pageable);
+//    Page<ArticleResponseDTO> getArticlesByCategorie(String categorie, Pageable pageable);
 
     List<ArticleSummaryDTO> getRecentArticles();
 }
