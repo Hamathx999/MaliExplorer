@@ -24,21 +24,10 @@ public class Article {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String contenu;
 
-    @Column(length = 100)
-    private String auteur;
-
-    @Column(length = 50)
-    private String categorie;
-
-    @Column(length = 500)
-    private String imageUrl;
-
     private LocalDateTime datePublication;
 
     @Builder.Default
     private Long vues = 0L;
-
-    private Long idUsers;
 
     @PrePersist
     public void prePersist() {

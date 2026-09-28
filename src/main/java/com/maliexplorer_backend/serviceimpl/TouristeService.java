@@ -1,8 +1,8 @@
 package com.maliexplorer_backend.serviceImpl;
 
-import com.maliexplorer_backend.Models.Role;
-import com.maliexplorer_backend.Models.TouristeModel;
-import com.maliexplorer_backend.Repository.TouristeRepository;
+import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.Touriste;
+import com.maliexplorer_backend.repository.TouristeRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -18,7 +18,7 @@ public class TouristeService {
         this.repository = repository;
     }
 
-    public TouristeModel creerTouriste(TouristeModel touriste) {
+    public Touriste creerTouriste(Touriste touriste) {
         if (repository.existsByEmail(touriste.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
@@ -29,17 +29,17 @@ public class TouristeService {
         return repository.save(touriste);
     }
 
-    public List<TouristeModel> obtenirTousLesTouristes() {
+    public List<Touriste> obtenirTousLesTouristes() {
         return repository.findAll();
     }
 
-    public TouristeModel obtenirTouristeParId(int id) {
+    public Touriste obtenirTouristeParId(int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Touriste introuvable avec l'ID : " + id));
     }
 
-    public TouristeModel mettreAJourTouriste(int id, TouristeModel details) {
-        TouristeModel existant = obtenirTouristeParId(id);
+    public Touriste mettreAJourTouriste(int id, Touriste details) {
+        Touriste existant = obtenirTouristeParId(id);
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");

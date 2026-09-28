@@ -32,10 +32,7 @@ public class PresidentRequestDTO {
 
     private String biographie;
 
-    private String faitsMarquants;
-
     @Size(max = 500, message = "L'URL de la photo ne peut pas dépasser 500 caractères")
     private String photoUrl;
 
-    private Long idUsers;
-}
+    }

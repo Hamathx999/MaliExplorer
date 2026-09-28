@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.QuestionRequestDTO;
 import com.maliexplorer_backend.dto.QuestionResponseDTO;
@@ -61,11 +61,10 @@ public class QuestionServiceImpl implements QuestionService {
         Question question = Question.builder()
                 .nomQuestion(requestDTO.getNomQuestion())
                 .reponse(requestDTO.getReponse())
-                .explication(requestDTO.getExplication())
-                .point(requestDTO.getPoint() != null ? requestDTO.getPoint() : 10)
+                
+                
                 .duree(requestDTO.getDuree() != null ? requestDTO.getDuree() : 30)
-                .propositions(requestDTO.getPropositions() != null ? new ArrayList<>(requestDTO.getPropositions())
-                        : new ArrayList<>())
+                
                 .quiz(quiz)
                 .build();
 
@@ -88,11 +87,11 @@ public class QuestionServiceImpl implements QuestionService {
 
         question.setNomQuestion(requestDTO.getNomQuestion());
         question.setReponse(requestDTO.getReponse());
-        question.setExplication(requestDTO.getExplication());
-        question.setPoint(requestDTO.getPoint());
+        
+        
         question.setDuree(requestDTO.getDuree());
-        if (requestDTO.getPropositions() != null) {
-            question.setPropositions(new ArrayList<>(requestDTO.getPropositions()));
+        if (new java.util.ArrayList<>() != null) {
+            
         }
 
         Question updated = questionRepository.save(question);
@@ -117,11 +116,10 @@ public class QuestionServiceImpl implements QuestionService {
                 .idQuestion(question.getIdQuestion())
                 .nomQuestion(question.getNomQuestion())
                 .reponse(question.getReponse())
-                .explication(question.getExplication())
-                .point(question.getPoint())
+                
+                
                 .duree(question.getDuree())
-                .propositions(question.getPropositions() != null ? new ArrayList<>(question.getPropositions())
-                        : new ArrayList<>())
+                
                 .quizId(quizId)
                 .build();
     }

@@ -15,9 +15,6 @@ public class ArticleSummaryDTO {
 
     private Long idArticle;
     private String nomArticle;
-    private String auteur;
-    private String categorie;
-    private String imageUrl;
     private LocalDateTime datePublication;
     private Long vues;
 }

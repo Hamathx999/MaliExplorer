@@ -1,8 +1,8 @@
 package com.maliexplorer_backend.Controllers;
 
 
-import com.maliexplorer_backend.Models.AdministrateurModel;
-import com.maliexplorer_backend.serviceImpl.AdministrateurService;
+import com.maliexplorer_backend.model.Administrateur;
+import com.maliexplorer_backend.service.AdministrateurService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,25 +22,25 @@ public class AdministrateurController {
     }
 
     @PostMapping
-    public ResponseEntity<AdministrateurModel> creerAdministrateur(
-            @Valid @RequestBody AdministrateurModel administrateur) {
-        AdministrateurModel nouveau = service.creerAdministrateur(administrateur);
+    public ResponseEntity<Administrateur> creerAdministrateur(
+            @Valid @RequestBody Administrateur administrateur) {
+        Administrateur nouveau = service.creerAdministrateur(administrateur);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<AdministrateurModel>> obtenirTousLesAdministrateurs() {
+    public ResponseEntity<List<Administrateur>> obtenirTousLesAdministrateurs() {
         return ResponseEntity.ok(service.obtenirTousLesAdministrateurs());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AdministrateurModel> obtenirAdministrateurParId(@PathVariable int id) {
+    public ResponseEntity<Administrateur> obtenirAdministrateurParId(@PathVariable int id) {
         return ResponseEntity.ok(service.obtenirAdministrateurParId(id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AdministrateurModel> mettreAJourAdministrateur(@PathVariable int id,
-            @Valid @RequestBody AdministrateurModel administrateur) {
+    public ResponseEntity<Administrateur> mettreAJourAdministrateur(@PathVariable int id,
+            @Valid @RequestBody Administrateur administrateur) {
         return ResponseEntity.ok(service.mettreAJourAdministrateur(id, administrateur));
     }
 

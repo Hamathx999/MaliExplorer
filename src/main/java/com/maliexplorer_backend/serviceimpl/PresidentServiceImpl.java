@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.PresidentRequestDTO;
 import com.maliexplorer_backend.dto.PresidentResponseDTO;
@@ -45,9 +45,9 @@ public class PresidentServiceImpl implements PresidentService {
                 .dateDeces(requestDTO.getDateDeces())
                 .periodeMandat(requestDTO.getPeriodeMandat())
                 .biographie(requestDTO.getBiographie())
-                .faitsMarquants(requestDTO.getFaitsMarquants())
+                
                 .photoUrl(requestDTO.getPhotoUrl())
-                .idUsers(requestDTO.getIdUsers())
+                
                 .build();
 
         President saved = presidentRepository.save(president);
@@ -64,11 +64,9 @@ public class PresidentServiceImpl implements PresidentService {
         president.setDateDeces(requestDTO.getDateDeces());
         president.setPeriodeMandat(requestDTO.getPeriodeMandat());
         president.setBiographie(requestDTO.getBiographie());
-        president.setFaitsMarquants(requestDTO.getFaitsMarquants());
+        
         president.setPhotoUrl(requestDTO.getPhotoUrl());
-        if (requestDTO.getIdUsers() != null) {
-            president.setIdUsers(requestDTO.getIdUsers());
-        }
+        
 
         President updated = presidentRepository.save(president);
         return mapToResponseDTO(updated);
@@ -103,9 +101,9 @@ public class PresidentServiceImpl implements PresidentService {
                 .dateDeces(president.getDateDeces())
                 .periodeMandat(president.getPeriodeMandat())
                 .biographie(president.getBiographie())
-                .faitsMarquants(president.getFaitsMarquants())
+                
                 .photoUrl(president.getPhotoUrl())
-                .idUsers(president.getIdUsers())
+                
                 .build();
     }
 }

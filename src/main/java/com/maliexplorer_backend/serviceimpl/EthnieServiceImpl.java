@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.EthnieRequestDTO;
 import com.maliexplorer_backend.dto.EthnieResponseDTO;
@@ -53,10 +53,7 @@ public class EthnieServiceImpl implements EthnieService {
                 .nomEthnie(requestDTO.getNom())
                 .region(requestDTO.getRegion())
                 .population(requestDTO.getPopulation())
-                .langue(requestDTO.getLangue())
                 .description(requestDTO.getDescription())
-                .imageUrl(requestDTO.getImageUrl())
-                .idUsers(requestDTO.getIdUsers())
                 .regions(new ArrayList<>())
                 .plats(new ArrayList<>())
                 .build();
@@ -89,12 +86,9 @@ public class EthnieServiceImpl implements EthnieService {
         ethnie.setNomEthnie(requestDTO.getNom());
         ethnie.setRegion(requestDTO.getRegion());
         ethnie.setPopulation(requestDTO.getPopulation());
-        ethnie.setLangue(requestDTO.getLangue());
         ethnie.setDescription(requestDTO.getDescription());
-        ethnie.setImageUrl(requestDTO.getImageUrl());
-        if (requestDTO.getIdUsers() != null) {
-            ethnie.setIdUsers(requestDTO.getIdUsers());
-        }
+        
+        
 
         Ethnie updated = ethnieRepository.save(ethnie);
         return mapToResponseDTO(updated);
@@ -130,34 +124,17 @@ public class EthnieServiceImpl implements EthnieService {
     }
 
     private EthnieResponseDTO mapToResponseDTO(Ethnie ethnie) {
-        List<RegionSummaryDTO> regions = ethnie.getRegions() == null ? Collections.emptyList()
-                : ethnie.getRegions().stream()
-                        .map(r -> RegionSummaryDTO.builder()
-                                .id(r.getIdRegion())
-                                .nom(r.getNomRegion())
-                                .code(r.getCode())
-                                .imageUrl(r.getImageUrl())
-                                .build())
-                        .collect(Collectors.toList());
+        List<RegionSummaryDTO> regions = ethnie.getRegions() == null ? Collections.emptyList() :
+                new java.util.ArrayList<>();
 
-        List<PlatSummaryDTO> plats = ethnie.getPlats() == null ? Collections.emptyList()
-                : ethnie.getPlats().stream()
-                        .map(p -> PlatSummaryDTO.builder()
-                                .id(p.getIdPlat())
-                                .nom(p.getNomPlat())
-                                .imageUrl(p.getImageUrl())
-                                .build())
-                        .collect(Collectors.toList());
+        List<PlatSummaryDTO> plats = new java.util.ArrayList<>();
 
         return EthnieResponseDTO.builder()
                 .id(ethnie.getIdEthnie())
                 .nom(ethnie.getNomEthnie())
                 .region(ethnie.getRegion())
                 .population(ethnie.getPopulation())
-                .langue(ethnie.getLangue())
                 .description(ethnie.getDescription())
-                .imageUrl(ethnie.getImageUrl())
-                .idUsers(ethnie.getIdUsers())
                 .regions(regions)
                 .plats(plats)
                 .build();

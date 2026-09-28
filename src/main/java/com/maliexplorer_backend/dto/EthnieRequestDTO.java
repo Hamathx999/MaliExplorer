@@ -24,15 +24,9 @@ public class EthnieRequestDTO {
     private String population;
 
     @Size(max = 100, message = "La langue ne peut pas dépasser 100 caractères")
-    private String langue;
-
     private String description;
 
     @Size(max = 500, message = "L'URL de l'image ne peut pas dépasser 500 caractères")
-    private String imageUrl;
-
-    private Long idUsers;
-
     private List<Long> regionIds;
 
     private List<Long> platIds;

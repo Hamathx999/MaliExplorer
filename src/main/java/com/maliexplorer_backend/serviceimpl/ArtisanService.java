@@ -1,8 +1,8 @@
 package com.maliexplorer_backend.serviceImpl;
 
-import com.maliexplorer_backend.Models.ArtisanModel;
-import com.maliexplorer_backend.Models.Role;
-import com.maliexplorer_backend.Repository.ArtisanRepository;
+import com.maliexplorer_backend.model.Artisan;
+import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.repository.ArtisanRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -18,7 +18,7 @@ public class ArtisanService {
         this.repository = repository;
     }
 
-    public ArtisanModel creerArtisan(ArtisanModel artisan) {
+    public Artisan creerArtisan(Artisan artisan) {
         if (repository.existsByEmail(artisan.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
@@ -29,21 +29,21 @@ public class ArtisanService {
         return repository.save(artisan);
     }
 
-    public List<ArtisanModel> obtenirTousLesArtisans() {
+    public List<Artisan> obtenirTousLesArtisans() {
         return repository.findAll();
     }
 
-    public ArtisanModel obtenirArtisanParId(int id) {
+    public Artisan obtenirArtisanParId(int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Artisan introuvable avec l'ID : " + id));
     }
 
-    public List<ArtisanModel> rechercherParType(String typeArtisanat) {
+    public List<Artisan> rechercherParType(String typeArtisanat) {
         return repository.findByTypeArtisanatContainingIgnoreCase(typeArtisanat);
     }
 
-    public ArtisanModel mettreAJourArtisan(int id, ArtisanModel details) {
-        ArtisanModel existant = obtenirArtisanParId(id);
+    public Artisan mettreAJourArtisan(int id, Artisan details) {
+        Artisan existant = obtenirArtisanParId(id);
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");

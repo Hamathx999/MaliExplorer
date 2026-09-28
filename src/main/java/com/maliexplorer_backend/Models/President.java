@@ -34,9 +34,6 @@ public class President {
     @Column(columnDefinition = "TEXT")
     private String biographie;
 
-    @Column(columnDefinition = "TEXT")
-    private String faitsMarquants;
-
     @Column(length = 500)
     private String photoUrl;
 

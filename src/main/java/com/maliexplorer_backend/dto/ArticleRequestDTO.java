@@ -18,8 +18,4 @@ public class ArticleRequestDTO {
     @NotBlank(message = "Le contenu de l'article est obligatoire")
     private String contenu;
 
-    private String auteur;
-    private String categorie;
-    private String imageUrl;
-    private Long idUsers;
-}
+    }

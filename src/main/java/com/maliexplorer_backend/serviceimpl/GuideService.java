@@ -1,8 +1,8 @@
 package com.maliexplorer_backend.serviceImpl;
 
-    import com.maliexplorer_backend.Models.GuideModel;
-import com.maliexplorer_backend.Models.Role;
-import com.maliexplorer_backend.Repository.GuideRepository;
+import com.maliexplorer_backend.model.Guide;
+import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.repository.GuideRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -18,7 +18,7 @@ public class GuideService {
         this.repository = repository;
     }
 
-    public GuideModel creerGuide(GuideModel guide) {
+    public Guide creerGuide(Guide guide) {
         if (repository.existsByEmail(guide.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
@@ -29,21 +29,21 @@ public class GuideService {
         return repository.save(guide);
     }
 
-    public List<GuideModel> obtenirTousLesGuides() {
+    public List<Guide> obtenirTousLesGuides() {
         return repository.findAll();
     }
 
-    public GuideModel obtenirGuideParId(int id) {
+    public Guide obtenirGuideParId(int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Guide introuvable avec l'ID : " + id));
     }
 
-    public List<GuideModel> rechercherParLangue(String langue) {
+    public List<Guide> rechercherParLangue(String langue) {
         return repository.findByLangueContainingIgnoreCase(langue);
     }
 
-    public GuideModel mettreAJourGuide(int id, GuideModel details) {
-        GuideModel existant = obtenirGuideParId(id);
+    public Guide mettreAJourGuide(int id, Guide details) {
+        Guide existant = obtenirGuideParId(id);
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");

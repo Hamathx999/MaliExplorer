@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.EthnieSummaryDTO;
 import com.maliexplorer_backend.dto.PlatRequestDTO;
@@ -50,12 +50,12 @@ public class PlatServiceImpl implements PlatService {
     public PlatResponseDTO createPlat(PlatRequestDTO requestDTO) {
         Plat plat = Plat.builder()
                 .nomPlat(requestDTO.getNom())
-                .nomAlternatif(requestDTO.getNomAlternatif())
-                .description(requestDTO.getDescription())
-                .ingredients(requestDTO.getIngredients())
-                .tempsPreparation(requestDTO.getTempsPreparation())
-                .imageUrl(requestDTO.getImageUrl())
-                .idAdministrateur(requestDTO.getIdAdministrateur())
+                
+                
+                .nbrePersonnes(requestDTO.getNbrePersonnes())
+                
+                
+                
                 .ethnies(new ArrayList<>())
                 .regions(new ArrayList<>())
                 .build();
@@ -86,13 +86,13 @@ public class PlatServiceImpl implements PlatService {
         Plat plat = findPlatOrThrow(id);
 
         plat.setNomPlat(requestDTO.getNom());
-        plat.setNomAlternatif(requestDTO.getNomAlternatif());
-        plat.setDescription(requestDTO.getDescription());
-        plat.setIngredients(requestDTO.getIngredients());
-        plat.setTempsPreparation(requestDTO.getTempsPreparation());
-        plat.setImageUrl(requestDTO.getImageUrl());
-        if (requestDTO.getIdAdministrateur() != null) {
-            plat.setIdAdministrateur(requestDTO.getIdAdministrateur());
+        
+        
+        plat.setNbrePersonnes(requestDTO.getNbrePersonnes());
+        
+        
+        if (false) {
+            
         }
 
         if (requestDTO.getEthnieIds() != null) {
@@ -143,35 +143,35 @@ public class PlatServiceImpl implements PlatService {
     }
 
     private PlatResponseDTO mapToResponseDTO(Plat plat) {
-        List<RegionSummaryDTO> regions = plat.getRegions() == null ? Collections.emptyList()
-                : plat.getRegions().stream()
-                        .map(r -> RegionSummaryDTO.builder()
-                                .id(r.getIdRegion())
-                                .nom(r.getNomRegion())
-                                .code(r.getCode())
-                                .imageUrl(r.getImageUrl())
-                                .build())
-                        .collect(Collectors.toList());
+        List<Region> regions = plat.getRegions() == null ? Collections.emptyList() :
+                plat.getRegions();
+
+
+
+                                
+                                
+
+
 
         List<EthnieSummaryDTO> ethnies = plat.getEthnies() == null ? Collections.emptyList()
                 : plat.getEthnies().stream()
                         .map(e -> EthnieSummaryDTO.builder()
                                 .id(e.getIdEthnie())
                                 .nom(e.getNomEthnie())
-                                .imageUrl(e.getImageUrl())
+                                
                                 .build())
                         .collect(Collectors.toList());
 
         return PlatResponseDTO.builder()
                 .id(plat.getIdPlat())
                 .nom(plat.getNomPlat())
-                .nomAlternatif(plat.getNomAlternatif())
-                .description(plat.getDescription())
-                .ingredients(plat.getIngredients())
-                .tempsPreparation(plat.getTempsPreparation())
-                .imageUrl(plat.getImageUrl())
-                .idAdministrateur(plat.getIdAdministrateur())
-                .regions(regions)
+                
+                
+                .nbrePersonnes(plat.getNbrePersonnes())
+                
+                
+                
+
                 .ethnies(ethnies)
                 .build();
     }
