@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.ArticleRequestDTO;
 import com.maliexplorer_backend.dto.ArticleResponseDTO;
@@ -44,12 +44,12 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = Article.builder()
                 .nomArticle(requestDTO.getNomArticle())
                 .contenu(requestDTO.getContenu())
-                .auteur(requestDTO.getAuteur())
-                .categorie(requestDTO.getCategorie())
-                .imageUrl(requestDTO.getImageUrl())
+                
+                
+                
                 .datePublication(LocalDateTime.now())
                 .vues(0L)
-                .idUsers(requestDTO.getIdUsers())
+                
                 .build();
 
         Article saved = articleRepository.save(article);
@@ -62,12 +62,10 @@ public class ArticleServiceImpl implements ArticleService {
 
         article.setNomArticle(requestDTO.getNomArticle());
         article.setContenu(requestDTO.getContenu());
-        article.setAuteur(requestDTO.getAuteur());
-        article.setCategorie(requestDTO.getCategorie());
-        article.setImageUrl(requestDTO.getImageUrl());
-        if (requestDTO.getIdUsers() != null) {
-            article.setIdUsers(requestDTO.getIdUsers());
-        }
+        
+        
+        
+        
 
         Article updated = articleRepository.save(article);
         return mapToResponseDTO(updated);
@@ -102,9 +100,9 @@ public class ArticleServiceImpl implements ArticleService {
                 .map(a -> ArticleSummaryDTO.builder()
                         .idArticle(a.getIdArticle())
                         .nomArticle(a.getNomArticle())
-                        .auteur(a.getAuteur())
-                        .categorie(a.getCategorie())
-                        .imageUrl(a.getImageUrl())
+                        
+                        
+                        
                         .datePublication(a.getDatePublication())
                         .vues(a.getVues())
                         .build())
@@ -121,12 +119,12 @@ public class ArticleServiceImpl implements ArticleService {
                 .idArticle(article.getIdArticle())
                 .nomArticle(article.getNomArticle())
                 .contenu(article.getContenu())
-                .auteur(article.getAuteur())
-                .categorie(article.getCategorie())
-                .imageUrl(article.getImageUrl())
+                
+                
+                
                 .datePublication(article.getDatePublication())
                 .vues(article.getVues())
-                .idUsers(article.getIdUsers())
+                
                 .build();
     }
 }

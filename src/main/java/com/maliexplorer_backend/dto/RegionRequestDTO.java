@@ -21,24 +21,14 @@ public class RegionRequestDTO {
     private String nom;
 
     @Size(max = 20, message = "Le code ne peut pas dépasser 20 caractères")
-    private String code;
-
     private String description;
 
     @Positive(message = "La superficie doit être positive")
-    private Double superficie;
-
     @Positive(message = "La population doit être positive")
-    private Long population;
+    private Long nbreHbt;
 
     @Size(max = 100, message = "Le chef-lieu ne peut pas dépasser 100 caractères")
-    private String chefLieu;
-
     @Size(max = 500, message = "L'URL de l'image ne peut pas dépasser 500 caractères")
-    private String imageUrl;
-
-    private Long idUsers;
-
     private List<Long> ethnieIds;
 
     private List<Long> platIds;

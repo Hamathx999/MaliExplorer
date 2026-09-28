@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.LieuHistoriqueRequestDTO;
 import com.maliexplorer_backend.dto.LieuHistoriqueResponseDTO;
@@ -58,15 +58,15 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
         }
 
         LieuHistorique lieu = LieuHistorique.builder()
-                .nomHistoire(requestDTO.getNomHistoire())
-                .description(requestDTO.getDescription())
+
+                
                 .epoque(requestDTO.getEpoque())
                 .cordonnees(requestDTO.getCordonnees())
-                .latitude(requestDTO.getLatitude())
-                .longitude(requestDTO.getLongitude())
-                .imageUrl(requestDTO.getImageUrl())
-                .panorama360Url(requestDTO.getPanorama360Url())
-                .idUsers(requestDTO.getIdUsers())
+                
+                
+                
+                
+                
                 .ville(ville)
                 .build();
 
@@ -86,17 +86,15 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
             lieu.setVille(null);
         }
 
-        lieu.setNomHistoire(requestDTO.getNomHistoire());
-        lieu.setDescription(requestDTO.getDescription());
+
+        
         lieu.setEpoque(requestDTO.getEpoque());
         lieu.setCordonnees(requestDTO.getCordonnees());
-        lieu.setLatitude(requestDTO.getLatitude());
-        lieu.setLongitude(requestDTO.getLongitude());
-        lieu.setImageUrl(requestDTO.getImageUrl());
-        lieu.setPanorama360Url(requestDTO.getPanorama360Url());
-        if (requestDTO.getIdUsers() != null) {
-            lieu.setIdUsers(requestDTO.getIdUsers());
-        }
+        
+        
+        
+        
+        
 
         LieuHistorique updated = lieuHistoriqueRepository.save(lieu);
         return mapToResponseDTO(updated);
@@ -122,7 +120,7 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
     public List<LieuHistoriqueResponseDTO> getLieuxWithPanorama360() {
         return lieuHistoriqueRepository.findAll()
                 .stream()
-                .filter(l -> l.getPanorama360Url() != null && !l.getPanorama360Url().trim().isEmpty())
+                .filter(l -> "" != null && !"".trim().isEmpty())
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -138,22 +136,22 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
             villeSummary = VilleSummaryDTO.builder()
                     .id(lieu.getVille().getIdVille())
                     .nom(lieu.getVille().getNomVille())
-                    .estCapitale(lieu.getVille().getEstCapitale())
-                    .imageUrl(lieu.getVille().getImageUrl())
+                    
+                    
                     .build();
         }
 
         return LieuHistoriqueResponseDTO.builder()
                 .idLieu(lieu.getIdLieu())
-                .nomHistoire(lieu.getNomHistoire())
-                .description(lieu.getDescription())
+
+                
                 .epoque(lieu.getEpoque())
                 .cordonnees(lieu.getCordonnees())
-                .latitude(lieu.getLatitude())
-                .longitude(lieu.getLongitude())
-                .imageUrl(lieu.getImageUrl())
-                .panorama360Url(lieu.getPanorama360Url())
-                .idUsers(lieu.getIdUsers())
+                
+                
+                
+                
+                
                 .ville(villeSummary)
                 .build();
     }

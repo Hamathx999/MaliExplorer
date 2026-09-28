@@ -24,22 +24,12 @@ public class Ville {
 
     private String region;
 
-    private String nbreHbts;
+    private String nbreHbt;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     private String cordonnees;
-
-    private Double latitude;
-
-    private Double longitude;
-
-    @Column(name = "est_capitale")
-    private Boolean estCapitale;
-
-    @Column(length = 500)
-    private String imageUrl;
 
     private Long idUsers;
 

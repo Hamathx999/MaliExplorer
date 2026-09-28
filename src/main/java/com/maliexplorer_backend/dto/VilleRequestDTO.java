@@ -20,23 +20,13 @@ public class VilleRequestDTO {
 
     private String region;
 
-    private String nbreHbts;
+    private String nbreHbt;
 
     private String description;
 
     private String cordonnees;
 
-    private Double latitude;
-
-    private Double longitude;
-
-    private Boolean estCapitale;
-
     @Size(max = 500, message = "L'URL de l'image ne peut pas dépasser 500 caractères")
-    private String imageUrl;
-
-    private Long idUsers;
-
     @NotNull(message = "L'identifiant de la région est obligatoire")
     private Long idRegion;
 

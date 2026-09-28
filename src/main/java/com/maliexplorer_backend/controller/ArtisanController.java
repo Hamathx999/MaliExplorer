@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.controller;
 
-import com.maliexplorer_backend.model.ArtisanModel;
+import com.maliexplorer_backend.model.Artisan;
 import com.maliexplorer_backend.service.ArtisanService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,29 +21,29 @@ public class ArtisanController {
     }
 
     @PostMapping
-    public ResponseEntity<ArtisanModel> creerArtisan(@Valid @RequestBody ArtisanModel artisan) {
-        ArtisanModel nouveau = service.creerArtisan(artisan);
+    public ResponseEntity<Artisan> creerArtisan(@Valid @RequestBody Artisan artisan) {
+        Artisan nouveau = service.creerArtisan(artisan);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<ArtisanModel>> obtenirTousLesArtisans() {
+    public ResponseEntity<List<Artisan>> obtenirTousLesArtisans() {
         return ResponseEntity.ok(service.obtenirTousLesArtisans());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ArtisanModel> obtenirArtisanParId(@PathVariable int id) {
+    public ResponseEntity<Artisan> obtenirArtisanParId(@PathVariable int id) {
         return ResponseEntity.ok(service.obtenirArtisanParId(id));
     }
 
     @GetMapping("/type/{typeArtisanat}")
-    public ResponseEntity<List<ArtisanModel>> rechercherParType(@PathVariable String typeArtisanat) {
+    public ResponseEntity<List<Artisan>> rechercherParType(@PathVariable String typeArtisanat) {
         return ResponseEntity.ok(service.rechercherParType(typeArtisanat));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ArtisanModel> mettreAJourArtisan(@PathVariable int id,
-            @Valid @RequestBody ArtisanModel artisan) {
+    public ResponseEntity<Artisan> mettreAJourArtisan(@PathVariable int id,
+            @Valid @RequestBody Artisan artisan) {
         return ResponseEntity.ok(service.mettreAJourArtisan(id, artisan));
     }
 

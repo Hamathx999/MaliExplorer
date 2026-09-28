@@ -22,23 +22,11 @@ public class Plat {
     @Column(nullable = false, length = 150)
     private String nomPlat;
 
-    @Column(length = 150)
-    private String nomAlternatif;
-
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(columnDefinition = "TEXT")
-    private String ingredients;
-
-    private Integer tempsPreparation;
-
-    @Column(length = 500)
-    private String imageUrl;
-
-    private Long idAdministrateur;
-
-    @ManyToMany(mappedBy = "plats")
+    private Integer nbrePersonnes;
+@ManyToMany(mappedBy = "plats")
     @Builder.Default
     private List<Region> regions = new ArrayList<>();
 

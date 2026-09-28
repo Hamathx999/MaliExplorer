@@ -20,7 +20,5 @@ public class PresidentResponseDTO {
     private LocalDate dateDeces;
     private String periodeMandat;
     private String biographie;
-    private String faitsMarquants;
     private String photoUrl;
-    private Long idUsers;
-}
+    }

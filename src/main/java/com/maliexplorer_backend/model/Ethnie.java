@@ -26,14 +26,8 @@ public class Ethnie {
 
     private String population;
 
-    @Column(length = 100)
-    private String langue;
-
     @Column(columnDefinition = "TEXT")
     private String description;
-
-    @Column(length = 500)
-    private String imageUrl;
 
     private Long idUsers;
 

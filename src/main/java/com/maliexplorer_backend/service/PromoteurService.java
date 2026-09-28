@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.model.PromoteurModel;
+import com.maliexplorer_backend.model.Promoteur;
 import com.maliexplorer_backend.model.Role;
 import com.maliexplorer_backend.repository.PromoteurRepository;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class PromoteurService {
         this.repository = repository;
     }
 
-    public PromoteurModel creerPromoteur(PromoteurModel promoteur) {
+    public Promoteur creerPromoteur(Promoteur promoteur) {
         if (repository.existsByEmail(promoteur.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
@@ -29,21 +29,21 @@ public class PromoteurService {
         return repository.save(promoteur);
     }
 
-    public List<PromoteurModel> obtenirTousLesPromoteurs() {
+    public List<Promoteur> obtenirTousLesPromoteurs() {
         return repository.findAll();
     }
 
-    public PromoteurModel obtenirPromoteurParId(int id) {
+    public Promoteur obtenirPromoteurParId(int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Promoteur introuvable avec l'ID : " + id));
     }
 
-    public List<PromoteurModel> rechercherParOrganisation(String nomOrganisation) {
+    public List<Promoteur> rechercherParOrganisation(String nomOrganisation) {
         return repository.findByNomOrganisationContainingIgnoreCase(nomOrganisation);
     }
 
-    public PromoteurModel mettreAJourPromoteur(int id, PromoteurModel details) {
-        PromoteurModel existant = obtenirPromoteurParId(id);
+    public Promoteur mettreAJourPromoteur(int id, Promoteur details) {
+        Promoteur existant = obtenirPromoteurParId(id);
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");

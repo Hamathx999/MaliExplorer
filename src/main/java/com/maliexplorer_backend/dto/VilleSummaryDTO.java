@@ -12,9 +12,5 @@ import lombok.NoArgsConstructor;
 public class VilleSummaryDTO {
     private Long id;
     private String nom;
-    private Double latitude;
-    private Double longitude;
     private String cordonnees;
-    private Boolean estCapitale;
-    private String imageUrl;
-}
+    }

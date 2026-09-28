@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.model.AdministrateurModel;
+import com.maliexplorer_backend.model.Administrateur;
 import com.maliexplorer_backend.model.Role;
 import com.maliexplorer_backend.repository.AdministrateurRepository;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class AdministrateurService {
         this.repository = repository;
     }
 
-    public AdministrateurModel creerAdministrateur(AdministrateurModel admin) {
+    public Administrateur creerAdministrateur(Administrateur admin) {
         if (repository.existsByEmail(admin.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
@@ -31,17 +31,17 @@ public class AdministrateurService {
         return repository.save(admin);
     }
 
-    public List<AdministrateurModel> obtenirTousLesAdministrateurs() {
+    public List<Administrateur> obtenirTousLesAdministrateurs() {
         return repository.findAll();
     }
 
-    public AdministrateurModel obtenirAdministrateurParId(int id) {
+    public Administrateur obtenirAdministrateurParId(int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Administrateur introuvable avec l'ID : " + id));
     }
 
-    public AdministrateurModel mettreAJourAdministrateur(int id, AdministrateurModel details) {
-        AdministrateurModel existant = obtenirAdministrateurParId(id);
+    public Administrateur mettreAJourAdministrateur(int id, Administrateur details) {
+        Administrateur existant = obtenirAdministrateurParId(id);
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");

@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.model.utilisateurModel;
+import com.maliexplorer_backend.model.Utilisateur;
 import com.maliexplorer_backend.repository.utilisateurRepository;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ public class UtilisateurService {
     /**
      * CREATE : Créer un nouvel utilisateur
      */
-    public utilisateurModel creerUtilisateur(utilisateurModel utilisateur) {
+    public Utilisateur creerUtilisateur(Utilisateur utilisateur) {
         if (repository.existsByEmail(utilisateur.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà utilisé !");
         }
@@ -36,14 +36,14 @@ public class UtilisateurService {
     /**
      * READ ALL : Obtenir la liste de tous les utilisateurs
      */
-    public List<utilisateurModel> obtenirTousLesUtilisateurs() {
+    public List<Utilisateur> obtenirTousLesUtilisateurs() {
         return repository.findAll();
     }
 
     /**
      * READ ONE : Obtenir un utilisateur par son identifiant
      */
-    public utilisateurModel obtenirUtilisateurParId(int id) {
+    public Utilisateur obtenirUtilisateurParId(int id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec l'ID : " + id));
     }
@@ -51,8 +51,8 @@ public class UtilisateurService {
     /**
      * UPDATE : Mettre à jour un utilisateur existant
      */
-    public utilisateurModel mettreAJourUtilisateur(int id, utilisateurModel utilisateurModifie) {
-        utilisateurModel existant = obtenirUtilisateurParId(id);
+    public Utilisateur mettreAJourUtilisateur(int id, Utilisateur utilisateurModifie) {
+        Utilisateur existant = obtenirUtilisateurParId(id);
 
         // Vérifier si le nouvel email n'est pas déjà pris par un autre utilisateur
         if (!existant.getEmail().equalsIgnoreCase(utilisateurModifie.getEmail())

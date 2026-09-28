@@ -14,9 +14,6 @@ public class QuizSummaryDTO {
     private Long idQuiz;
     private String nomQuiz;
     private String description;
-    private Integer point;
-    private String niveauDifficulte;
-    private String imageUrl;
-    private String categorie;
-    private int nombreQuestions;
+    private String imageQuiz;
+private int nombreQuestions;
 }

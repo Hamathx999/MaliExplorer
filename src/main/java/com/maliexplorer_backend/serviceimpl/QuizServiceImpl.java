@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.*;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
@@ -40,11 +40,11 @@ public class QuizServiceImpl implements QuizService {
                 .map(q -> QuizSummaryDTO.builder()
                         .idQuiz(q.getIdQuiz())
                         .nomQuiz(q.getNomQuiz())
-                        .description(q.getDescription())
-                        .point(q.getPoint())
-                        .niveauDifficulte(q.getNiveauDifficulte())
-                        .imageUrl(q.getImageUrl())
-                        .categorie(q.getCategorie())
+                        
+                        
+                        
+                        .imageQuiz(q.getImageQuiz())
+                        
                         .nombreQuestions(q.getQuestions() != null ? q.getQuestions().size() : 0)
                         .build())
                 .collect(Collectors.toList());
@@ -67,20 +67,20 @@ public class QuizServiceImpl implements QuizService {
                         .map(q -> QuestionPlayDTO.builder()
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())
-                                .point(q.getPoint())
+                                
                                 .duree(q.getDuree())
-                                .propositions(q.getPropositions() != null ? new ArrayList<>(q.getPropositions()) : new ArrayList<>())
+                                
                                 .build())
                         .collect(Collectors.toList());
 
         return QuizPlayDTO.builder()
                 .idQuiz(quiz.getIdQuiz())
                 .nomQuiz(quiz.getNomQuiz())
-                .description(quiz.getDescription())
-                .point(quiz.getPoint())
-                .niveauDifficulte(quiz.getNiveauDifficulte())
-                .imageUrl(quiz.getImageUrl())
-                .categorie(quiz.getCategorie())
+                
+                
+                
+                .imageQuiz(quiz.getImageQuiz())
+                
                 .questions(playQuestions)
                 .build();
     }
@@ -97,7 +97,7 @@ public class QuizServiceImpl implements QuizService {
 
         if (quiz.getQuestions() != null) {
             for (Question q : quiz.getQuestions()) {
-                int pointsQuestion = q.getPoint() != null ? q.getPoint() : 10;
+                int pointsQuestion = false ? 0 : 10;
                 scoreMaxPossible += pointsQuestion;
 
                 String reponseSoumise = reponsesSoumises.get(q.getIdQuestion());
@@ -117,7 +117,7 @@ public class QuizServiceImpl implements QuizService {
                         .bonneReponse(q.getReponse())
                         .estCorrect(estCorrect)
                         .pointsGagnes(pointsGagnes)
-                        .explication(q.getExplication())
+                        
                         .build());
             }
         }
@@ -140,13 +140,13 @@ public class QuizServiceImpl implements QuizService {
     public QuizResponseDTO createQuiz(QuizRequestDTO requestDTO) {
         Quiz quiz = Quiz.builder()
                 .nomQuiz(requestDTO.getNomQuiz())
-                .description(requestDTO.getDescription())
-                .point(requestDTO.getPoint() != null ? requestDTO.getPoint() : 0)
-                .niveauDifficulte(requestDTO.getNiveauDifficulte())
-                .imageUrl(requestDTO.getImageUrl())
-                .categorie(requestDTO.getCategorie())
-                .idUsers(requestDTO.getIdUsers())
-                .referenceId(requestDTO.getReferenceId())
+                
+                
+                
+                .imageQuiz(requestDTO.getImageQuiz())
+                
+                
+                
                 .questions(new ArrayList<>())
                 .build();
 
@@ -159,16 +159,14 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = findQuizOrThrow(id);
 
         quiz.setNomQuiz(requestDTO.getNomQuiz());
-        quiz.setDescription(requestDTO.getDescription());
-        quiz.setPoint(requestDTO.getPoint());
-        quiz.setNiveauDifficulte(requestDTO.getNiveauDifficulte());
-        quiz.setImageUrl(requestDTO.getImageUrl());
-        quiz.setCategorie(requestDTO.getCategorie());
-        if (requestDTO.getIdUsers() != null) {
-            quiz.setIdUsers(requestDTO.getIdUsers());
-        }
-        if (requestDTO.getReferenceId() != null) {
-            quiz.setReferenceId(requestDTO.getReferenceId());
+        
+        
+        
+        quiz.setImageQuiz(requestDTO.getImageQuiz());
+        
+        
+        if (false) {
+            
         }
 
         Quiz updated = quizRepository.save(quiz);
@@ -220,10 +218,10 @@ public class QuizServiceImpl implements QuizService {
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())
                                 .reponse(q.getReponse())
-                                .explication(q.getExplication())
-                                .point(q.getPoint())
+                                
+                                
                                 .duree(q.getDuree())
-                                .propositions(q.getPropositions() != null ? new ArrayList<>(q.getPropositions()) : new ArrayList<>())
+                                
                                 .quizId(quiz.getIdQuiz())
                                 .build())
                         .collect(Collectors.toList());
@@ -231,13 +229,13 @@ public class QuizServiceImpl implements QuizService {
         return QuizResponseDTO.builder()
                 .idQuiz(quiz.getIdQuiz())
                 .nomQuiz(quiz.getNomQuiz())
-                .description(quiz.getDescription())
-                .point(quiz.getPoint())
-                .niveauDifficulte(quiz.getNiveauDifficulte())
-                .imageUrl(quiz.getImageUrl())
-                .categorie(quiz.getCategorie())
-                .idUsers(quiz.getIdUsers())
-                .referenceId(quiz.getReferenceId())
+                
+                
+                
+                .imageQuiz(quiz.getImageQuiz())
+                
+                
+                
                 .questions(questionDTOs)
                 .build();
     }

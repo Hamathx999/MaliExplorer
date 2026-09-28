@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.controller;
 
-import com.maliexplorer_backend.model.utilisateurModel;
+import com.maliexplorer_backend.model.Utilisateur;
 import com.maliexplorer_backend.service.UtilisateurService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,8 +25,8 @@ public class UtilisateurControllers {
      * POST /api/utilisateurs
      */
     @PostMapping
-    public ResponseEntity<utilisateurModel> creerUtilisateur(@Valid @RequestBody utilisateurModel utilisateur) {
-        utilisateurModel nouveau = service.creerUtilisateur(utilisateur);
+    public ResponseEntity<Utilisateur> creerUtilisateur(@Valid @RequestBody Utilisateur utilisateur) {
+        Utilisateur nouveau = service.creerUtilisateur(utilisateur);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
     }
 
@@ -35,8 +35,8 @@ public class UtilisateurControllers {
      * GET /api/utilisateurs
      */
     @GetMapping
-    public ResponseEntity<List<utilisateurModel>> obtenirTousLesUtilisateurs() {
-        List<utilisateurModel> liste = service.obtenirTousLesUtilisateurs();
+    public ResponseEntity<List<Utilisateur>> obtenirTousLesUtilisateurs() {
+        List<Utilisateur> liste = service.obtenirTousLesUtilisateurs();
         return ResponseEntity.ok(liste);
     }
 
@@ -45,8 +45,8 @@ public class UtilisateurControllers {
      * GET /api/utilisateurs/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<utilisateurModel> obtenirUtilisateurParId(@PathVariable int id) {
-        utilisateurModel utilisateur = service.obtenirUtilisateurParId(id);
+    public ResponseEntity<Utilisateur> obtenirUtilisateurParId(@PathVariable int id) {
+        Utilisateur utilisateur = service.obtenirUtilisateurParId(id);
         return ResponseEntity.ok(utilisateur);
     }
 
@@ -55,10 +55,10 @@ public class UtilisateurControllers {
      * PUT /api/utilisateurs/{id}
      */
     @PutMapping("/{id}")
-    public ResponseEntity<utilisateurModel> mettreAJourUtilisateur(
+    public ResponseEntity<Utilisateur> mettreAJourUtilisateur(
             @PathVariable int id,
-            @Valid @RequestBody utilisateurModel utilisateurModifie) {
-        utilisateurModel maj = service.mettreAJourUtilisateur(id, utilisateurModifie);
+            @Valid @RequestBody Utilisateur utilisateurModifie) {
+        Utilisateur maj = service.mettreAJourUtilisateur(id, utilisateurModifie);
         return ResponseEntity.ok(maj);
     }
 

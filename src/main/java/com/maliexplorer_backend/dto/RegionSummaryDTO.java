@@ -12,7 +12,4 @@ import lombok.NoArgsConstructor;
 public class RegionSummaryDTO {
     private Long id;
     private String nom;
-    private String code;
-    private String chefLieu;
-    private String imageUrl;
-}
+    }

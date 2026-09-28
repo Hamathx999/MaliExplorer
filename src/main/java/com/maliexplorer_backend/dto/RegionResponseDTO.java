@@ -15,13 +15,8 @@ public class RegionResponseDTO {
 
     private Long id;
     private String nom;
-    private String code;
     private String description;
-    private Double superficie;
-    private Long population;
-    private String chefLieu;
-    private String imageUrl;
-    private Long idUsers;
+    private Long nbreHbt;
     private List<VilleSummaryDTO> villes;
     private List<EthnieSummaryDTO> ethnies;
     private List<PlatSummaryDTO> plats;

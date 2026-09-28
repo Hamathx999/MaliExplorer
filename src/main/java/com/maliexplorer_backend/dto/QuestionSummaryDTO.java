@@ -13,6 +13,5 @@ public class QuestionSummaryDTO {
 
     private Long idQuestion;
     private String nomQuestion;
-    private Integer point;
     private Integer duree;
 }

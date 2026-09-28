@@ -14,7 +14,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class PromoteurModel extends utilisateurModel {
+public class Promoteur extends Utilisateur {
+
+    private Long idPromoteur;
 
     @NotBlank(message = "Le nom de l'organisation est obligatoire !")
     private String nomOrganisation;

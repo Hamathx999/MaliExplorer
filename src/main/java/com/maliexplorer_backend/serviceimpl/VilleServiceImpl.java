@@ -1,10 +1,12 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.VilleRequestDTO;
 import com.maliexplorer_backend.dto.VilleResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
 import com.maliexplorer_backend.model.Region;
 import com.maliexplorer_backend.model.Ville;
+import com.maliexplorer_backend.dto.RegionSummaryDTO;
+import com.maliexplorer_backend.dto.LieuHistoriqueSummaryDTO;
 import com.maliexplorer_backend.repository.RegionRepository;
 import com.maliexplorer_backend.repository.VilleRepository;
 import com.maliexplorer_backend.service.VilleService;
@@ -59,14 +61,9 @@ public class VilleServiceImpl implements VilleService {
         Ville ville = Ville.builder()
                 .nomVille(requestDTO.getNom())
                 .region(requestDTO.getRegion())
-                .nbreHbts(requestDTO.getNbreHbts())
+
                 .description(requestDTO.getDescription())
                 .cordonnees(requestDTO.getCordonnees())
-                .latitude(requestDTO.getLatitude())
-                .longitude(requestDTO.getLongitude())
-                .estCapitale(requestDTO.getEstCapitale() != null ? requestDTO.getEstCapitale() : false)
-                .imageUrl(requestDTO.getImageUrl())
-                .idUsers(requestDTO.getIdUsers())
                 .regionParent(regionParent)
                 .build();
 
@@ -88,16 +85,14 @@ public class VilleServiceImpl implements VilleService {
 
         ville.setNomVille(requestDTO.getNom());
         ville.setRegion(requestDTO.getRegion());
-        ville.setNbreHbts(requestDTO.getNbreHbts());
+        
         ville.setDescription(requestDTO.getDescription());
         ville.setCordonnees(requestDTO.getCordonnees());
-        ville.setLatitude(requestDTO.getLatitude());
-        ville.setLongitude(requestDTO.getLongitude());
-        ville.setEstCapitale(requestDTO.getEstCapitale());
-        ville.setImageUrl(requestDTO.getImageUrl());
-        if (requestDTO.getIdUsers() != null) {
-            ville.setIdUsers(requestDTO.getIdUsers());
-        }
+        
+        
+        
+        
+        
 
         Ville updated = villeRepository.save(ville);
         return mapToResponseDTO(updated);
@@ -129,37 +124,16 @@ public class VilleServiceImpl implements VilleService {
             regionSummary = RegionSummaryDTO.builder()
                     .id(ville.getRegionParent().getIdRegion())
                     .nom(ville.getRegionParent().getNomRegion())
-                    .code(ville.getRegionParent().getCode())
-                    .imageUrl(ville.getRegionParent().getImageUrl())
                     .build();
         }
-
-        List<LieuHistoriqueSummaryDTO> lieux = ville.getLieuxHistoriques() == null ? java.util.Collections.emptyList() :
-                ville.getLieuxHistoriques().stream()
-                        .map(l -> LieuHistoriqueSummaryDTO.builder()
-                                .idLieu(l.getIdLieu())
-                                .nomHistoire(l.getNomHistoire())
-                                .epoque(l.getEpoque())
-                                .imageUrl(l.getImageUrl())
-                                .latitude(l.getLatitude())
-                                .longitude(l.getLongitude())
-                                .build())
-                        .collect(java.util.stream.Collectors.toList());
 
         return VilleResponseDTO.builder()
                 .id(ville.getIdVille())
                 .nom(ville.getNomVille())
-                .region(ville.getRegion())
-                .nbreHbts(ville.getNbreHbts())
                 .description(ville.getDescription())
                 .cordonnees(ville.getCordonnees())
-                .latitude(ville.getLatitude())
-                .longitude(ville.getLongitude())
-                .estCapitale(ville.getEstCapitale())
-                .imageUrl(ville.getImageUrl())
-                .idUsers(ville.getIdUsers())
                 .regionParent(regionSummary)
-                .lieuxHistoriques(lieux)
+                .lieuxHistoriques(new java.util.ArrayList<>())
                 .build();
     }
 }
