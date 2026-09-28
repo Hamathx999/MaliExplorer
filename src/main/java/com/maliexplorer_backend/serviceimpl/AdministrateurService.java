@@ -37,7 +37,7 @@ public class AdministrateurService {
 
     public AdministrateurModel obtenirAdministrateurParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Administrateur introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("AdministrateurModel introuvable avec l'ID : " + id));
     }
 
     public AdministrateurModel mettreAJourAdministrateur(int id, AdministrateurModel details) {
@@ -66,7 +66,7 @@ public class AdministrateurService {
 
     public void supprimerAdministrateur(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Administrateur introuvable avec l'ID : " + id);
+            throw new RuntimeException("AdministrateurModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
     }

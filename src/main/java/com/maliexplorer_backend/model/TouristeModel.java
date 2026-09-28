@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Touriste extends Utilisateur {
+public class TouristeModel extends utilisateurModel {
 
     private Long idTouriste;
 
@@ -49,7 +49,7 @@ public class Touriste extends Utilisateur {
     private List<Quiz> quizJoues;
 
 
-    public Touriste(String prenom, String nom, String email, String motDePasse, String adresse, String photoUrl,
+    public TouristeModel(String prenom, String nom, String email, String motDePasse, String adresse, String photoUrl,
             int points) {
         setPrenom(prenom);
         setNom(nom);

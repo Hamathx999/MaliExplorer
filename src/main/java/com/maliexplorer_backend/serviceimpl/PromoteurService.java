@@ -35,7 +35,7 @@ public class PromoteurService {
 
     public PromoteurModel obtenirPromoteurParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Promoteur introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("PromoteurModel introuvable avec l'ID : " + id));
     }
 
     public List<PromoteurModel> rechercherParOrganisation(String nomOrganisation) {
@@ -66,7 +66,7 @@ public class PromoteurService {
 
     public void supprimerPromoteur(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Promoteur introuvable avec l'ID : " + id);
+            throw new RuntimeException("PromoteurModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
     }

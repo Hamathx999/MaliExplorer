@@ -35,7 +35,7 @@ public class ArtisanService {
 
     public ArtisanModel obtenirArtisanParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Artisan introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("ArtisanModel introuvable avec l'ID : " + id));
     }
 
     public List<ArtisanModel> rechercherParType(String typeArtisanat) {
@@ -65,7 +65,7 @@ public class ArtisanService {
 
     public void supprimerArtisan(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Artisan introuvable avec l'ID : " + id);
+            throw new RuntimeException("ArtisanModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
     }

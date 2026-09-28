@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Promoteur extends Utilisateur {
+public class PromoteurModel extends utilisateurModel {
 
     private Long idPromoteur;
 

@@ -9,6 +9,6 @@ import lombok.EqualsAndHashCode;
 @Table(name = "administrateurs")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Administrateur extends Utilisateur {
+public class AdministrateurModel extends utilisateurModel {
 
 }

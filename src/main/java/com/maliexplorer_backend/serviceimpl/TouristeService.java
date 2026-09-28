@@ -35,7 +35,7 @@ public class TouristeService {
 
     public TouristeModel obtenirTouristeParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Touriste introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("TouristeModel introuvable avec l'ID : " + id));
     }
 
     public TouristeModel mettreAJourTouriste(int id, TouristeModel details) {
@@ -61,7 +61,7 @@ public class TouristeService {
 
     public void supprimerTouriste(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Touriste introuvable avec l'ID : " + id);
+            throw new RuntimeException("TouristeModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
     }

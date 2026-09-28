@@ -45,7 +45,7 @@ public class UtilisateurService {
      */
     public utilisateurModel obtenirUtilisateurParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Utilisateur introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("utilisateurModel introuvable avec l'ID : " + id));
     }
 
     /**

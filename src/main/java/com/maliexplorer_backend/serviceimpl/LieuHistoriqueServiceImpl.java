@@ -111,7 +111,7 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
     @Override
     @Transactional(readOnly = true)
     public List<LieuHistoriqueResponseDTO> searchLieux(String keyword) {
-        return lieuHistoriqueRepository.findByNomHistoireContainingIgnoreCase(keyword)
+        return lieuHistoriqueRepository.findByNomLieuContainingIgnoreCase(keyword)
                 .stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
