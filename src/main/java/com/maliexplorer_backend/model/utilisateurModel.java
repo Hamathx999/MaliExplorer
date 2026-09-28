@@ -18,7 +18,7 @@ import com.maliexplorer_backend.model.Role;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Utilisateur {
+public class utilisateurModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

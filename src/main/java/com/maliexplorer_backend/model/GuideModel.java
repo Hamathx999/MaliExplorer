@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Guide extends Utilisateur {
+public class GuideModel extends utilisateurModel {
 
     private Long idGuide;
 

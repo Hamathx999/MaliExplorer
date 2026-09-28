@@ -1,7 +1,7 @@
 package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.model.Role;
-import com.maliexplorer_backend.model.Touriste;
+import com.maliexplorer_backend.model.TouristeModel;
 import com.maliexplorer_backend.repository.TouristeRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class TouristeService {
         this.repository = repository;
     }
 
-    public Touriste creerTouriste(Touriste touriste) {
+    public TouristeModel creerTouriste(TouristeModel touriste) {
         if (repository.existsByEmail(touriste.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
@@ -29,17 +29,17 @@ public class TouristeService {
         return repository.save(touriste);
     }
 
-    public List<Touriste> obtenirTousLesTouristes() {
+    public List<TouristeModel> obtenirTousLesTouristes() {
         return repository.findAll();
     }
 
-    public Touriste obtenirTouristeParId(int id) {
+    public TouristeModel obtenirTouristeParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Touriste introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("TouristeModel introuvable avec l'ID : " + id));
     }
 
-    public Touriste mettreAJourTouriste(int id, Touriste details) {
-        Touriste existant = obtenirTouristeParId(id);
+    public TouristeModel mettreAJourTouriste(int id, TouristeModel details) {
+        TouristeModel existant = obtenirTouristeParId(id);
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");
@@ -61,7 +61,7 @@ public class TouristeService {
 
     public void supprimerTouriste(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Touriste introuvable avec l'ID : " + id);
+            throw new RuntimeException("TouristeModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
     }

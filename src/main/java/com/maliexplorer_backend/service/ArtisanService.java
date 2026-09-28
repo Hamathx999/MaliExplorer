@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.model.Artisan;
+import com.maliexplorer_backend.model.ArtisanModel;
 import com.maliexplorer_backend.model.Role;
 import com.maliexplorer_backend.repository.ArtisanRepository;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class ArtisanService {
         this.repository = repository;
     }
 
-    public Artisan creerArtisan(Artisan artisan) {
+    public ArtisanModel creerArtisan(ArtisanModel artisan) {
         if (repository.existsByEmail(artisan.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
@@ -29,21 +29,21 @@ public class ArtisanService {
         return repository.save(artisan);
     }
 
-    public List<Artisan> obtenirTousLesArtisans() {
+    public List<ArtisanModel> obtenirTousLesArtisans() {
         return repository.findAll();
     }
 
-    public Artisan obtenirArtisanParId(int id) {
+    public ArtisanModel obtenirArtisanParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Artisan introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("ArtisanModel introuvable avec l'ID : " + id));
     }
 
-    public List<Artisan> rechercherParType(String typeArtisanat) {
+    public List<ArtisanModel> rechercherParType(String typeArtisanat) {
         return repository.findByTypeArtisanatContainingIgnoreCase(typeArtisanat);
     }
 
-    public Artisan mettreAJourArtisan(int id, Artisan details) {
-        Artisan existant = obtenirArtisanParId(id);
+    public ArtisanModel mettreAJourArtisan(int id, ArtisanModel details) {
+        ArtisanModel existant = obtenirArtisanParId(id);
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");
@@ -65,7 +65,7 @@ public class ArtisanService {
 
     public void supprimerArtisan(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Artisan introuvable avec l'ID : " + id);
+            throw new RuntimeException("ArtisanModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
     }

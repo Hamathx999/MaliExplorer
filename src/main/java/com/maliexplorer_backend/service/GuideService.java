@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.model.Guide;
+import com.maliexplorer_backend.model.GuideModel;
 import com.maliexplorer_backend.model.Role;
 import com.maliexplorer_backend.repository.GuideRepository;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class GuideService {
         this.repository = repository;
     }
 
-    public Guide creerGuide(Guide guide) {
+    public GuideModel creerGuide(GuideModel guide) {
         if (repository.existsByEmail(guide.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
@@ -29,21 +29,21 @@ public class GuideService {
         return repository.save(guide);
     }
 
-    public List<Guide> obtenirTousLesGuides() {
+    public List<GuideModel> obtenirTousLesGuides() {
         return repository.findAll();
     }
 
-    public Guide obtenirGuideParId(int id) {
+    public GuideModel obtenirGuideParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Guide introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("GuideModel introuvable avec l'ID : " + id));
     }
 
-    public List<Guide> rechercherParLangue(String langue) {
+    public List<GuideModel> rechercherParLangue(String langue) {
         return repository.findByLangueContainingIgnoreCase(langue);
     }
 
-    public Guide mettreAJourGuide(int id, Guide details) {
-        Guide existant = obtenirGuideParId(id);
+    public GuideModel mettreAJourGuide(int id, GuideModel details) {
+        GuideModel existant = obtenirGuideParId(id);
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");
@@ -69,7 +69,7 @@ public class GuideService {
 
     public void supprimerGuide(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Guide introuvable avec l'ID : " + id);
+            throw new RuntimeException("GuideModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
     }

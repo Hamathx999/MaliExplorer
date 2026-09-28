@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.controller;
 
-import com.maliexplorer_backend.model.Guide;
+import com.maliexplorer_backend.model.GuideModel;
 import com.maliexplorer_backend.service.GuideService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,28 +21,28 @@ public class GuideController {
     }
 
     @PostMapping
-    public ResponseEntity<Guide> creerGuide(@Valid @RequestBody Guide guide) {
-        Guide nouveau = service.creerGuide(guide);
+    public ResponseEntity<GuideModel> creerGuide(@Valid @RequestBody GuideModel guide) {
+        GuideModel nouveau = service.creerGuide(guide);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Guide>> obtenirTousLesGuides() {
+    public ResponseEntity<List<GuideModel>> obtenirTousLesGuides() {
         return ResponseEntity.ok(service.obtenirTousLesGuides());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Guide> obtenirGuideParId(@PathVariable int id) {
+    public ResponseEntity<GuideModel> obtenirGuideParId(@PathVariable int id) {
         return ResponseEntity.ok(service.obtenirGuideParId(id));
     }
 
     @GetMapping("/langue/{langue}")
-    public ResponseEntity<List<Guide>> rechercherParLangue(@PathVariable String langue) {
+    public ResponseEntity<List<GuideModel>> rechercherParLangue(@PathVariable String langue) {
         return ResponseEntity.ok(service.rechercherParLangue(langue));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Guide> mettreAJourGuide(@PathVariable int id, @Valid @RequestBody Guide guide) {
+    public ResponseEntity<GuideModel> mettreAJourGuide(@PathVariable int id, @Valid @RequestBody GuideModel guide) {
         return ResponseEntity.ok(service.mettreAJourGuide(id, guide));
     }
 

@@ -11,5 +11,5 @@ public interface LieuHistoriqueRepository extends JpaRepository<LieuHistorique, 
 
     List<LieuHistorique> findByVilleIdVille(Long idVille);
 
-    List<LieuHistorique> findByNomHistoireContainingIgnoreCase(String keyword);
+    List<LieuHistorique> findByNomLieuContainingIgnoreCase(String keyword);
 }

@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.model.Promoteur;
+import com.maliexplorer_backend.model.PromoteurModel;
 import com.maliexplorer_backend.model.Role;
 import com.maliexplorer_backend.repository.PromoteurRepository;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class PromoteurService {
         this.repository = repository;
     }
 
-    public Promoteur creerPromoteur(Promoteur promoteur) {
+    public PromoteurModel creerPromoteur(PromoteurModel promoteur) {
         if (repository.existsByEmail(promoteur.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
@@ -29,21 +29,21 @@ public class PromoteurService {
         return repository.save(promoteur);
     }
 
-    public List<Promoteur> obtenirTousLesPromoteurs() {
+    public List<PromoteurModel> obtenirTousLesPromoteurs() {
         return repository.findAll();
     }
 
-    public Promoteur obtenirPromoteurParId(int id) {
+    public PromoteurModel obtenirPromoteurParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Promoteur introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("PromoteurModel introuvable avec l'ID : " + id));
     }
 
-    public List<Promoteur> rechercherParOrganisation(String nomOrganisation) {
+    public List<PromoteurModel> rechercherParOrganisation(String nomOrganisation) {
         return repository.findByNomOrganisationContainingIgnoreCase(nomOrganisation);
     }
 
-    public Promoteur mettreAJourPromoteur(int id, Promoteur details) {
-        Promoteur existant = obtenirPromoteurParId(id);
+    public PromoteurModel mettreAJourPromoteur(int id, PromoteurModel details) {
+        PromoteurModel existant = obtenirPromoteurParId(id);
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");
@@ -66,7 +66,7 @@ public class PromoteurService {
 
     public void supprimerPromoteur(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Promoteur introuvable avec l'ID : " + id);
+            throw new RuntimeException("PromoteurModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
     }

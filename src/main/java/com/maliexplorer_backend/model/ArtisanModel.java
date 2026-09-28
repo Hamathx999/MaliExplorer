@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Artisan extends Utilisateur {
+public class ArtisanModel extends utilisateurModel {
 
     @NotBlank(message = "Le type d'artisanat est obligatoire !")
     private String typeArtisanat;

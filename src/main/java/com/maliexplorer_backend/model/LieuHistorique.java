@@ -17,7 +17,7 @@ public class LieuHistorique {
     private Long idLieu;
 
     @Column(nullable = false, length = 150)
-    private String nomHistoire;
+    private String nomLieu;
 
     @Column(columnDefinition = "TEXT")
     private String description;
@@ -42,10 +42,10 @@ public class LieuHistorique {
     }
 
     public String getNom() {
-        return this.nomHistoire;
+        return this.nomLieu;
     }
 
     public void setNom(String nom) {
-        this.nomHistoire = nom;
+        this.nomLieu = nom;
     }
 }

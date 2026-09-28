@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.model.Administrateur;
+import com.maliexplorer_backend.model.AdministrateurModel;
 import com.maliexplorer_backend.model.Role;
 import com.maliexplorer_backend.repository.AdministrateurRepository;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class AdministrateurService {
         this.repository = repository;
     }
 
-    public Administrateur creerAdministrateur(Administrateur admin) {
+    public AdministrateurModel creerAdministrateur(AdministrateurModel admin) {
         if (repository.existsByEmail(admin.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
@@ -31,17 +31,17 @@ public class AdministrateurService {
         return repository.save(admin);
     }
 
-    public List<Administrateur> obtenirTousLesAdministrateurs() {
+    public List<AdministrateurModel> obtenirTousLesAdministrateurs() {
         return repository.findAll();
     }
 
-    public Administrateur obtenirAdministrateurParId(int id) {
+    public AdministrateurModel obtenirAdministrateurParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Administrateur introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("AdministrateurModel introuvable avec l'ID : " + id));
     }
 
-    public Administrateur mettreAJourAdministrateur(int id, Administrateur details) {
-        Administrateur existant = obtenirAdministrateurParId(id);
+    public AdministrateurModel mettreAJourAdministrateur(int id, AdministrateurModel details) {
+        AdministrateurModel existant = obtenirAdministrateurParId(id);
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");
@@ -66,7 +66,7 @@ public class AdministrateurService {
 
     public void supprimerAdministrateur(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Administrateur introuvable avec l'ID : " + id);
+            throw new RuntimeException("AdministrateurModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
     }

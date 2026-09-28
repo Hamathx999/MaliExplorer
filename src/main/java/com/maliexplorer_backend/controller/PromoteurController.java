@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.controller;
 
-import com.maliexplorer_backend.model.Promoteur;
+import com.maliexplorer_backend.model.PromoteurModel;
 import com.maliexplorer_backend.service.PromoteurService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,29 +21,29 @@ public class PromoteurController {
     }
 
     @PostMapping
-    public ResponseEntity<Promoteur> creerPromoteur(@Valid @RequestBody Promoteur promoteur) {
-        Promoteur nouveau = service.creerPromoteur(promoteur);
+    public ResponseEntity<PromoteurModel> creerPromoteur(@Valid @RequestBody PromoteurModel promoteur) {
+        PromoteurModel nouveau = service.creerPromoteur(promoteur);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Promoteur>> obtenirTousLesPromoteurs() {
+    public ResponseEntity<List<PromoteurModel>> obtenirTousLesPromoteurs() {
         return ResponseEntity.ok(service.obtenirTousLesPromoteurs());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Promoteur> obtenirPromoteurParId(@PathVariable int id) {
+    public ResponseEntity<PromoteurModel> obtenirPromoteurParId(@PathVariable int id) {
         return ResponseEntity.ok(service.obtenirPromoteurParId(id));
     }
 
     @GetMapping("/organisation/{nomOrganisation}")
-    public ResponseEntity<List<Promoteur>> rechercherParOrganisation(@PathVariable String nomOrganisation) {
+    public ResponseEntity<List<PromoteurModel>> rechercherParOrganisation(@PathVariable String nomOrganisation) {
         return ResponseEntity.ok(service.rechercherParOrganisation(nomOrganisation));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Promoteur> mettreAJourPromoteur(@PathVariable int id,
-            @Valid @RequestBody Promoteur promoteur) {
+    public ResponseEntity<PromoteurModel> mettreAJourPromoteur(@PathVariable int id,
+            @Valid @RequestBody PromoteurModel promoteur) {
         return ResponseEntity.ok(service.mettreAJourPromoteur(id, promoteur));
     }
 
