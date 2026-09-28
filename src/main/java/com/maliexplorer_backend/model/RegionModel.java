@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Region {
+public class RegionModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class Region {
 
     @OneToMany(mappedBy = "regionParent", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Ville> villes = new ArrayList<>();
+    private List<VilleModel> villes = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -35,7 +35,7 @@ public class Region {
             inverseJoinColumns = @JoinColumn(name = "ethnie_id")
     )
     @Builder.Default
-    private List<Ethnie> ethnies = new ArrayList<>();
+    private List<EthnieModel> ethnies = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -44,7 +44,7 @@ public class Region {
             inverseJoinColumns = @JoinColumn(name = "plat_id")
     )
     @Builder.Default
-    private List<Plat> plats = new ArrayList<>();
+    private List<PlatModel> plats = new ArrayList<>();
 
     public Long getId() {
         return this.idRegion;

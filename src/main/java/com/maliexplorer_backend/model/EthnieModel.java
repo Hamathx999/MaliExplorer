@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Ethnie {
+public class EthnieModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,11 +33,11 @@ public class Ethnie {
 
     @ManyToMany(mappedBy = "ethnies")
     @Builder.Default
-    private List<Region> regions = new ArrayList<>();
+    private List<RegionModel> regions = new ArrayList<>();
 
     @ManyToMany(mappedBy = "ethnies")
     @Builder.Default
-    private List<Plat> plats = new ArrayList<>();
+    private List<PlatModel> plats = new ArrayList<>();
 
     public Long getId() {
         return this.idEthnie;

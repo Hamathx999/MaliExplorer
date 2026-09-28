@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Quiz {
+public class QuizModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +34,7 @@ public class Quiz {
   
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Question> questions = new ArrayList<>();
+    private List<QuestionModel> questions = new ArrayList<>();
 
     public Long getId() {
         return this.idQuiz;

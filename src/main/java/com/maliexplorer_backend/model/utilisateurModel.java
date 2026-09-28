@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.RoleModel;
 
 @Entity
 @Table(name = "utilisateurs")
@@ -48,5 +48,5 @@ public class utilisateurModel {
     private Date dateCreation;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private RoleModel role;
 }

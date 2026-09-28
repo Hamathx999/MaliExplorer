@@ -1,7 +1,7 @@
 package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.model.AdministrateurModel;
-import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.repository.AdministrateurRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +23,7 @@ public class AdministrateurService {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
         if (admin.getRole() == null) {
-            admin.setRole(Role.admin);
+            admin.setRole(RoleModel.admin);
         }
         if (admin.getDateCreation() == null) {
             admin.setDateCreation(Date.valueOf(LocalDate.now()));

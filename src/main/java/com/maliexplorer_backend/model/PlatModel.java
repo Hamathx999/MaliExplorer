@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Plat {
+public class PlatModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,7 @@ public class Plat {
     private Integer nbrePersonnes;
 @ManyToMany(mappedBy = "plats")
     @Builder.Default
-    private List<Region> regions = new ArrayList<>();
+    private List<RegionModel> regions = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -37,7 +37,7 @@ public class Plat {
             inverseJoinColumns = @JoinColumn(name = "ethnie_id")
     )
     @Builder.Default
-    private List<Ethnie> ethnies = new ArrayList<>();
+    private List<EthnieModel> ethnies = new ArrayList<>();
 
     public Long getId() {
         return this.idPlat;

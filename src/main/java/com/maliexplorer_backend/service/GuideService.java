@@ -1,7 +1,7 @@
 package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.model.GuideModel;
-import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.repository.GuideRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class GuideService {
         if (repository.existsByEmail(guide.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
-        guide.setRole(Role.guide);
+        guide.setRole(RoleModel.guide);
         if (guide.getDateCreation() == null) {
             guide.setDateCreation(Date.valueOf(LocalDate.now()));
         }

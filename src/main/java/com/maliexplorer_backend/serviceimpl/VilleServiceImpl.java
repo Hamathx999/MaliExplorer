@@ -3,8 +3,8 @@ package com.maliexplorer_backend.serviceimpl;
 import com.maliexplorer_backend.dto.VilleRequestDTO;
 import com.maliexplorer_backend.dto.VilleResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Region;
-import com.maliexplorer_backend.model.Ville;
+import com.maliexplorer_backend.model.RegionModel;
+import com.maliexplorer_backend.model.VilleModel;
 import com.maliexplorer_backend.dto.RegionSummaryDTO;
 import com.maliexplorer_backend.dto.LieuHistoriqueSummaryDTO;
 import com.maliexplorer_backend.repository.RegionRepository;
@@ -37,7 +37,7 @@ public class VilleServiceImpl implements VilleService {
     @Override
     @Transactional(readOnly = true)
     public VilleResponseDTO getVilleById(Long id) {
-        Ville ville = findVilleOrThrow(id);
+        VilleModel ville = findVilleOrThrow(id);
         return mapToResponseDTO(ville);
     }
 
@@ -52,13 +52,13 @@ public class VilleServiceImpl implements VilleService {
 
     @Override
     public VilleResponseDTO createVille(VilleRequestDTO requestDTO) {
-        Region regionParent = null;
+        RegionModel regionParent = null;
         if (requestDTO.getRegionId() != null) {
             regionParent = regionRepository.findById(requestDTO.getRegionId())
                     .orElseThrow(() -> new ResourceNotFoundException("Région introuvable avec l'ID : " + requestDTO.getRegionId()));
         }
 
-        Ville ville = Ville.builder()
+        VilleModel ville = VilleModel.builder()
                 .nomVille(requestDTO.getNom())
                 .region(requestDTO.getRegion())
 
@@ -67,16 +67,16 @@ public class VilleServiceImpl implements VilleService {
                 .regionParent(regionParent)
                 .build();
 
-        Ville saved = villeRepository.save(ville);
+        VilleModel saved = villeRepository.save(ville);
         return mapToResponseDTO(saved);
     }
 
     @Override
     public VilleResponseDTO updateVille(Long id, VilleRequestDTO requestDTO) {
-        Ville ville = findVilleOrThrow(id);
+        VilleModel ville = findVilleOrThrow(id);
 
         if (requestDTO.getRegionId() != null) {
-            Region regionParent = regionRepository.findById(requestDTO.getRegionId())
+            RegionModel regionParent = regionRepository.findById(requestDTO.getRegionId())
                     .orElseThrow(() -> new ResourceNotFoundException("Région introuvable avec l'ID : " + requestDTO.getRegionId()));
             ville.setRegionParent(regionParent);
         } else {
@@ -94,13 +94,13 @@ public class VilleServiceImpl implements VilleService {
         
         
 
-        Ville updated = villeRepository.save(ville);
+        VilleModel updated = villeRepository.save(ville);
         return mapToResponseDTO(updated);
     }
 
     @Override
     public void deleteVille(Long id) {
-        Ville ville = findVilleOrThrow(id);
+        VilleModel ville = findVilleOrThrow(id);
         villeRepository.delete(ville);
     }
 
@@ -113,12 +113,12 @@ public class VilleServiceImpl implements VilleService {
                 .collect(Collectors.toList());
     }
 
-    private Ville findVilleOrThrow(Long id) {
+    private VilleModel findVilleOrThrow(Long id) {
         return villeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Ville introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("VilleModel introuvable avec l'ID : " + id));
     }
 
-    private VilleResponseDTO mapToResponseDTO(Ville ville) {
+    private VilleResponseDTO mapToResponseDTO(VilleModel ville) {
         RegionSummaryDTO regionSummary = null;
         if (ville.getRegionParent() != null) {
             regionSummary = RegionSummaryDTO.builder()

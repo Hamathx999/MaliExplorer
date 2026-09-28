@@ -4,8 +4,8 @@ import com.maliexplorer_backend.dto.LieuHistoriqueRequestDTO;
 import com.maliexplorer_backend.dto.LieuHistoriqueResponseDTO;
 import com.maliexplorer_backend.dto.VilleSummaryDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.LieuHistorique;
-import com.maliexplorer_backend.model.Ville;
+import com.maliexplorer_backend.model.LieuHistoriqueModel;
+import com.maliexplorer_backend.model.VilleModel;
 import com.maliexplorer_backend.repository.LieuHistoriqueRepository;
 import com.maliexplorer_backend.repository.VilleRepository;
 import com.maliexplorer_backend.service.LieuHistoriqueService;
@@ -36,7 +36,7 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
     @Override
     @Transactional(readOnly = true)
     public LieuHistoriqueResponseDTO getLieuById(Long id) {
-        LieuHistorique lieu = findLieuOrThrow(id);
+        LieuHistoriqueModel lieu = findLieuOrThrow(id);
         return mapToResponseDTO(lieu);
     }
 
@@ -51,13 +51,13 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
 
     @Override
     public LieuHistoriqueResponseDTO createLieu(LieuHistoriqueRequestDTO requestDTO) {
-        Ville ville = null;
+        VilleModel ville = null;
         if (requestDTO.getVilleId() != null) {
             ville = villeRepository.findById(requestDTO.getVilleId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Ville introuvable avec l'ID : " + requestDTO.getVilleId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("VilleModel introuvable avec l'ID : " + requestDTO.getVilleId()));
         }
 
-        LieuHistorique lieu = LieuHistorique.builder()
+        LieuHistoriqueModel lieu = LieuHistoriqueModel.builder()
 
                 
                 .epoque(requestDTO.getEpoque())
@@ -70,17 +70,17 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
                 .ville(ville)
                 .build();
 
-        LieuHistorique saved = lieuHistoriqueRepository.save(lieu);
+        LieuHistoriqueModel saved = lieuHistoriqueRepository.save(lieu);
         return mapToResponseDTO(saved);
     }
 
     @Override
     public LieuHistoriqueResponseDTO updateLieu(Long id, LieuHistoriqueRequestDTO requestDTO) {
-        LieuHistorique lieu = findLieuOrThrow(id);
+        LieuHistoriqueModel lieu = findLieuOrThrow(id);
 
         if (requestDTO.getVilleId() != null) {
-            Ville ville = villeRepository.findById(requestDTO.getVilleId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Ville introuvable avec l'ID : " + requestDTO.getVilleId()));
+            VilleModel ville = villeRepository.findById(requestDTO.getVilleId())
+                    .orElseThrow(() -> new ResourceNotFoundException("VilleModel introuvable avec l'ID : " + requestDTO.getVilleId()));
             lieu.setVille(ville);
         } else {
             lieu.setVille(null);
@@ -96,13 +96,13 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
         
         
 
-        LieuHistorique updated = lieuHistoriqueRepository.save(lieu);
+        LieuHistoriqueModel updated = lieuHistoriqueRepository.save(lieu);
         return mapToResponseDTO(updated);
     }
 
     @Override
     public void deleteLieu(Long id) {
-        LieuHistorique lieu = findLieuOrThrow(id);
+        LieuHistoriqueModel lieu = findLieuOrThrow(id);
         lieuHistoriqueRepository.delete(lieu);
     }
 
@@ -125,12 +125,12 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
                 .collect(Collectors.toList());
     }
 
-    private LieuHistorique findLieuOrThrow(Long id) {
+    private LieuHistoriqueModel findLieuOrThrow(Long id) {
         return lieuHistoriqueRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Lieu historique introuvable avec l'ID : " + id));
     }
 
-    private LieuHistoriqueResponseDTO mapToResponseDTO(LieuHistorique lieu) {
+    private LieuHistoriqueResponseDTO mapToResponseDTO(LieuHistoriqueModel lieu) {
         VilleSummaryDTO villeSummary = null;
         if (lieu.getVille() != null) {
             villeSummary = VilleSummaryDTO.builder()

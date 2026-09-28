@@ -1,7 +1,7 @@
 package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.model.PromoteurModel;
-import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.repository.PromoteurRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class PromoteurService {
         if (repository.existsByEmail(promoteur.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
-        promoteur.setRole(Role.promoteur);
+        promoteur.setRole(RoleModel.promoteur);
         if (promoteur.getDateCreation() == null) {
             promoteur.setDateCreation(Date.valueOf(LocalDate.now()));
         }

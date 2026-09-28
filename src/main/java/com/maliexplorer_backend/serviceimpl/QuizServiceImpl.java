@@ -2,8 +2,8 @@ package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.*;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Question;
-import com.maliexplorer_backend.model.Quiz;
+import com.maliexplorer_backend.model.QuestionModel;
+import com.maliexplorer_backend.model.QuizModel;
 import com.maliexplorer_backend.repository.QuizRepository;
 import com.maliexplorer_backend.service.QuizService;
 import lombok.RequiredArgsConstructor;
@@ -53,14 +53,14 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional(readOnly = true)
     public QuizResponseDTO getQuizById(Long id) {
-        Quiz quiz = findQuizOrThrow(id);
+        QuizModel quiz = findQuizOrThrow(id);
         return mapToResponseDTO(quiz);
     }
 
     @Override
     @Transactional(readOnly = true)
     public QuizPlayDTO getQuizForPlay(Long id) {
-        Quiz quiz = findQuizOrThrow(id);
+        QuizModel quiz = findQuizOrThrow(id);
 
         List<QuestionPlayDTO> playQuestions = quiz.getQuestions() == null ? Collections.emptyList() :
                 quiz.getQuestions().stream()
@@ -88,7 +88,7 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional(readOnly = true)
     public QuizResultDTO evaluateQuiz(QuizSubmissionDTO submission) {
-        Quiz quiz = findQuizOrThrow(submission.getQuizId());
+        QuizModel quiz = findQuizOrThrow(submission.getQuizId());
         Map<Long, String> reponsesSoumises = submission.getReponses() != null ? submission.getReponses() : Collections.emptyMap();
 
         int scoreTotalObtenu = 0;
@@ -96,7 +96,7 @@ public class QuizServiceImpl implements QuizService {
         List<QuizResultDTO.QuestionResultDetailDTO> details = new ArrayList<>();
 
         if (quiz.getQuestions() != null) {
-            for (Question q : quiz.getQuestions()) {
+            for (QuestionModel q : quiz.getQuestions()) {
                 int pointsQuestion = false ? 0 : 10;
                 scoreMaxPossible += pointsQuestion;
 
@@ -138,7 +138,7 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public QuizResponseDTO createQuiz(QuizRequestDTO requestDTO) {
-        Quiz quiz = Quiz.builder()
+        QuizModel quiz = QuizModel.builder()
                 .nomQuiz(requestDTO.getNomQuiz())
                 
                 
@@ -150,13 +150,13 @@ public class QuizServiceImpl implements QuizService {
                 .questions(new ArrayList<>())
                 .build();
 
-        Quiz saved = quizRepository.save(quiz);
+        QuizModel saved = quizRepository.save(quiz);
         return mapToResponseDTO(saved);
     }
 
     @Override
     public QuizResponseDTO updateQuiz(Long id, QuizRequestDTO requestDTO) {
-        Quiz quiz = findQuizOrThrow(id);
+        QuizModel quiz = findQuizOrThrow(id);
 
         quiz.setNomQuiz(requestDTO.getNomQuiz());
         
@@ -169,13 +169,13 @@ public class QuizServiceImpl implements QuizService {
             
         }
 
-        Quiz updated = quizRepository.save(quiz);
+        QuizModel updated = quizRepository.save(quiz);
         return mapToResponseDTO(updated);
     }
 
     @Override
     public void deleteQuiz(Long id) {
-        Quiz quiz = findQuizOrThrow(id);
+        QuizModel quiz = findQuizOrThrow(id);
         quizRepository.delete(quiz);
     }
 
@@ -206,12 +206,12 @@ public class QuizServiceImpl implements QuizService {
                 .collect(Collectors.toList());
     }
 
-    private Quiz findQuizOrThrow(Long id) {
+    private QuizModel findQuizOrThrow(Long id) {
         return quizRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Quiz introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("QuizModel introuvable avec l'ID : " + id));
     }
 
-    private QuizResponseDTO mapToResponseDTO(Quiz quiz) {
+    private QuizResponseDTO mapToResponseDTO(QuizModel quiz) {
         List<QuestionResponseDTO> questionDTOs = quiz.getQuestions() == null ? Collections.emptyList() :
                 quiz.getQuestions().stream()
                         .map(q -> QuestionResponseDTO.builder()
