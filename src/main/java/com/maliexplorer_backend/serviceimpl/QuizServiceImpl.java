@@ -2,10 +2,10 @@ package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.*;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Question;
-import com.maliexplorer_backend.model.Quiz;
-import com.maliexplorer_backend.repository.QuizRepository;
-import com.maliexplorer_backend.service.QuizService;
+import com.maliexplorer_backend.Models.Question;
+import com.maliexplorer_backend.Models.Quiz;
+import com.maliexplorer_backend.Repository.QuizRepository;
+import com.maliexplorer_backend.Services.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,8 +62,8 @@ public class QuizServiceImpl implements QuizService {
     public QuizPlayDTO getQuizForPlay(Long id) {
         Quiz quiz = findQuizOrThrow(id);
 
-        List<QuestionPlayDTO> playQuestions = quiz.getQuestions() == null ? Collections.emptyList() :
-                quiz.getQuestions().stream()
+        List<QuestionPlayDTO> playQuestions = quiz.getQuestions() == null ? Collections.emptyList()
+                : quiz.getQuestions().stream()
                         .map(q -> QuestionPlayDTO.builder()
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())
@@ -89,7 +89,8 @@ public class QuizServiceImpl implements QuizService {
     @Transactional(readOnly = true)
     public QuizResultDTO evaluateQuiz(QuizSubmissionDTO submission) {
         Quiz quiz = findQuizOrThrow(submission.getQuizId());
-        Map<Long, String> reponsesSoumises = submission.getReponses() != null ? submission.getReponses() : Collections.emptyMap();
+        Map<Long, String> reponsesSoumises = submission.getReponses() != null ? submission.getReponses()
+                : Collections.emptyMap();
 
         int scoreTotalObtenu = 0;
         int scoreMaxPossible = 0;
@@ -212,8 +213,8 @@ public class QuizServiceImpl implements QuizService {
     }
 
     private QuizResponseDTO mapToResponseDTO(Quiz quiz) {
-        List<QuestionResponseDTO> questionDTOs = quiz.getQuestions() == null ? Collections.emptyList() :
-                quiz.getQuestions().stream()
+        List<QuestionResponseDTO> questionDTOs = quiz.getQuestions() == null ? Collections.emptyList()
+                : quiz.getQuestions().stream()
                         .map(q -> QuestionResponseDTO.builder()
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())

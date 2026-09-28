@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.repository;
+package com.maliexplorer_backend.Repository;
 
 import com.maliexplorer_backend.model.Guide;
 import org.springframework.data.jpa.repository.JpaRepository;

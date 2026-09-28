@@ -3,11 +3,11 @@ package com.maliexplorer_backend.serviceimpl;
 import com.maliexplorer_backend.dto.QuestionRequestDTO;
 import com.maliexplorer_backend.dto.QuestionResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Question;
-import com.maliexplorer_backend.model.Quiz;
-import com.maliexplorer_backend.repository.QuestionRepository;
-import com.maliexplorer_backend.repository.QuizRepository;
-import com.maliexplorer_backend.service.QuestionService;
+import com.maliexplorer_backend.Models.Question;
+import com.maliexplorer_backend.Models.Quiz;
+import com.maliexplorer_backend.Repository.QuestionRepository;
+import com.maliexplorer_backend.Repository.QuizRepository;
+import com.maliexplorer_backend.Services.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +54,8 @@ public class QuestionServiceImpl implements QuestionService {
         Quiz quiz = null;
         if (requestDTO.getQuizId() != null) {
             quiz = quizRepository.findById(requestDTO.getQuizId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Quiz introuvable avec l'ID : " + requestDTO.getQuizId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Quiz introuvable avec l'ID : " + requestDTO.getQuizId()));
         }
 
         Question question = Question.builder()
@@ -77,7 +78,8 @@ public class QuestionServiceImpl implements QuestionService {
 
         if (requestDTO.getQuizId() != null) {
             Quiz quiz = quizRepository.findById(requestDTO.getQuizId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Quiz introuvable avec l'ID : " + requestDTO.getQuizId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Quiz introuvable avec l'ID : " + requestDTO.getQuizId()));
             question.setQuiz(quiz);
         } else {
             question.setQuiz(null);

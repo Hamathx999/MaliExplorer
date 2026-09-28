@@ -1,6 +1,6 @@
-package com.maliexplorer_backend.repository;
+package com.maliexplorer_backend.Repository;
 
-import com.maliexplorer_backend.model.Article;
+import com.maliexplorer_backend.Models.Article;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

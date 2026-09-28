@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.repository;
+package com.maliexplorer_backend.Repository;
 
 import com.maliexplorer_backend.model.Touriste;
 import org.springframework.data.jpa.repository.JpaRepository;

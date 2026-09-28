@@ -4,11 +4,11 @@ import com.maliexplorer_backend.dto.LieuHistoriqueRequestDTO;
 import com.maliexplorer_backend.dto.LieuHistoriqueResponseDTO;
 import com.maliexplorer_backend.dto.VilleSummaryDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.LieuHistorique;
-import com.maliexplorer_backend.model.Ville;
-import com.maliexplorer_backend.repository.LieuHistoriqueRepository;
-import com.maliexplorer_backend.repository.VilleRepository;
-import com.maliexplorer_backend.service.LieuHistoriqueService;
+import com.maliexplorer_backend.Models.LieuHistorique;
+import com.maliexplorer_backend.Models.Ville;
+import com.maliexplorer_backend.Repository.LieuHistoriqueRepository;
+import com.maliexplorer_backend.Repository.VilleRepository;
+import com.maliexplorer_backend.Services.LieuHistoriqueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +54,8 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
         Ville ville = null;
         if (requestDTO.getVilleId() != null) {
             ville = villeRepository.findById(requestDTO.getVilleId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Ville introuvable avec l'ID : " + requestDTO.getVilleId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Ville introuvable avec l'ID : " + requestDTO.getVilleId()));
         }
 
         LieuHistorique lieu = LieuHistorique.builder()
@@ -80,7 +81,8 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
 
         if (requestDTO.getVilleId() != null) {
             Ville ville = villeRepository.findById(requestDTO.getVilleId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Ville introuvable avec l'ID : " + requestDTO.getVilleId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Ville introuvable avec l'ID : " + requestDTO.getVilleId()));
             lieu.setVille(ville);
         } else {
             lieu.setVille(null);

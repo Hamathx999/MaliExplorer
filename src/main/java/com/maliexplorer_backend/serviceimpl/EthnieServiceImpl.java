@@ -6,15 +6,14 @@ import com.maliexplorer_backend.dto.PlatSummaryDTO;
 import com.maliexplorer_backend.dto.RegionSummaryDTO;
 import com.maliexplorer_backend.exception.BadRequestException;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Ethnie;
-import com.maliexplorer_backend.model.Region;
-import com.maliexplorer_backend.repository.EthnieRepository;
-import com.maliexplorer_backend.repository.RegionRepository;
-import com.maliexplorer_backend.service.EthnieService;
+import com.maliexplorer_backend.Models.Ethnie;
+import com.maliexplorer_backend.Models.Region;
+import com.maliexplorer_backend.Repository.EthnieRepository;
+import com.maliexplorer_backend.Repository.RegionRepository;
+import com.maliexplorer_backend.Services.EthnieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -141,4 +140,3 @@ public class EthnieServiceImpl implements EthnieService {
                 .build();
     }
 }
-

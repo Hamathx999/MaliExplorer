@@ -2,8 +2,8 @@ package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.dto.RegionRequestDTO;
 import com.maliexplorer_backend.dto.RegionResponseDTO;
-import com.maliexplorer_backend.model.Region;
-import com.maliexplorer_backend.repository.RegionRepository;
+import com.maliexplorer_backend.Models.Region;
+import com.maliexplorer_backend.Repository.RegionRepository;
 import com.maliexplorer_backend.serviceImpl.RegionServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
