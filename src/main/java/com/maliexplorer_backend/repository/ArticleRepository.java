@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface ArticleRepository extends JpaRepository<ArticleModel, Long> {
 
-    Page<ArticleModel> findByCategorieIgnoreCase(String categorie, Pageable pageable);
+//    Page<ArticleModel> findByCategorieIgnoreCase(String categorie, Pageable pageable);
 
     Page<ArticleModel> findByNomArticleContainingIgnoreCaseOrContenuContainingIgnoreCase(
             String keywordNom, String keywordContenu, Pageable pageable);

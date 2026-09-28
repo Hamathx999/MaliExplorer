@@ -9,9 +9,5 @@ import java.util.List;
 @Repository
 public interface QuizRepository extends JpaRepository<QuizModel, Long> {
 
-    List<QuizModel> findByCategorieIgnoreCase(String categorie);
-
-    List<QuizModel> findByNiveauDifficulteIgnoreCase(String niveauDifficulte);
-
     List<QuizModel> findByNomQuizContainingIgnoreCase(String keyword);
 }

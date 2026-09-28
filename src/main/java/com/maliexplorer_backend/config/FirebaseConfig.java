@@ -28,42 +28,49 @@ public class FirebaseConfig {
         }
 
         try {
-            InputStream serviceAccountStream = null;
+            Resource resource = serviceAccountPath.startsWith("classpath:")
+                    ? new ClassPathResource(serviceAccountPath.replace("classpath:", ""))
+                    : new FileSystemResource(serviceAccountPath);
 
-            if (serviceAccountPath.startsWith("classpath:")) {
-                String resourcePath = serviceAccountPath.replace("classpath:", "");
-                Resource resource = new ClassPathResource(resourcePath);
-                if (resource.exists()) {
-                    serviceAccountStream = resource.getInputStream();
-                    log.info("Chargement des credentials Firebase depuis le classpath : {}", resourcePath);
-                }
-            } else {
-                Resource resource = new FileSystemResource(serviceAccountPath);
-                if (resource.exists()) {
-                    serviceAccountStream = resource.getInputStream();
-                    log.info("Chargement des credentials Firebase depuis le fichier : {}", serviceAccountPath);
+            FirebaseOptions options = null;
+
+            if (resource.exists()) {
+                byte[] content = resource.getInputStream().readAllBytes();
+                String contentStr = new String(content, java.nio.charset.StandardCharsets.UTF_8);
+
+                if (contentStr.contains("YOUR_PRIVATE_KEY")) {
+                    log.warn(
+                            "⚠️ Le fichier '{}' contient une clé factice (YOUR_PRIVATE_KEY). Veuillez y coller votre vraie clé privée de compte de service Firebase téléchargée depuis la console Google.",
+                            serviceAccountPath);
+                } else {
+                    try (InputStream is = new java.io.ByteArrayInputStream(content)) {
+                        options = FirebaseOptions.builder()
+                                .setCredentials(GoogleCredentials.fromStream(is))
+                                .build();
+                        log.info("Chargement des credentials Firebase depuis : {}", serviceAccountPath);
+                    }
                 }
             }
 
-            FirebaseOptions options;
-            if (serviceAccountStream != null) {
-                options = FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.fromStream(serviceAccountStream))
-                        .build();
-            } else {
+            if (options == null) {
                 log.warn(
-                        "Aucun fichier de compte de service Firebase trouvé à '{}'. Tentative avec les identifiants par défaut Google Application...",
-                        serviceAccountPath);
-                options = FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.getApplicationDefault())
-                        .build();
+                        "Tentative d'initialisation Firebase avec les identifiants par défaut Google Application Credentials...");
+                try {
+                    options = FirebaseOptions.builder()
+                            .setCredentials(GoogleCredentials.getApplicationDefault())
+                            .build();
+                } catch (Exception ex) {
+                    log.warn(
+                            "Identifiants par défaut Google non trouvés. Firebase démarrera en mode dégradé (placez votre 'firebase-service-account.json' valide pour activer l'authentification).");
+                    return;
+                }
             }
 
             FirebaseApp.initializeApp(options);
             log.info("Firebase Admin SDK initialisé avec succès.");
         } catch (Exception e) {
-            log.error(
-                    "Impossible d'initialiser Firebase Admin SDK automatiquement : {}. Veuillez placer votre fichier 'firebase-service-account.json' dans 'src/main/resources/' ou configurer 'firebase.service-account.path'.",
+            log.warn(
+                    "Notice Firebase Admin SDK : {}. Placez un fichier 'firebase-service-account.json' valide dans 'src/main/resources/' pour valider les tokens front-end.",
                     e.getMessage());
         }
     }

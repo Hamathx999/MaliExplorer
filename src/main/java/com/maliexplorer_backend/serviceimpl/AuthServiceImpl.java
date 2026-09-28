@@ -1,8 +1,8 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
-import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.model.utilisateurModel;
 import com.maliexplorer_backend.repository.utilisateurRepository;
 import com.maliexplorer_backend.service.AuthService;
@@ -52,7 +52,6 @@ public class AuthServiceImpl implements AuthService {
             utilisateurModel user;
             if (userOpt.isPresent()) {
                 user = userOpt.get();
-                // Mise à jour de l'UID Firebase et photo si nécessaire
                 if (!StringUtils.hasText(user.getFirebaseUid())) {
                     user.setFirebaseUid(uid);
                 }
@@ -61,7 +60,6 @@ public class AuthServiceImpl implements AuthService {
                 }
                 user = userRepository.save(user);
             } else {
-                // Création automatique lors de la première connexion via Google/Firebase
                 String[] parts = (StringUtils.hasText(name) ? name.split(" ", 2)
                         : new String[] { "Utilisateur", "Firebase" });
                 String prenom = parts[0];
@@ -73,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
                         .prenom(prenom)
                         .nom(nom)
                         .photoUrl(picture)
-                        .role(Role.touriste)
+                        .role(RoleModel.touriste)
                         .dateCreation(new Date(System.currentTimeMillis()))
                         .build();
 
@@ -113,7 +111,7 @@ public class AuthServiceImpl implements AuthService {
                 .motDePasse(requestDTO.getMotDePasse())
                 .adresse(requestDTO.getAdresse())
                 .photoUrl(requestDTO.getPhotoUrl())
-                .role(requestDTO.getRole() != null ? requestDTO.getRole() : Role.touriste)
+                .role(requestDTO.getRole() != null ? requestDTO.getRole() : RoleModel.touriste)
                 .dateCreation(new Date(System.currentTimeMillis()))
                 .build();
 

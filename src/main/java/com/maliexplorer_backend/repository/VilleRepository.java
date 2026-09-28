@@ -12,6 +12,4 @@ public interface VilleRepository extends JpaRepository<VilleModel, Long> {
     List<VilleModel> findByRegionParentIdRegion(Long idRegion);
 
     List<VilleModel> findByNomVilleContainingIgnoreCase(String keyword);
-
-    List<VilleModel> findByEstCapitaleTrue();
 }

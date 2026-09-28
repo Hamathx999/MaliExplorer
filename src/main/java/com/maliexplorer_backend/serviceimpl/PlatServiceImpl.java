@@ -50,12 +50,8 @@ public class PlatServiceImpl implements PlatService {
     public PlatResponseDTO createPlat(PlatRequestDTO requestDTO) {
         PlatModel plat = PlatModel.builder()
                 .nomPlat(requestDTO.getNom())
-                
-                
+                .description(requestDTO.getDescription())
                 .nbrePersonnes(requestDTO.getNbrePersonnes())
-                
-                
-                
                 .ethnies(new ArrayList<>())
                 .regions(new ArrayList<>())
                 .build();
@@ -86,14 +82,8 @@ public class PlatServiceImpl implements PlatService {
         PlatModel plat = findPlatOrThrow(id);
 
         plat.setNomPlat(requestDTO.getNom());
-        
-        
+        plat.setDescription(requestDTO.getDescription());
         plat.setNbrePersonnes(requestDTO.getNbrePersonnes());
-        
-        
-        if (false) {
-            
-        }
 
         if (requestDTO.getEthnieIds() != null) {
             List<EthnieModel> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
@@ -143,35 +133,28 @@ public class PlatServiceImpl implements PlatService {
     }
 
     private PlatResponseDTO mapToResponseDTO(PlatModel plat) {
-        List<RegionModel> regions = plat.getRegions() == null ? Collections.emptyList() :
-                plat.getRegions();
+        List<RegionSummaryDTO> regions = plat.getRegions() == null ? Collections.emptyList()
+                : plat.getRegions().stream()
+                        .map(r -> RegionSummaryDTO.builder()
+                                .id(r.getIdRegion())
+                                .nom(r.getNomRegion())
+                                .build())
+                        .collect(Collectors.toList());
 
-
-
-                                
-                                
-
-
-
-        List<EthnieSummaryDTO> ethnies = plat.getEthnies() == null ? Collections.emptyList() :
-                plat.getEthnies().stream()
+        List<EthnieSummaryDTO> ethnies = plat.getEthnies() == null ? Collections.emptyList()
+                : plat.getEthnies().stream()
                         .map(e -> EthnieSummaryDTO.builder()
                                 .id(e.getIdEthnie())
                                 .nom(e.getNomEthnie())
-                                
                                 .build())
                         .collect(Collectors.toList());
 
         return PlatResponseDTO.builder()
                 .id(plat.getIdPlat())
                 .nom(plat.getNomPlat())
-                
-                
+                .description(plat.getDescription())
                 .nbrePersonnes(plat.getNbrePersonnes())
-                
-                
-                
-
+                .regions(regions)
                 .ethnies(ethnies)
                 .build();
     }

@@ -25,6 +25,12 @@ public class QuestionModel {
     @Column(nullable = false, length = 200)
     private String reponse;
 
+    @Column(nullable = false, columnDefinition ="TEXT")
+    private List<String> propositions;
+
+    @Builder.Default
+    private Integer points = 0;
+
     @Builder.Default
     private Integer duree = 30; // en secondes
 

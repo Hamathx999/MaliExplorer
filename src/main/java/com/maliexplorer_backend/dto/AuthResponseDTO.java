@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.dto;
 
-import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.RoleModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +21,6 @@ public class AuthResponseDTO {
     private String email;
     private String photoUrl;
     private String adresse;
-    private Role role;
+    private RoleModel role;
     private String message;
 }

@@ -2,7 +2,7 @@ package com.maliexplorer_backend.config;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
-import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.model.utilisateurModel;
 import com.maliexplorer_backend.repository.utilisateurRepository;
 import jakarta.servlet.FilterChain;
@@ -60,14 +60,14 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
 
                 if (userOpt.isPresent()) {
                     principalUser = userOpt.get();
-                    Role role = principalUser.getRole();
+                    RoleModel role = principalUser.getRole();
 
                     if (role != null) {
                         String roleName = role.name().toUpperCase();
                         authorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
                         authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
 
-                        if (role == Role.superAdmin || role == Role.admin) {
+                        if (role == RoleModel.superAdmin || role == RoleModel.admin) {
                             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
                             authorities.add(new SimpleGrantedAuthority("ROLE_admin"));
                         }

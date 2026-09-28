@@ -1,12 +1,6 @@
 package com.maliexplorer_backend.service;
-
-<<<<<<<< HEAD:src/main/java/com/maliexplorer_backend/serviceimpl/GuideService.java
-    import com.maliexplorer_backend.model.GuideModel;
-import com.maliexplorer_backend.model.Role;
-========
 import com.maliexplorer_backend.model.GuideModel;
 import com.maliexplorer_backend.model.RoleModel;
->>>>>>>> cc9e10e2042a4344fa4bbc9eefec037879a35fcd:src/main/java/com/maliexplorer_backend/service/GuideService.java
 import com.maliexplorer_backend.repository.GuideRepository;
 import org.springframework.stereotype.Service;
 

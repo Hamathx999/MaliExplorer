@@ -40,11 +40,9 @@ public class QuizServiceImpl implements QuizService {
                 .map(q -> QuizSummaryDTO.builder()
                         .idQuiz(q.getIdQuiz())
                         .nomQuiz(q.getNomQuiz())
-                        
-                        
-                        
+
                         .imageQuiz(q.getImageQuiz())
-                        
+
                         .nombreQuestions(q.getQuestions() != null ? q.getQuestions().size() : 0)
                         .build())
                 .collect(Collectors.toList());
@@ -62,25 +60,23 @@ public class QuizServiceImpl implements QuizService {
     public QuizPlayDTO getQuizForPlay(Long id) {
         QuizModel quiz = findQuizOrThrow(id);
 
-        List<QuestionPlayDTO> playQuestions = quiz.getQuestions() == null ? Collections.emptyList() :
-                quiz.getQuestions().stream()
+        List<QuestionPlayDTO> playQuestions = quiz.getQuestions() == null ? Collections.emptyList()
+                : quiz.getQuestions().stream()
                         .map(q -> QuestionPlayDTO.builder()
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())
-                                
+
                                 .duree(q.getDuree())
-                                
+
                                 .build())
                         .collect(Collectors.toList());
 
         return QuizPlayDTO.builder()
                 .idQuiz(quiz.getIdQuiz())
                 .nomQuiz(quiz.getNomQuiz())
-                
-                
-                
+
                 .imageQuiz(quiz.getImageQuiz())
-                
+
                 .questions(playQuestions)
                 .build();
     }
@@ -89,7 +85,8 @@ public class QuizServiceImpl implements QuizService {
     @Transactional(readOnly = true)
     public QuizResultDTO evaluateQuiz(QuizSubmissionDTO submission) {
         QuizModel quiz = findQuizOrThrow(submission.getQuizId());
-        Map<Long, String> reponsesSoumises = submission.getReponses() != null ? submission.getReponses() : Collections.emptyMap();
+        Map<Long, String> reponsesSoumises = submission.getReponses() != null ? submission.getReponses()
+                : Collections.emptyMap();
 
         int scoreTotalObtenu = 0;
         int scoreMaxPossible = 0;
@@ -117,7 +114,7 @@ public class QuizServiceImpl implements QuizService {
                         .bonneReponse(q.getReponse())
                         .estCorrect(estCorrect)
                         .pointsGagnes(pointsGagnes)
-                        
+
                         .build());
             }
         }
@@ -140,13 +137,9 @@ public class QuizServiceImpl implements QuizService {
     public QuizResponseDTO createQuiz(QuizRequestDTO requestDTO) {
         QuizModel quiz = QuizModel.builder()
                 .nomQuiz(requestDTO.getNomQuiz())
-                
-                
-                
+
                 .imageQuiz(requestDTO.getImageQuiz())
-                
-                
-                
+
                 .questions(new ArrayList<>())
                 .build();
 
@@ -159,14 +152,11 @@ public class QuizServiceImpl implements QuizService {
         QuizModel quiz = findQuizOrThrow(id);
 
         quiz.setNomQuiz(requestDTO.getNomQuiz());
-        
-        
-        
+
         quiz.setImageQuiz(requestDTO.getImageQuiz());
-        
-        
+
         if (false) {
-            
+
         }
 
         QuizModel updated = quizRepository.save(quiz);
@@ -182,19 +172,13 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional(readOnly = true)
     public List<QuizResponseDTO> getQuizzesByCategorie(String categorie) {
-        return quizRepository.findByCategorieIgnoreCase(categorie)
-                .stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
+        return searchQuizzes(categorie);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<QuizResponseDTO> getQuizzesByNiveau(String niveau) {
-        return quizRepository.findByNiveauDifficulteIgnoreCase(niveau)
-                .stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
+        return getAllQuizzes();
     }
 
     @Override
@@ -212,16 +196,15 @@ public class QuizServiceImpl implements QuizService {
     }
 
     private QuizResponseDTO mapToResponseDTO(QuizModel quiz) {
-        List<QuestionResponseDTO> questionDTOs = quiz.getQuestions() == null ? Collections.emptyList() :
-                quiz.getQuestions().stream()
+        List<QuestionResponseDTO> questionDTOs = quiz.getQuestions() == null ? Collections.emptyList()
+                : quiz.getQuestions().stream()
                         .map(q -> QuestionResponseDTO.builder()
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())
                                 .reponse(q.getReponse())
-                                
-                                
+
                                 .duree(q.getDuree())
-                                
+
                                 .quizId(quiz.getIdQuiz())
                                 .build())
                         .collect(Collectors.toList());
@@ -229,13 +212,9 @@ public class QuizServiceImpl implements QuizService {
         return QuizResponseDTO.builder()
                 .idQuiz(quiz.getIdQuiz())
                 .nomQuiz(quiz.getNomQuiz())
-                
-                
-                
+
                 .imageQuiz(quiz.getImageQuiz())
-                
-                
-                
+
                 .questions(questionDTOs)
                 .build();
     }

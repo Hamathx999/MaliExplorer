@@ -46,14 +46,17 @@ public class LieuHistoriqueController {
     }
 
     @PostMapping
-    @Operation(summary = "Créer un nouveau lieu historique (avec coordonnées GPS et image/360)")
-    public ResponseEntity<LieuHistoriqueResponseDTO> createLieu(@Valid @RequestBody LieuHistoriqueRequestDTO requestDTO) {
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Créer un nouveau lieu historique (Admin uniquement)")
+    public ResponseEntity<LieuHistoriqueResponseDTO> createLieu(
+            @Valid @RequestBody LieuHistoriqueRequestDTO requestDTO) {
         LieuHistoriqueResponseDTO created = lieuHistoriqueService.createLieu(requestDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Modifier un lieu historique")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Modifier un lieu historique (Admin uniquement)")
     public ResponseEntity<LieuHistoriqueResponseDTO> updateLieu(
             @PathVariable Long id,
             @Valid @RequestBody LieuHistoriqueRequestDTO requestDTO) {
@@ -61,7 +64,8 @@ public class LieuHistoriqueController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Supprimer un lieu historique")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Supprimer un lieu historique (Admin uniquement)")
     public ResponseEntity<Void> deleteLieu(@PathVariable Long id) {
         lieuHistoriqueService.deleteLieu(id);
         return ResponseEntity.noContent().build();

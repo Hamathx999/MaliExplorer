@@ -1,10 +1,10 @@
 package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.dto.VilleResponseDTO;
-import com.maliexplorer_backend.model.Ville;
+import com.maliexplorer_backend.model.VilleModel;
 import com.maliexplorer_backend.repository.RegionRepository;
 import com.maliexplorer_backend.repository.VilleRepository;
-import com.maliexplorer_backend.serviceImpl.VilleServiceImpl;
+import com.maliexplorer_backend.serviceimpl.VilleServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,12 +31,11 @@ class VilleServiceTest {
 
     @Test
     void testGetVilleById() {
-        Ville ville = Ville.builder()
+        VilleModel ville = VilleModel.builder()
                 .idVille(1L)
                 .nomVille("Tombouctou")
-                .latitude(16.7666)
-                .longitude(-3.0026)
-                .estCapitale(false)
+                .region("Tombouctou")
+                .cordonnees("16.7666,-3.0026")
                 .build();
 
         when(villeRepository.findById(1L)).thenReturn(Optional.of(ville));
@@ -46,12 +45,12 @@ class VilleServiceTest {
         assertNotNull(response);
         assertEquals(1L, response.getId());
         assertEquals("Tombouctou", response.getNom());
-        assertEquals(16.7666, response.getLatitude());
+        assertEquals("16.7666,-3.0026", response.getCordonnees());
     }
 
     @Test
     void testSearchVilles() {
-        Ville ville = Ville.builder()
+        VilleModel ville = VilleModel.builder()
                 .idVille(2L)
                 .nomVille("Djenné")
                 .build();

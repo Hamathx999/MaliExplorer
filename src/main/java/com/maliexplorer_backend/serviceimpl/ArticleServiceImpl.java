@@ -85,12 +85,12 @@ public class ArticleServiceImpl implements ArticleService {
                 .map(this::mapToResponseDTO);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ArticleResponseDTO> getArticlesByCategorie(String categorie, Pageable pageable) {
-        return articleRepository.findByCategorieIgnoreCase(categorie, pageable)
-                .map(this::mapToResponseDTO);
-    }
+//    @Override
+//    @Transactional(readOnly = true)
+//    public Page<ArticleResponseDTO> getArticlesByCategorie(String categorie, Pageable pageable) {
+//        return articleRepository.findByCategorieIgnoreCase(categorie, pageable)
+//                .map(this::mapToResponseDTO);
+//    }
 
     @Override
     @Transactional(readOnly = true)

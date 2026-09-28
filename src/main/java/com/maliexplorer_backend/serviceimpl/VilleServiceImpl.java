@@ -55,13 +55,14 @@ public class VilleServiceImpl implements VilleService {
         RegionModel regionParent = null;
         if (requestDTO.getRegionId() != null) {
             regionParent = regionRepository.findById(requestDTO.getRegionId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Région introuvable avec l'ID : " + requestDTO.getRegionId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Région introuvable avec l'ID : " + requestDTO.getRegionId()));
         }
 
         VilleModel ville = VilleModel.builder()
                 .nomVille(requestDTO.getNom())
                 .region(requestDTO.getRegion())
-
+                .nbreHbt(requestDTO.getNbreHbt())
                 .description(requestDTO.getDescription())
                 .cordonnees(requestDTO.getCordonnees())
                 .regionParent(regionParent)
@@ -77,7 +78,8 @@ public class VilleServiceImpl implements VilleService {
 
         if (requestDTO.getRegionId() != null) {
             RegionModel regionParent = regionRepository.findById(requestDTO.getRegionId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Région introuvable avec l'ID : " + requestDTO.getRegionId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Région introuvable avec l'ID : " + requestDTO.getRegionId()));
             ville.setRegionParent(regionParent);
         } else {
             ville.setRegionParent(null);
@@ -85,14 +87,9 @@ public class VilleServiceImpl implements VilleService {
 
         ville.setNomVille(requestDTO.getNom());
         ville.setRegion(requestDTO.getRegion());
-        
+        ville.setNbreHbt(requestDTO.getNbreHbt());
         ville.setDescription(requestDTO.getDescription());
         ville.setCordonnees(requestDTO.getCordonnees());
-        
-        
-        
-        
-        
 
         VilleModel updated = villeRepository.save(ville);
         return mapToResponseDTO(updated);
@@ -127,13 +124,25 @@ public class VilleServiceImpl implements VilleService {
                     .build();
         }
 
+        List<LieuHistoriqueSummaryDTO> lieuxHistoriques = ville.getLieuxHistoriques() == null
+                ? new java.util.ArrayList<>()
+                : ville.getLieuxHistoriques().stream()
+                        .map(l -> LieuHistoriqueSummaryDTO.builder()
+                                .idLieu(l.getIdLieu())
+                                .nomLieuHisto(l.getNomLieu())
+                                .epoque(l.getEpoque())
+                                .build())
+                        .collect(Collectors.toList());
+
         return VilleResponseDTO.builder()
                 .id(ville.getIdVille())
                 .nom(ville.getNomVille())
+                .region(ville.getRegion())
+                .nbreHbt(ville.getNbreHbt())
                 .description(ville.getDescription())
                 .cordonnees(ville.getCordonnees())
                 .regionParent(regionSummary)
-                .lieuxHistoriques(new java.util.ArrayList<>())
+                .lieuxHistoriques(lieuxHistoriques)
                 .build();
     }
 }

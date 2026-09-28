@@ -46,13 +46,13 @@ public class ArticleController {
         return ResponseEntity.ok(articleService.getRecentArticles());
     }
 
-    @GetMapping("/categorie/{categorie}")
-    @Operation(summary = "Lister les articles filtrés par catégorie avec pagination")
-    public ResponseEntity<Page<ArticleResponseDTO>> getArticlesByCategorie(
-            @PathVariable String categorie,
-            @PageableDefault(size = 10, sort = "datePublication", direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(articleService.getArticlesByCategorie(categorie, pageable));
-    }
+//    @GetMapping("/categorie/{categorie}")
+//    @Operation(summary = "Lister les articles filtrés par catégorie avec pagination")
+//    public ResponseEntity<Page<ArticleResponseDTO>> getArticlesByCategorie(
+//            @PathVariable String categorie,
+//            @PageableDefault(size = 10, sort = "datePublication", direction = Sort.Direction.DESC) Pageable pageable) {
+//        return ResponseEntity.ok(articleService.getArticlesByCategorie(categorie, pageable));
+//    }
 
     @GetMapping("/search")
     @Operation(summary = "Rechercher des articles par mot-clé (titre ou contenu) avec pagination")

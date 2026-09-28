@@ -54,19 +54,15 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
         VilleModel ville = null;
         if (requestDTO.getVilleId() != null) {
             ville = villeRepository.findById(requestDTO.getVilleId())
-                    .orElseThrow(() -> new ResourceNotFoundException("VilleModel introuvable avec l'ID : " + requestDTO.getVilleId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "VilleModel introuvable avec l'ID : " + requestDTO.getVilleId()));
         }
 
         LieuHistoriqueModel lieu = LieuHistoriqueModel.builder()
-
-                
+                .nomLieu(requestDTO.getNomLieuHisto())
+                .description(requestDTO.getDescription())
                 .epoque(requestDTO.getEpoque())
                 .cordonnees(requestDTO.getCordonnees())
-                
-                
-                
-                
-                
                 .ville(ville)
                 .build();
 
@@ -80,21 +76,17 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
 
         if (requestDTO.getVilleId() != null) {
             VilleModel ville = villeRepository.findById(requestDTO.getVilleId())
-                    .orElseThrow(() -> new ResourceNotFoundException("VilleModel introuvable avec l'ID : " + requestDTO.getVilleId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "VilleModel introuvable avec l'ID : " + requestDTO.getVilleId()));
             lieu.setVille(ville);
         } else {
             lieu.setVille(null);
         }
 
-
-        
+        lieu.setNomLieu(requestDTO.getNomLieuHisto());
+        lieu.setDescription(requestDTO.getDescription());
         lieu.setEpoque(requestDTO.getEpoque());
         lieu.setCordonnees(requestDTO.getCordonnees());
-        
-        
-        
-        
-        
 
         LieuHistoriqueModel updated = lieuHistoriqueRepository.save(lieu);
         return mapToResponseDTO(updated);
@@ -120,7 +112,6 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
     public List<LieuHistoriqueResponseDTO> getLieuxWithPanorama360() {
         return lieuHistoriqueRepository.findAll()
                 .stream()
-                .filter(l -> "" != null && !"".trim().isEmpty())
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -136,22 +127,15 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
             villeSummary = VilleSummaryDTO.builder()
                     .id(lieu.getVille().getIdVille())
                     .nom(lieu.getVille().getNomVille())
-                    
-                    
                     .build();
         }
 
         return LieuHistoriqueResponseDTO.builder()
                 .idLieu(lieu.getIdLieu())
-
-                
+                .nomLieuHisto(lieu.getNomLieu())
+                .description(lieu.getDescription())
                 .epoque(lieu.getEpoque())
                 .cordonnees(lieu.getCordonnees())
-                
-                
-                
-                
-                
                 .ville(villeSummary)
                 .build();
     }

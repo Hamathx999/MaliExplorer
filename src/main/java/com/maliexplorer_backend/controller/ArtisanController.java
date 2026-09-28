@@ -21,6 +21,7 @@ public class ArtisanController {
     }
 
     @PostMapping
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArtisanModel> creerArtisan(@Valid @RequestBody ArtisanModel artisan) {
         ArtisanModel nouveau = service.creerArtisan(artisan);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
@@ -42,12 +43,14 @@ public class ArtisanController {
     }
 
     @PutMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArtisanModel> mettreAJourArtisan(@PathVariable int id,
             @Valid @RequestBody ArtisanModel artisan) {
         return ResponseEntity.ok(service.mettreAJourArtisan(id, artisan));
     }
 
     @DeleteMapping("/{id}")
+    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> supprimerArtisan(@PathVariable int id) {
         service.supprimerArtisan(id);
         return ResponseEntity.noContent().build();
