@@ -1,6 +1,6 @@
-package com.maliexplorer_backend.Repository;
+package com.maliexplorer_backend.repository;
 
-import com.maliexplorer_backend.Models.President;
+import com.maliexplorer_backend.model.President;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

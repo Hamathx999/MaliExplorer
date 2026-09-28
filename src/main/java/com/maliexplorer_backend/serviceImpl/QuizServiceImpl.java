@@ -2,10 +2,10 @@ package com.maliexplorer_backend.serviceImpl;
 
 import com.maliexplorer_backend.dto.*;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.Models.Question;
-import com.maliexplorer_backend.Models.Quiz;
-import com.maliexplorer_backend.Repository.QuizRepository;
-import com.maliexplorer_backend.Services.QuizService;
+import com.maliexplorer_backend.model.Question;
+import com.maliexplorer_backend.model.Quiz;
+import com.maliexplorer_backend.repository.QuizRepository;
+import com.maliexplorer_backend.service.QuizService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

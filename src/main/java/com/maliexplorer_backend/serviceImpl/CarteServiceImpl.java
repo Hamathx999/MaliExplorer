@@ -1,10 +1,10 @@
 package com.maliexplorer_backend.serviceImpl;
 
 import com.maliexplorer_backend.dto.MarqueurCarteDTO;
-import com.maliexplorer_backend.Repository.LieuHistoriqueRepository;
-import com.maliexplorer_backend.Repository.PointInteretRepository;
-import com.maliexplorer_backend.Repository.VilleRepository;
-import com.maliexplorer_backend.Services.CarteService;
+import com.maliexplorer_backend.repository.LieuHistoriqueRepository;
+import com.maliexplorer_backend.repository.PointInteretRepository;
+import com.maliexplorer_backend.repository.VilleRepository;
+import com.maliexplorer_backend.service.CarteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

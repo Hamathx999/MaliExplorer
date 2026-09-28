@@ -2,9 +2,9 @@ package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.dto.QuizResultDTO;
 import com.maliexplorer_backend.dto.QuizSubmissionDTO;
-import com.maliexplorer_backend.Models.Question;
-import com.maliexplorer_backend.Models.Quiz;
-import com.maliexplorer_backend.Repository.QuizRepository;
+import com.maliexplorer_backend.model.Question;
+import com.maliexplorer_backend.model.Quiz;
+import com.maliexplorer_backend.repository.QuizRepository;
 import com.maliexplorer_backend.serviceImpl.QuizServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
