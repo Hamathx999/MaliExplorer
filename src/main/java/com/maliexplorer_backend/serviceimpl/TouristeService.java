@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.serviceImpl;
 
-import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.model.TouristeModel;
 import com.maliexplorer_backend.repository.TouristeRepository;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,7 @@ public class TouristeService {
         if (repository.existsByEmail(touriste.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
-        touriste.setRole(Role.touriste);
+        touriste.setRole(RoleModel.touriste);
         if (touriste.getDateCreation() == null) {
             touriste.setDateCreation(Date.valueOf(LocalDate.now()));
         }

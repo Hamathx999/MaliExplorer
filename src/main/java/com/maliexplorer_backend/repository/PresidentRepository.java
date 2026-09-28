@@ -1,13 +1,13 @@
 package com.maliexplorer_backend.repository;
 
-import com.maliexplorer_backend.model.President;
+import com.maliexplorer_backend.model.PresidentModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface PresidentRepository extends JpaRepository<President, Long> {
+public interface PresidentRepository extends JpaRepository<PresidentModel, Long> {
 
-    List<President> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom);
+    List<PresidentModel> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom);
 }

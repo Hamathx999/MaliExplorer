@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Ville {
+public class VilleModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +35,11 @@ public class Ville {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_region")
-    private Region regionParent;
+    private RegionModel regionParent;
 
     @OneToMany(mappedBy = "ville", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<LieuHistorique> lieuxHistoriques = new ArrayList<>();
+    private List<LieuHistoriqueModel> lieuxHistoriques = new ArrayList<>();
 
     public Long getId() {
         return this.idVille;

@@ -3,7 +3,7 @@ package com.maliexplorer_backend.serviceimpl;
 import com.maliexplorer_backend.dto.PresidentRequestDTO;
 import com.maliexplorer_backend.dto.PresidentResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.President;
+import com.maliexplorer_backend.model.PresidentModel;
 import com.maliexplorer_backend.repository.PresidentRepository;
 import com.maliexplorer_backend.service.PresidentService;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +32,13 @@ public class PresidentServiceImpl implements PresidentService {
     @Override
     @Transactional(readOnly = true)
     public PresidentResponseDTO getPresidentById(Long id) {
-        President president = findPresidentOrThrow(id);
+        PresidentModel president = findPresidentOrThrow(id);
         return mapToResponseDTO(president);
     }
 
     @Override
     public PresidentResponseDTO createPresident(PresidentRequestDTO requestDTO) {
-        President president = President.builder()
+        PresidentModel president = PresidentModel.builder()
                 .prenom(requestDTO.getPrenom())
                 .nom(requestDTO.getNom())
                 .dateNaissance(requestDTO.getDateNaissance())
@@ -50,13 +50,13 @@ public class PresidentServiceImpl implements PresidentService {
                 
                 .build();
 
-        President saved = presidentRepository.save(president);
+        PresidentModel saved = presidentRepository.save(president);
         return mapToResponseDTO(saved);
     }
 
     @Override
     public PresidentResponseDTO updatePresident(Long id, PresidentRequestDTO requestDTO) {
-        President president = findPresidentOrThrow(id);
+        PresidentModel president = findPresidentOrThrow(id);
 
         president.setPrenom(requestDTO.getPrenom());
         president.setNom(requestDTO.getNom());
@@ -68,13 +68,13 @@ public class PresidentServiceImpl implements PresidentService {
         president.setPhotoUrl(requestDTO.getPhotoUrl());
         
 
-        President updated = presidentRepository.save(president);
+        PresidentModel updated = presidentRepository.save(president);
         return mapToResponseDTO(updated);
     }
 
     @Override
     public void deletePresident(Long id) {
-        President president = findPresidentOrThrow(id);
+        PresidentModel president = findPresidentOrThrow(id);
         presidentRepository.delete(president);
     }
 
@@ -87,12 +87,12 @@ public class PresidentServiceImpl implements PresidentService {
                 .collect(Collectors.toList());
     }
 
-    private President findPresidentOrThrow(Long id) {
+    private PresidentModel findPresidentOrThrow(Long id) {
         return presidentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Président introuvable avec l'ID : " + id));
     }
 
-    private PresidentResponseDTO mapToResponseDTO(President president) {
+    private PresidentResponseDTO mapToResponseDTO(PresidentModel president) {
         return PresidentResponseDTO.builder()
                 .id(president.getIdPresident())
                 .prenom(president.getPrenom())

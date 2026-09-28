@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LieuHistorique {
+public class LieuHistoriqueModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +31,7 @@ public class LieuHistorique {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_ville")
-    private Ville ville;
+    private VilleModel ville;
 
     public Long getId() {
         return this.idLieu;

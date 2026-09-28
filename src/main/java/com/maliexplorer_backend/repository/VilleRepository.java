@@ -1,17 +1,17 @@
 package com.maliexplorer_backend.repository;
 
-import com.maliexplorer_backend.model.Ville;
+import com.maliexplorer_backend.model.VilleModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface VilleRepository extends JpaRepository<Ville, Long> {
+public interface VilleRepository extends JpaRepository<VilleModel, Long> {
 
-    List<Ville> findByRegionParentIdRegion(Long idRegion);
+    List<VilleModel> findByRegionParentIdRegion(Long idRegion);
 
-    List<Ville> findByNomVilleContainingIgnoreCase(String keyword);
+    List<VilleModel> findByNomVilleContainingIgnoreCase(String keyword);
 
-    List<Ville> findByEstCapitaleTrue();
+    List<VilleModel> findByEstCapitaleTrue();
 }

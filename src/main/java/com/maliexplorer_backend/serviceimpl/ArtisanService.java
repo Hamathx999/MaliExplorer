@@ -1,7 +1,7 @@
 package com.maliexplorer_backend.serviceImpl;
 
 import com.maliexplorer_backend.model.ArtisanModel;
-import com.maliexplorer_backend.model.Role;
+import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.repository.ArtisanRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class ArtisanService {
         if (repository.existsByEmail(artisan.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
-        artisan.setRole(Role.artisan);
+        artisan.setRole(RoleModel.artisan);
         if (artisan.getDateCreation() == null) {
             artisan.setDateCreation(Date.valueOf(LocalDate.now()));
         }

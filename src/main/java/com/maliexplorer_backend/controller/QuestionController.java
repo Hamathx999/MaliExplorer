@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/questions")
 @RequiredArgsConstructor
-@Tag(name = "Questions de Quiz", description = "Gestion des questions, propositions et réponses des quiz")
+@Tag(name = "Questions de QuizModel", description = "Gestion des questions, propositions et réponses des quiz")
 public class QuestionController {
 
     private final QuestionService questionService;

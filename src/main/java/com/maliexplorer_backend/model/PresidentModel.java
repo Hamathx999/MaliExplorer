@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class President {
+public class PresidentModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

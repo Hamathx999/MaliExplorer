@@ -26,27 +26,27 @@ public class TouristeModel extends utilisateurModel {
 
     @ManyToMany
     @JoinTable(name = "touriste_article", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_article"))
-    private List<Article> articlesLus;
+    private List<ArticleModel> articlesLus;
 
     @ManyToMany
     @JoinTable(name = "touriste_lieu_historique", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_lieu"))
-    private List<LieuHistorique> lieuxVisites;
+    private List<LieuHistoriqueModel> lieuxVisites;
 
     @ManyToMany
     @JoinTable(name = "touriste_ville", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_ville"))
-    private List<Ville> villesVisitees;
+    private List<VilleModel> villesVisitees;
 
     @ManyToMany
     @JoinTable(name = "touriste_ethnie", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_ethnie"))
-    private List<Ethnie> ethniesVues;
+    private List<EthnieModel> ethniesVues;
 
     @ManyToMany
     @JoinTable(name = "touriste_plat", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_plat"))
-    private List<Plat> platsVus;
+    private List<PlatModel> platsVus;
 
     @ManyToMany
     @JoinTable(name = "touriste_quiz", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_quiz"))
-    private List<Quiz> quizJoues;
+    private List<QuizModel> quizJoues;
 
 
     public TouristeModel(String prenom, String nom, String email, String motDePasse, String adresse, String photoUrl,
@@ -57,7 +57,7 @@ public class TouristeModel extends utilisateurModel {
         setMotDePasse(motDePasse);
         setAdresse(adresse);
         setPhotoUrl(photoUrl);
-        setRole(Role.touriste);
+        setRole(RoleModel.touriste);
         this.points = points;
     }
 }

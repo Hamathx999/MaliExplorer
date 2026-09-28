@@ -1,6 +1,6 @@
 package com.maliexplorer_backend.model;
 
-public enum Role {
+public enum RoleModel {
     touriste,
     artisan,
     guide,
