@@ -1,13 +1,13 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.EthnieSummaryDTO;
 import com.maliexplorer_backend.dto.PlatRequestDTO;
 import com.maliexplorer_backend.dto.PlatResponseDTO;
 import com.maliexplorer_backend.dto.RegionSummaryDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Ethnie;
-import com.maliexplorer_backend.model.Plat;
-import com.maliexplorer_backend.model.Region;
+import com.maliexplorer_backend.model.EthnieModel;
+import com.maliexplorer_backend.model.PlatModel;
+import com.maliexplorer_backend.model.RegionModel;
 import com.maliexplorer_backend.repository.EthnieRepository;
 import com.maliexplorer_backend.repository.PlatRepository;
 import com.maliexplorer_backend.repository.RegionRepository;
@@ -42,34 +42,34 @@ public class PlatServiceImpl implements PlatService {
     @Override
     @Transactional(readOnly = true)
     public PlatResponseDTO getPlatById(Long id) {
-        Plat plat = findPlatOrThrow(id);
+        PlatModel plat = findPlatOrThrow(id);
         return mapToResponseDTO(plat);
     }
 
     @Override
     public PlatResponseDTO createPlat(PlatRequestDTO requestDTO) {
-        Plat plat = Plat.builder()
+        PlatModel plat = PlatModel.builder()
                 .nomPlat(requestDTO.getNom())
-                .nomAlternatif(requestDTO.getNomAlternatif())
-                .description(requestDTO.getDescription())
-                .ingredients(requestDTO.getIngredients())
-                .tempsPreparation(requestDTO.getTempsPreparation())
-                .imageUrl(requestDTO.getImageUrl())
-                .idAdministrateur(requestDTO.getIdAdministrateur())
+                
+                
+                .nbrePersonnes(requestDTO.getNbrePersonnes())
+                
+                
+                
                 .ethnies(new ArrayList<>())
                 .regions(new ArrayList<>())
                 .build();
 
         if (requestDTO.getEthnieIds() != null && !requestDTO.getEthnieIds().isEmpty()) {
-            List<Ethnie> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
+            List<EthnieModel> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
             plat.setEthnies(ethnies);
         }
 
-        Plat saved = platRepository.save(plat);
+        PlatModel saved = platRepository.save(plat);
 
         if (requestDTO.getRegionIds() != null && !requestDTO.getRegionIds().isEmpty()) {
-            List<Region> regions = regionRepository.findAllById(requestDTO.getRegionIds());
-            for (Region region : regions) {
+            List<RegionModel> regions = regionRepository.findAllById(requestDTO.getRegionIds());
+            for (RegionModel region : regions) {
                 if (!region.getPlats().contains(saved)) {
                     region.getPlats().add(saved);
                     regionRepository.save(region);
@@ -83,30 +83,30 @@ public class PlatServiceImpl implements PlatService {
 
     @Override
     public PlatResponseDTO updatePlat(Long id, PlatRequestDTO requestDTO) {
-        Plat plat = findPlatOrThrow(id);
+        PlatModel plat = findPlatOrThrow(id);
 
         plat.setNomPlat(requestDTO.getNom());
-        plat.setNomAlternatif(requestDTO.getNomAlternatif());
-        plat.setDescription(requestDTO.getDescription());
-        plat.setIngredients(requestDTO.getIngredients());
-        plat.setTempsPreparation(requestDTO.getTempsPreparation());
-        plat.setImageUrl(requestDTO.getImageUrl());
-        if (requestDTO.getIdAdministrateur() != null) {
-            plat.setIdAdministrateur(requestDTO.getIdAdministrateur());
+        
+        
+        plat.setNbrePersonnes(requestDTO.getNbrePersonnes());
+        
+        
+        if (false) {
+            
         }
 
         if (requestDTO.getEthnieIds() != null) {
-            List<Ethnie> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
+            List<EthnieModel> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
             plat.setEthnies(ethnies);
         }
 
-        Plat updated = platRepository.save(plat);
+        PlatModel updated = platRepository.save(plat);
         return mapToResponseDTO(updated);
     }
 
     @Override
     public void deletePlat(Long id) {
-        Plat plat = findPlatOrThrow(id);
+        PlatModel plat = findPlatOrThrow(id);
         platRepository.delete(plat);
     }
 
@@ -137,41 +137,41 @@ public class PlatServiceImpl implements PlatService {
                 .collect(Collectors.toList());
     }
 
-    private Plat findPlatOrThrow(Long id) {
+    private PlatModel findPlatOrThrow(Long id) {
         return platRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Plat introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("PlatModel introuvable avec l'ID : " + id));
     }
 
-    private PlatResponseDTO mapToResponseDTO(Plat plat) {
-        List<RegionSummaryDTO> regions = plat.getRegions() == null ? Collections.emptyList()
-                : plat.getRegions().stream()
-                        .map(r -> RegionSummaryDTO.builder()
-                                .id(r.getIdRegion())
-                                .nom(r.getNomRegion())
-                                .code(r.getCode())
-                                .imageUrl(r.getImageUrl())
-                                .build())
-                        .collect(Collectors.toList());
+    private PlatResponseDTO mapToResponseDTO(PlatModel plat) {
+        List<RegionModel> regions = plat.getRegions() == null ? Collections.emptyList() :
+                plat.getRegions();
 
-        List<EthnieSummaryDTO> ethnies = plat.getEthnies() == null ? Collections.emptyList()
-                : plat.getEthnies().stream()
+
+
+                                
+                                
+
+
+
+        List<EthnieSummaryDTO> ethnies = plat.getEthnies() == null ? Collections.emptyList() :
+                plat.getEthnies().stream()
                         .map(e -> EthnieSummaryDTO.builder()
                                 .id(e.getIdEthnie())
                                 .nom(e.getNomEthnie())
-                                .imageUrl(e.getImageUrl())
+                                
                                 .build())
                         .collect(Collectors.toList());
 
         return PlatResponseDTO.builder()
                 .id(plat.getIdPlat())
                 .nom(plat.getNomPlat())
-                .nomAlternatif(plat.getNomAlternatif())
-                .description(plat.getDescription())
-                .ingredients(plat.getIngredients())
-                .tempsPreparation(plat.getTempsPreparation())
-                .imageUrl(plat.getImageUrl())
-                .idAdministrateur(plat.getIdAdministrateur())
-                .regions(regions)
+                
+                
+                .nbrePersonnes(plat.getNbrePersonnes())
+                
+                
+                
+
                 .ethnies(ethnies)
                 .build();
     }

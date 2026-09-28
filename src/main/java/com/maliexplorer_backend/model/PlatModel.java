@@ -31,7 +31,11 @@ public class PlatModel {
     private List<RegionModel> regions = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(name = "plat_ethnie", joinColumns = @JoinColumn(name = "plat_id"), inverseJoinColumns = @JoinColumn(name = "ethnie_id"))
+    @JoinTable(
+            name = "plat_ethnie",
+            joinColumns = @JoinColumn(name = "plat_id"),
+            inverseJoinColumns = @JoinColumn(name = "ethnie_id")
+    )
     @Builder.Default
     private List<EthnieModel> ethnies = new ArrayList<>();
 

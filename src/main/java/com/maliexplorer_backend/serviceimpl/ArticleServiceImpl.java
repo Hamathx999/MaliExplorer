@@ -81,7 +81,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Transactional(readOnly = true)
     public Page<ArticleResponseDTO> searchArticles(String keyword, Pageable pageable) {
         return articleRepository.findByNomArticleContainingIgnoreCaseOrContenuContainingIgnoreCase(
-                keyword, keyword, pageable)
+                        keyword, keyword, pageable)
                 .map(this::mapToResponseDTO);
     }
 

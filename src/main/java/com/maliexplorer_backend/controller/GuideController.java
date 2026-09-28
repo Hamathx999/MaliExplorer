@@ -1,11 +1,10 @@
 package com.maliexplorer_backend.controller;
 
 import com.maliexplorer_backend.model.GuideModel;
-import com.maliexplorer_backend.serviceImpl.GuideService;
+import com.maliexplorer_backend.service.GuideService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +21,6 @@ public class GuideController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GuideModel> creerGuide(@Valid @RequestBody GuideModel guide) {
         GuideModel nouveau = service.creerGuide(guide);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
@@ -44,13 +42,11 @@ public class GuideController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<GuideModel> mettreAJourGuide(@PathVariable int id, @Valid @RequestBody GuideModel guide) {
         return ResponseEntity.ok(service.mettreAJourGuide(id, guide));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> supprimerGuide(@PathVariable int id) {
         service.supprimerGuide(id);
         return ResponseEntity.noContent().build();

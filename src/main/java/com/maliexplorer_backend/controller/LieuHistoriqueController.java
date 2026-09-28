@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,17 +46,14 @@ public class LieuHistoriqueController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Créer un nouveau lieu historique (Admin uniquement)")
-    public ResponseEntity<LieuHistoriqueResponseDTO> createLieu(
-            @Valid @RequestBody LieuHistoriqueRequestDTO requestDTO) {
+    @Operation(summary = "Créer un nouveau lieu historique (avec coordonnées GPS et image/360)")
+    public ResponseEntity<LieuHistoriqueResponseDTO> createLieu(@Valid @RequestBody LieuHistoriqueRequestDTO requestDTO) {
         LieuHistoriqueResponseDTO created = lieuHistoriqueService.createLieu(requestDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Modifier un lieu historique (Admin uniquement)")
+    @Operation(summary = "Modifier un lieu historique")
     public ResponseEntity<LieuHistoriqueResponseDTO> updateLieu(
             @PathVariable Long id,
             @Valid @RequestBody LieuHistoriqueRequestDTO requestDTO) {
@@ -65,8 +61,7 @@ public class LieuHistoriqueController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Supprimer un lieu historique (Admin uniquement)")
+    @Operation(summary = "Supprimer un lieu historique")
     public ResponseEntity<Void> deleteLieu(@PathVariable Long id) {
         lieuHistoriqueService.deleteLieu(id);
         return ResponseEntity.noContent().build();

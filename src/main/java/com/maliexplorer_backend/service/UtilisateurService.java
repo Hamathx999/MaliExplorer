@@ -1,4 +1,4 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.model.utilisateurModel;
 import com.maliexplorer_backend.repository.utilisateurRepository;

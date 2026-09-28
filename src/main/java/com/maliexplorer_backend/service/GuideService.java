@@ -1,7 +1,12 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.service;
 
+<<<<<<<< HEAD:src/main/java/com/maliexplorer_backend/serviceimpl/GuideService.java
     import com.maliexplorer_backend.model.GuideModel;
 import com.maliexplorer_backend.model.Role;
+========
+import com.maliexplorer_backend.model.GuideModel;
+import com.maliexplorer_backend.model.RoleModel;
+>>>>>>>> cc9e10e2042a4344fa4bbc9eefec037879a35fcd:src/main/java/com/maliexplorer_backend/service/GuideService.java
 import com.maliexplorer_backend.repository.GuideRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +27,7 @@ public class GuideService {
         if (repository.existsByEmail(guide.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
-        guide.setRole(Role.guide);
+        guide.setRole(RoleModel.guide);
         if (guide.getDateCreation() == null) {
             guide.setDateCreation(Date.valueOf(LocalDate.now()));
         }
@@ -35,7 +40,7 @@ public class GuideService {
 
     public GuideModel obtenirGuideParId(int id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Guide introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new RuntimeException("GuideModel introuvable avec l'ID : " + id));
     }
 
     public List<GuideModel> rechercherParLangue(String langue) {
@@ -69,7 +74,7 @@ public class GuideService {
 
     public void supprimerGuide(int id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Guide introuvable avec l'ID : " + id);
+            throw new RuntimeException("GuideModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
     }

@@ -1,11 +1,10 @@
 package com.maliexplorer_backend.controller;
 
 import com.maliexplorer_backend.model.ArtisanModel;
-import com.maliexplorer_backend.serviceImpl.ArtisanService;
+import com.maliexplorer_backend.service.ArtisanService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +21,6 @@ public class ArtisanController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArtisanModel> creerArtisan(@Valid @RequestBody ArtisanModel artisan) {
         ArtisanModel nouveau = service.creerArtisan(artisan);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
@@ -44,14 +42,12 @@ public class ArtisanController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArtisanModel> mettreAJourArtisan(@PathVariable int id,
             @Valid @RequestBody ArtisanModel artisan) {
         return ResponseEntity.ok(service.mettreAJourArtisan(id, artisan));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> supprimerArtisan(@PathVariable int id) {
         service.supprimerArtisan(id);
         return ResponseEntity.noContent().build();

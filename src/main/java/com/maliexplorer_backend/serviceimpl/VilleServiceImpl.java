@@ -1,12 +1,12 @@
-package com.maliexplorer_backend.serviceImpl;
+package com.maliexplorer_backend.serviceimpl;
 
-import com.maliexplorer_backend.dto.LieuHistoriqueSummaryDTO;
-import com.maliexplorer_backend.dto.RegionSummaryDTO;
 import com.maliexplorer_backend.dto.VilleRequestDTO;
 import com.maliexplorer_backend.dto.VilleResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.model.Region;
-import com.maliexplorer_backend.model.Ville;
+import com.maliexplorer_backend.model.RegionModel;
+import com.maliexplorer_backend.model.VilleModel;
+import com.maliexplorer_backend.dto.RegionSummaryDTO;
+import com.maliexplorer_backend.dto.LieuHistoriqueSummaryDTO;
 import com.maliexplorer_backend.repository.RegionRepository;
 import com.maliexplorer_backend.repository.VilleRepository;
 import com.maliexplorer_backend.service.VilleService;
@@ -37,7 +37,7 @@ public class VilleServiceImpl implements VilleService {
     @Override
     @Transactional(readOnly = true)
     public VilleResponseDTO getVilleById(Long id) {
-        Ville ville = findVilleOrThrow(id);
+        VilleModel ville = findVilleOrThrow(id);
         return mapToResponseDTO(ville);
     }
 
@@ -52,39 +52,32 @@ public class VilleServiceImpl implements VilleService {
 
     @Override
     public VilleResponseDTO createVille(VilleRequestDTO requestDTO) {
-        Region regionParent = null;
+        RegionModel regionParent = null;
         if (requestDTO.getRegionId() != null) {
             regionParent = regionRepository.findById(requestDTO.getRegionId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Région introuvable avec l'ID : " + requestDTO.getRegionId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Région introuvable avec l'ID : " + requestDTO.getRegionId()));
         }
 
-        Ville ville = Ville.builder()
+        VilleModel ville = VilleModel.builder()
                 .nomVille(requestDTO.getNom())
                 .region(requestDTO.getRegion())
-                .nbreHbts(requestDTO.getNbreHbts())
+
                 .description(requestDTO.getDescription())
                 .cordonnees(requestDTO.getCordonnees())
-                .latitude(requestDTO.getLatitude())
-                .longitude(requestDTO.getLongitude())
-                .estCapitale(requestDTO.getEstCapitale() != null ? requestDTO.getEstCapitale() : false)
-                .imageUrl(requestDTO.getImageUrl())
-                .idUsers(requestDTO.getIdUsers())
                 .regionParent(regionParent)
                 .build();
 
-        Ville saved = villeRepository.save(ville);
+        VilleModel saved = villeRepository.save(ville);
         return mapToResponseDTO(saved);
     }
 
     @Override
     public VilleResponseDTO updateVille(Long id, VilleRequestDTO requestDTO) {
-        Ville ville = findVilleOrThrow(id);
+        VilleModel ville = findVilleOrThrow(id);
 
         if (requestDTO.getRegionId() != null) {
-            Region regionParent = regionRepository.findById(requestDTO.getRegionId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Région introuvable avec l'ID : " + requestDTO.getRegionId()));
+            RegionModel regionParent = regionRepository.findById(requestDTO.getRegionId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Région introuvable avec l'ID : " + requestDTO.getRegionId()));
             ville.setRegionParent(regionParent);
         } else {
             ville.setRegionParent(null);
@@ -92,24 +85,22 @@ public class VilleServiceImpl implements VilleService {
 
         ville.setNomVille(requestDTO.getNom());
         ville.setRegion(requestDTO.getRegion());
-        ville.setNbreHbts(requestDTO.getNbreHbts());
+        
         ville.setDescription(requestDTO.getDescription());
         ville.setCordonnees(requestDTO.getCordonnees());
-        ville.setLatitude(requestDTO.getLatitude());
-        ville.setLongitude(requestDTO.getLongitude());
-        ville.setEstCapitale(requestDTO.getEstCapitale());
-        ville.setImageUrl(requestDTO.getImageUrl());
-        if (requestDTO.getIdUsers() != null) {
-            ville.setIdUsers(requestDTO.getIdUsers());
-        }
+        
+        
+        
+        
+        
 
-        Ville updated = villeRepository.save(ville);
+        VilleModel updated = villeRepository.save(ville);
         return mapToResponseDTO(updated);
     }
 
     @Override
     public void deleteVille(Long id) {
-        Ville ville = findVilleOrThrow(id);
+        VilleModel ville = findVilleOrThrow(id);
         villeRepository.delete(ville);
     }
 
@@ -122,48 +113,27 @@ public class VilleServiceImpl implements VilleService {
                 .collect(Collectors.toList());
     }
 
-    private Ville findVilleOrThrow(Long id) {
+    private VilleModel findVilleOrThrow(Long id) {
         return villeRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Ville introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("VilleModel introuvable avec l'ID : " + id));
     }
 
-    private VilleResponseDTO mapToResponseDTO(Ville ville) {
+    private VilleResponseDTO mapToResponseDTO(VilleModel ville) {
         RegionSummaryDTO regionSummary = null;
         if (ville.getRegionParent() != null) {
             regionSummary = RegionSummaryDTO.builder()
                     .id(ville.getRegionParent().getIdRegion())
                     .nom(ville.getRegionParent().getNomRegion())
-                    .code(ville.getRegionParent().getCode())
-                    .imageUrl(ville.getRegionParent().getImageUrl())
                     .build();
         }
-
-        List<LieuHistoriqueSummaryDTO> lieux = ville.getLieuxHistoriques() == null ? java.util.Collections.emptyList()
-                : ville.getLieuxHistoriques().stream()
-                        .map(l -> LieuHistoriqueSummaryDTO.builder()
-                                .idLieu(l.getIdLieu())
-                                .nomHistoire(l.getNomHistoire())
-                                .epoque(l.getEpoque())
-                                .imageUrl(l.getImageUrl())
-                                .latitude(l.getLatitude())
-                                .longitude(l.getLongitude())
-                                .build())
-                        .collect(java.util.stream.Collectors.toList());
 
         return VilleResponseDTO.builder()
                 .id(ville.getIdVille())
                 .nom(ville.getNomVille())
-                .region(ville.getRegion())
-                .nbreHbts(ville.getNbreHbts())
                 .description(ville.getDescription())
                 .cordonnees(ville.getCordonnees())
-                .latitude(ville.getLatitude())
-                .longitude(ville.getLongitude())
-                .estCapitale(ville.getEstCapitale())
-                .imageUrl(ville.getImageUrl())
-                .idUsers(ville.getIdUsers())
                 .regionParent(regionSummary)
-                .lieuxHistoriques(lieux)
+                .lieuxHistoriques(new java.util.ArrayList<>())
                 .build();
     }
 }
