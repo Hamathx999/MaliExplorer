@@ -6,14 +6,15 @@ import com.maliexplorer_backend.dto.PlatSummaryDTO;
 import com.maliexplorer_backend.dto.RegionSummaryDTO;
 import com.maliexplorer_backend.exception.BadRequestException;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.Models.Ethnie;
-import com.maliexplorer_backend.Models.Region;
-import com.maliexplorer_backend.Repository.EthnieRepository;
-import com.maliexplorer_backend.Repository.RegionRepository;
-import com.maliexplorer_backend.Services.EthnieService;
+import com.maliexplorer_backend.model.EthnieModel;
+import com.maliexplorer_backend.model.RegionModel;
+import com.maliexplorer_backend.repository.EthnieRepository;
+import com.maliexplorer_backend.repository.RegionRepository;
+import com.maliexplorer_backend.service.EthnieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +40,7 @@ public class EthnieServiceImpl implements EthnieService {
     @Override
     @Transactional(readOnly = true)
     public EthnieResponseDTO getEthnieById(Long id) {
-        Ethnie ethnie = findEthnieOrThrow(id);
+        EthnieModel ethnie = findEthnieOrThrow(id);
         return mapToResponseDTO(ethnie);
     }
 
@@ -49,7 +50,7 @@ public class EthnieServiceImpl implements EthnieService {
             throw new BadRequestException("Une ethnie avec le nom '" + requestDTO.getNom() + "' existe déjà");
         }
 
-        Ethnie ethnie = Ethnie.builder()
+        EthnieModel ethnie = EthnieModel.builder()
                 .nomEthnie(requestDTO.getNom())
                 .region(requestDTO.getRegion())
                 .population(requestDTO.getPopulation())
@@ -58,11 +59,11 @@ public class EthnieServiceImpl implements EthnieService {
                 .plats(new ArrayList<>())
                 .build();
 
-        Ethnie saved = ethnieRepository.save(ethnie);
+        EthnieModel saved = ethnieRepository.save(ethnie);
 
         if (requestDTO.getRegionIds() != null && !requestDTO.getRegionIds().isEmpty()) {
-            List<Region> regions = regionRepository.findAllById(requestDTO.getRegionIds());
-            for (Region region : regions) {
+            List<RegionModel> regions = regionRepository.findAllById(requestDTO.getRegionIds());
+            for (RegionModel region : regions) {
                 if (!region.getEthnies().contains(saved)) {
                     region.getEthnies().add(saved);
                     regionRepository.save(region);
@@ -76,7 +77,7 @@ public class EthnieServiceImpl implements EthnieService {
 
     @Override
     public EthnieResponseDTO updateEthnie(Long id, EthnieRequestDTO requestDTO) {
-        Ethnie ethnie = findEthnieOrThrow(id);
+        EthnieModel ethnie = findEthnieOrThrow(id);
 
         if (!ethnie.getNomEthnie().equalsIgnoreCase(requestDTO.getNom())
                 && ethnieRepository.existsByNomEthnieIgnoreCase(requestDTO.getNom())) {
@@ -90,13 +91,13 @@ public class EthnieServiceImpl implements EthnieService {
         
         
 
-        Ethnie updated = ethnieRepository.save(ethnie);
+        EthnieModel updated = ethnieRepository.save(ethnie);
         return mapToResponseDTO(updated);
     }
 
     @Override
     public void deleteEthnie(Long id) {
-        Ethnie ethnie = findEthnieOrThrow(id);
+        EthnieModel ethnie = findEthnieOrThrow(id);
         ethnieRepository.delete(ethnie);
     }
 
@@ -118,12 +119,12 @@ public class EthnieServiceImpl implements EthnieService {
                 .collect(Collectors.toList());
     }
 
-    private Ethnie findEthnieOrThrow(Long id) {
+    private EthnieModel findEthnieOrThrow(Long id) {
         return ethnieRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Ethnie introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("EthnieModel introuvable avec l'ID : " + id));
     }
 
-    private EthnieResponseDTO mapToResponseDTO(Ethnie ethnie) {
+    private EthnieResponseDTO mapToResponseDTO(EthnieModel ethnie) {
         List<RegionSummaryDTO> regions = ethnie.getRegions() == null ? Collections.emptyList() :
                 new java.util.ArrayList<>();
 
@@ -140,3 +141,4 @@ public class EthnieServiceImpl implements EthnieService {
                 .build();
     }
 }
+

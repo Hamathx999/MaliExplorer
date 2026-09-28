@@ -5,13 +5,13 @@ import com.maliexplorer_backend.dto.PlatRequestDTO;
 import com.maliexplorer_backend.dto.PlatResponseDTO;
 import com.maliexplorer_backend.dto.RegionSummaryDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.Models.Ethnie;
-import com.maliexplorer_backend.Models.Plat;
-import com.maliexplorer_backend.Models.Region;
-import com.maliexplorer_backend.Repository.EthnieRepository;
-import com.maliexplorer_backend.Repository.PlatRepository;
-import com.maliexplorer_backend.Repository.RegionRepository;
-import com.maliexplorer_backend.Services.PlatService;
+import com.maliexplorer_backend.model.EthnieModel;
+import com.maliexplorer_backend.model.PlatModel;
+import com.maliexplorer_backend.model.RegionModel;
+import com.maliexplorer_backend.repository.EthnieRepository;
+import com.maliexplorer_backend.repository.PlatRepository;
+import com.maliexplorer_backend.repository.RegionRepository;
+import com.maliexplorer_backend.service.PlatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,13 +42,13 @@ public class PlatServiceImpl implements PlatService {
     @Override
     @Transactional(readOnly = true)
     public PlatResponseDTO getPlatById(Long id) {
-        Plat plat = findPlatOrThrow(id);
+        PlatModel plat = findPlatOrThrow(id);
         return mapToResponseDTO(plat);
     }
 
     @Override
     public PlatResponseDTO createPlat(PlatRequestDTO requestDTO) {
-        Plat plat = Plat.builder()
+        PlatModel plat = PlatModel.builder()
                 .nomPlat(requestDTO.getNom())
                 
                 
@@ -61,15 +61,15 @@ public class PlatServiceImpl implements PlatService {
                 .build();
 
         if (requestDTO.getEthnieIds() != null && !requestDTO.getEthnieIds().isEmpty()) {
-            List<Ethnie> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
+            List<EthnieModel> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
             plat.setEthnies(ethnies);
         }
 
-        Plat saved = platRepository.save(plat);
+        PlatModel saved = platRepository.save(plat);
 
         if (requestDTO.getRegionIds() != null && !requestDTO.getRegionIds().isEmpty()) {
-            List<Region> regions = regionRepository.findAllById(requestDTO.getRegionIds());
-            for (Region region : regions) {
+            List<RegionModel> regions = regionRepository.findAllById(requestDTO.getRegionIds());
+            for (RegionModel region : regions) {
                 if (!region.getPlats().contains(saved)) {
                     region.getPlats().add(saved);
                     regionRepository.save(region);
@@ -83,7 +83,7 @@ public class PlatServiceImpl implements PlatService {
 
     @Override
     public PlatResponseDTO updatePlat(Long id, PlatRequestDTO requestDTO) {
-        Plat plat = findPlatOrThrow(id);
+        PlatModel plat = findPlatOrThrow(id);
 
         plat.setNomPlat(requestDTO.getNom());
         
@@ -96,17 +96,17 @@ public class PlatServiceImpl implements PlatService {
         }
 
         if (requestDTO.getEthnieIds() != null) {
-            List<Ethnie> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
+            List<EthnieModel> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
             plat.setEthnies(ethnies);
         }
 
-        Plat updated = platRepository.save(plat);
+        PlatModel updated = platRepository.save(plat);
         return mapToResponseDTO(updated);
     }
 
     @Override
     public void deletePlat(Long id) {
-        Plat plat = findPlatOrThrow(id);
+        PlatModel plat = findPlatOrThrow(id);
         platRepository.delete(plat);
     }
 
@@ -137,13 +137,13 @@ public class PlatServiceImpl implements PlatService {
                 .collect(Collectors.toList());
     }
 
-    private Plat findPlatOrThrow(Long id) {
+    private PlatModel findPlatOrThrow(Long id) {
         return platRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Plat introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("PlatModel introuvable avec l'ID : " + id));
     }
 
-    private PlatResponseDTO mapToResponseDTO(Plat plat) {
-        List<Region> regions = plat.getRegions() == null ? Collections.emptyList() :
+    private PlatResponseDTO mapToResponseDTO(PlatModel plat) {
+        List<RegionModel> regions = plat.getRegions() == null ? Collections.emptyList() :
                 plat.getRegions();
 
 
@@ -153,8 +153,8 @@ public class PlatServiceImpl implements PlatService {
 
 
 
-        List<EthnieSummaryDTO> ethnies = plat.getEthnies() == null ? Collections.emptyList()
-                : plat.getEthnies().stream()
+        List<EthnieSummaryDTO> ethnies = plat.getEthnies() == null ? Collections.emptyList() :
+                plat.getEthnies().stream()
                         .map(e -> EthnieSummaryDTO.builder()
                                 .id(e.getIdEthnie())
                                 .nom(e.getNomEthnie())

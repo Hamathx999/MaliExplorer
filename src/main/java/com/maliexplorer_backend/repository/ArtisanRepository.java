@@ -1,6 +1,6 @@
-package com.maliexplorer_backend.Repository;
+package com.maliexplorer_backend.repository;
 
-import com.maliexplorer_backend.model.Artisan;
+import com.maliexplorer_backend.model.ArtisanModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ArtisanRepository extends JpaRepository<Artisan, Integer> {
-    Optional<Artisan> findByEmail(String email);
+public interface ArtisanRepository extends JpaRepository<ArtisanModel, Integer> {
+    Optional<ArtisanModel> findByEmail(String email);
 
     boolean existsByEmail(String email);
 
-    List<Artisan> findByTypeArtisanatContainingIgnoreCase(String typeArtisanat);
+    List<ArtisanModel> findByTypeArtisanatContainingIgnoreCase(String typeArtisanat);
 }

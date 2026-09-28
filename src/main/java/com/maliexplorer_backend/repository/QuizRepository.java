@@ -1,17 +1,17 @@
-package com.maliexplorer_backend.Repository;
+package com.maliexplorer_backend.repository;
 
-import com.maliexplorer_backend.Models.Quiz;
+import com.maliexplorer_backend.model.QuizModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface QuizRepository extends JpaRepository<Quiz, Long> {
+public interface QuizRepository extends JpaRepository<QuizModel, Long> {
 
-    List<Quiz> findByCategorieIgnoreCase(String categorie);
+    List<QuizModel> findByCategorieIgnoreCase(String categorie);
 
-    List<Quiz> findByNiveauDifficulteIgnoreCase(String niveauDifficulte);
+    List<QuizModel> findByNiveauDifficulteIgnoreCase(String niveauDifficulte);
 
-    List<Quiz> findByNomQuizContainingIgnoreCase(String keyword);
+    List<QuizModel> findByNomQuizContainingIgnoreCase(String keyword);
 }

@@ -1,17 +1,17 @@
-package com.maliexplorer_backend.Repository;
+package com.maliexplorer_backend.repository;
 
-import com.maliexplorer_backend.Models.Plat;
+import com.maliexplorer_backend.model.PlatModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface PlatRepository extends JpaRepository<Plat, Long> {
+public interface PlatRepository extends JpaRepository<PlatModel, Long> {
 
-    List<Plat> findByNomPlatContainingIgnoreCase(String keyword);
+    List<PlatModel> findByNomPlatContainingIgnoreCase(String keyword);
 
-    List<Plat> findByRegionsIdRegion(Long idRegion);
+    List<PlatModel> findByRegionsIdRegion(Long idRegion);
 
-    List<Plat> findByEthniesIdEthnie(Long idEthnie);
+    List<PlatModel> findByEthniesIdEthnie(Long idEthnie);
 }

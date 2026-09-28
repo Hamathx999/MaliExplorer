@@ -3,9 +3,9 @@ package com.maliexplorer_backend.serviceimpl;
 import com.maliexplorer_backend.dto.*;
 import com.maliexplorer_backend.exception.BadRequestException;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
-import com.maliexplorer_backend.Models.Region;
-import com.maliexplorer_backend.Repository.RegionRepository;
-import com.maliexplorer_backend.Services.RegionService;
+import com.maliexplorer_backend.model.RegionModel;
+import com.maliexplorer_backend.repository.RegionRepository;
+import com.maliexplorer_backend.service.RegionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +33,7 @@ public class RegionServiceImpl implements RegionService {
     @Override
     @Transactional(readOnly = true)
     public RegionResponseDTO getRegionById(Long id) {
-        Region region = findRegionOrThrow(id);
+        RegionModel region = findRegionOrThrow(id);
         return mapToResponseDTO(region);
     }
 
@@ -46,7 +46,7 @@ public class RegionServiceImpl implements RegionService {
             throw new BadRequestException("Une région avec le code '" + "" + "' existe déjà");
         }
 
-        Region region = Region.builder()
+        RegionModel region = RegionModel.builder()
                 .nomRegion(requestDTO.getNom())
                 
                 
@@ -57,13 +57,13 @@ public class RegionServiceImpl implements RegionService {
                 
                 .build();
 
-        Region saved = regionRepository.save(region);
+        RegionModel saved = regionRepository.save(region);
         return mapToResponseDTO(saved);
     }
 
     @Override
     public RegionResponseDTO updateRegion(Long id, RegionRequestDTO requestDTO) {
-        Region region = findRegionOrThrow(id);
+        RegionModel region = findRegionOrThrow(id);
 
         if (!region.getNomRegion().equalsIgnoreCase(requestDTO.getNom())
                 && regionRepository.existsByNomRegionIgnoreCase(requestDTO.getNom())) {
@@ -85,13 +85,13 @@ public class RegionServiceImpl implements RegionService {
         
         
 
-        Region updated = regionRepository.save(region);
+        RegionModel updated = regionRepository.save(region);
         return mapToResponseDTO(updated);
     }
 
     @Override
     public void deleteRegion(Long id) {
-        Region region = findRegionOrThrow(id);
+        RegionModel region = findRegionOrThrow(id);
         regionRepository.delete(region);
     }
 
@@ -104,14 +104,14 @@ public class RegionServiceImpl implements RegionService {
                 .collect(Collectors.toList());
     }
 
-    private Region findRegionOrThrow(Long id) {
+    private RegionModel findRegionOrThrow(Long id) {
         return regionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Région introuvable avec l'ID : " + id));
     }
 
-    private RegionResponseDTO mapToResponseDTO(Region region) {
-        List<VilleSummaryDTO> villes = region.getVilles() == null ? Collections.emptyList()
-                : region.getVilles().stream()
+    private RegionResponseDTO mapToResponseDTO(RegionModel region) {
+        List<VilleSummaryDTO> villes = region.getVilles() == null ? Collections.emptyList() :
+                region.getVilles().stream()
                         .map(v -> VilleSummaryDTO.builder()
                                 .id(v.getIdVille())
                                 .nom(v.getNomVille())
@@ -120,8 +120,8 @@ public class RegionServiceImpl implements RegionService {
                                 .build())
                         .collect(Collectors.toList());
 
-        List<EthnieSummaryDTO> ethnies = region.getEthnies() == null ? Collections.emptyList()
-                : region.getEthnies().stream()
+        List<EthnieSummaryDTO> ethnies = region.getEthnies() == null ? Collections.emptyList() :
+                region.getEthnies().stream()
                         .map(e -> EthnieSummaryDTO.builder()
                                 .id(e.getIdEthnie())
                                 .nom(e.getNomEthnie())
@@ -129,8 +129,8 @@ public class RegionServiceImpl implements RegionService {
                                 .build())
                         .collect(Collectors.toList());
 
-        List<PlatSummaryDTO> plats = region.getPlats() == null ? Collections.emptyList()
-                : region.getPlats().stream()
+        List<PlatSummaryDTO> plats = region.getPlats() == null ? Collections.emptyList() :
+                region.getPlats().stream()
                         .map(p -> PlatSummaryDTO.builder()
                                 .id(p.getIdPlat())
                                 .nom(p.getNomPlat())

@@ -1,9 +1,9 @@
 package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.dto.VilleResponseDTO;
-import com.maliexplorer_backend.Models.Ville;
-import com.maliexplorer_backend.Repository.RegionRepository;
-import com.maliexplorer_backend.Repository.VilleRepository;
+import com.maliexplorer_backend.model.Ville;
+import com.maliexplorer_backend.repository.RegionRepository;
+import com.maliexplorer_backend.repository.VilleRepository;
 import com.maliexplorer_backend.serviceImpl.VilleServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

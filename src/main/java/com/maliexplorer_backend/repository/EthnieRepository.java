@@ -1,6 +1,6 @@
-package com.maliexplorer_backend.Repository;
+package com.maliexplorer_backend.repository;
 
-import com.maliexplorer_backend.Models.Ethnie;
+import com.maliexplorer_backend.model.EthnieModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface EthnieRepository extends JpaRepository<Ethnie, Long> {
+public interface EthnieRepository extends JpaRepository<EthnieModel, Long> {
 
-    Optional<Ethnie> findByNomEthnieIgnoreCase(String nomEthnie);
+    Optional<EthnieModel> findByNomEthnieIgnoreCase(String nomEthnie);
 
     boolean existsByNomEthnieIgnoreCase(String nomEthnie);
 
-    List<Ethnie> findByNomEthnieContainingIgnoreCase(String keyword);
+    List<EthnieModel> findByNomEthnieContainingIgnoreCase(String keyword);
 
-    List<Ethnie> findByRegionsIdRegion(Long idRegion);
+    List<EthnieModel> findByRegionsIdRegion(Long idRegion);
 }

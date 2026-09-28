@@ -20,9 +20,9 @@ public class CarteServiceImpl implements CarteService {
     private final LieuHistoriqueRepository lieuHistoriqueRepository;
     private final VilleRepository villeRepository;
 
-        @Override
-        public List<MarqueurCarteDTO> getAllMarqueurs() {
-                List<MarqueurCarteDTO> marqueurs = new ArrayList<>();
+    @Override
+    public List<MarqueurCarteDTO> getAllMarqueurs() {
+        List<MarqueurCarteDTO> marqueurs = new ArrayList<>();
 
         // Marqueurs des Lieux Historiques
         lieuHistoriqueRepository.findAll().stream()
@@ -55,20 +55,20 @@ public class CarteServiceImpl implements CarteService {
                         
                         .build()));
 
-                return marqueurs;
-        }
+        return marqueurs;
+    }
 
-        @Override
-        public List<MarqueurCarteDTO> getMarqueursByType(String type) {
-                return getAllMarqueurs().stream()
-                                .filter(m -> m.getType().equalsIgnoreCase(type))
-                                .collect(Collectors.toList());
-        }
+    @Override
+    public List<MarqueurCarteDTO> getMarqueursByType(String type) {
+        return getAllMarqueurs().stream()
+                .filter(m -> m.getType().equalsIgnoreCase(type))
+                .collect(Collectors.toList());
+    }
 
-        @Override
-        public List<MarqueurCarteDTO> getMarqueursWith360() {
-                return getAllMarqueurs().stream()
-                                .filter(m -> m.getPanorama360Url() != null && !m.getPanorama360Url().trim().isEmpty())
-                                .collect(Collectors.toList());
-        }
+    @Override
+    public List<MarqueurCarteDTO> getMarqueursWith360() {
+        return getAllMarqueurs().stream()
+                .filter(m -> m.getPanorama360Url() != null && !m.getPanorama360Url().trim().isEmpty())
+                .collect(Collectors.toList());
+    }
 }
