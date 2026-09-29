@@ -31,14 +31,9 @@ public class CarteServiceImpl implements CarteService {
                         .id("LIEU_" + l.getIdLieu())
                         .nom("")
                         .type("LIEU_HISTORIQUE")
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        .build()));
+                        .build()
+                        )
+                );
 
         // Marqueurs des Villes
         villeRepository.findAll().stream()
@@ -47,13 +42,9 @@ public class CarteServiceImpl implements CarteService {
                         .id("VILLE_" + v.getIdVille())
                         .nom(v.getNomVille())
                         .type("VILLE")
-                        
-                        
-                        
-                        
-                        
-                        
-                        .build()));
+                        .build()
+                        )
+                );
 
         return marqueurs;
     }

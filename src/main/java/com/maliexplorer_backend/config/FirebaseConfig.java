@@ -40,7 +40,7 @@ public class FirebaseConfig {
 
                 if (contentStr.contains("YOUR_PRIVATE_KEY")) {
                     log.warn(
-                            "⚠️ Le fichier '{}' contient une clé factice (YOUR_PRIVATE_KEY). Veuillez y coller votre vraie clé privée de compte de service Firebase téléchargée depuis la console Google.",
+                            "Le fichier '{}' contient une clé factice (YOUR_PRIVATE_KEY). Veuillez y coller votre vraie clé privée de compte de service Firebase téléchargée depuis la console Google.",
                             serviceAccountPath);
                 } else {
                     try (InputStream is = new java.io.ByteArrayInputStream(content)) {
