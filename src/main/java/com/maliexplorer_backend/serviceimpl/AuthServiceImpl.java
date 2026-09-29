@@ -32,6 +32,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDTO login(LoginRequestDTO requestDTO) {
+        if (com.google.firebase.FirebaseApp.getApps().isEmpty()) {
+            throw new BadRequestException("Le service d'authentification Firebase Admin n'est pas initialisé sur le serveur. Veuillez configurer firebase-service-account.json.");
+        }
         try {
             FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(requestDTO.getIdToken());
             String email = decodedToken.getEmail();
@@ -94,7 +97,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String firebaseUid = null;
-        if (StringUtils.hasText(requestDTO.getIdToken())) {
+        if (StringUtils.hasText(requestDTO.getIdToken()) && !com.google.firebase.FirebaseApp.getApps().isEmpty()) {
             try {
                 FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(requestDTO.getIdToken());
                 firebaseUid = decodedToken.getUid();

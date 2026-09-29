@@ -1,10 +1,12 @@
 package com.maliexplorer_backend.controller;
 
-import com.maliexplorer_backend.model.PromoteurModel;
+import com.maliexplorer_backend.dto.PromoteurRequestDTO;
+import com.maliexplorer_backend.dto.PromoteurResponseDTO;
 import com.maliexplorer_backend.service.PromoteurService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,36 +23,36 @@ public class PromoteurController {
     }
 
     @PostMapping
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PromoteurModel> creerPromoteur(@Valid @RequestBody PromoteurModel promoteur) {
-        PromoteurModel nouveau = service.creerPromoteur(promoteur);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PromoteurResponseDTO> creerPromoteur(@Valid @RequestBody PromoteurRequestDTO promoteur) {
+        PromoteurResponseDTO nouveau = service.creerPromoteur(promoteur);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<PromoteurModel>> obtenirTousLesPromoteurs() {
+    public ResponseEntity<List<PromoteurResponseDTO>> obtenirTousLesPromoteurs() {
         return ResponseEntity.ok(service.obtenirTousLesPromoteurs());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PromoteurModel> obtenirPromoteurParId(@PathVariable int id) {
+    public ResponseEntity<PromoteurResponseDTO> obtenirPromoteurParId(@PathVariable int id) {
         return ResponseEntity.ok(service.obtenirPromoteurParId(id));
     }
 
     @GetMapping("/organisation/{nomOrganisation}")
-    public ResponseEntity<List<PromoteurModel>> rechercherParOrganisation(@PathVariable String nomOrganisation) {
+    public ResponseEntity<List<PromoteurResponseDTO>> rechercherParOrganisation(@PathVariable String nomOrganisation) {
         return ResponseEntity.ok(service.rechercherParOrganisation(nomOrganisation));
     }
 
     @PutMapping("/{id}")
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<PromoteurModel> mettreAJourPromoteur(@PathVariable int id,
-            @Valid @RequestBody PromoteurModel promoteur) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PromoteurResponseDTO> mettreAJourPromoteur(@PathVariable int id,
+            @Valid @RequestBody PromoteurRequestDTO promoteur) {
         return ResponseEntity.ok(service.mettreAJourPromoteur(id, promoteur));
     }
 
     @DeleteMapping("/{id}")
-    @org.springframework.security.access.prepost.PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> supprimerPromoteur(@PathVariable int id) {
         service.supprimerPromoteur(id);
         return ResponseEntity.noContent().build();
