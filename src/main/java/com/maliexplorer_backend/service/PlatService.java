@@ -3,14 +3,9 @@ package com.maliexplorer_backend.service;
 import com.maliexplorer_backend.dto.PlatRequestDTO;
 import com.maliexplorer_backend.dto.PlatResponseDTO;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
 public interface PlatService {
-
-    Page<PlatResponseDTO> getAllPlats(Pageable pageable);
 
     List<PlatResponseDTO> getAllPlats();
 

@@ -7,12 +7,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,10 +22,9 @@ public class PresidentController {
     private final PresidentService presidentService;
 
     @GetMapping
-    @Operation(summary = "Lister tous les présidents avec pagination")
-    public ResponseEntity<Page<PresidentResponseDTO>> getAllPresidents(
-            @PageableDefault(size = 10, sort = "nom") Pageable pageable) {
-        return ResponseEntity.ok(presidentService.getAllPresidents(pageable));
+    @Operation(summary = "Lister tous les présidents")
+    public ResponseEntity<List<PresidentResponseDTO>> getAllPresidents() {
+        return ResponseEntity.ok(presidentService.getAllPresidents());
     }
 
     @GetMapping("/{id}")
@@ -39,16 +34,14 @@ public class PresidentController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Ajouter un président (Admin uniquement)")
+    @Operation(summary = "Ajouter un président")
     public ResponseEntity<PresidentResponseDTO> createPresident(@Valid @RequestBody PresidentRequestDTO requestDTO) {
         PresidentResponseDTO created = presidentService.createPresident(requestDTO);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Modifier les informations d'un président (Admin uniquement)")
+    @Operation(summary = "Modifier les informations d'un président")
     public ResponseEntity<PresidentResponseDTO> updatePresident(
             @PathVariable Long id,
             @Valid @RequestBody PresidentRequestDTO requestDTO) {
@@ -56,8 +49,7 @@ public class PresidentController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Supprimer un président (Admin uniquement)")
+    @Operation(summary = "Supprimer un président")
     public ResponseEntity<Void> deletePresident(@PathVariable Long id) {
         presidentService.deletePresident(id);
         return ResponseEntity.noContent().build();

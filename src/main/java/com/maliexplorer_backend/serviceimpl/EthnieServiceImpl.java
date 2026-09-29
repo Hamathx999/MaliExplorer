@@ -30,12 +30,6 @@ public class EthnieServiceImpl implements EthnieService {
 
     @Override
     @Transactional(readOnly = true)
-    public org.springframework.data.domain.Page<EthnieResponseDTO> getAllEthnies(org.springframework.data.domain.Pageable pageable) {
-        return ethnieRepository.findAll(pageable).map(this::mapToResponseDTO);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<EthnieResponseDTO> getAllEthnies() {
         return ethnieRepository.findAll()
                 .stream()

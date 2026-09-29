@@ -3,14 +3,9 @@ package com.maliexplorer_backend.service;
 import com.maliexplorer_backend.dto.VilleRequestDTO;
 import com.maliexplorer_backend.dto.VilleResponseDTO;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
 public interface VilleService {
-
-    Page<VilleResponseDTO> getAllVilles(Pageable pageable);
 
     List<VilleResponseDTO> getAllVilles();
 

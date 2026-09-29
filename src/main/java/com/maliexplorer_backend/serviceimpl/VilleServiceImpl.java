@@ -27,12 +27,6 @@ public class VilleServiceImpl implements VilleService {
 
     @Override
     @Transactional(readOnly = true)
-    public org.springframework.data.domain.Page<VilleResponseDTO> getAllVilles(org.springframework.data.domain.Pageable pageable) {
-        return villeRepository.findAll(pageable).map(this::mapToResponseDTO);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<VilleResponseDTO> getAllVilles() {
         return villeRepository.findAll()
                 .stream()

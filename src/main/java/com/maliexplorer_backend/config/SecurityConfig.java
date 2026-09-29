@@ -81,12 +81,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/villes/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ethnies/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/lieux-historiques/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/presidents/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/carte/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/quiz/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/artisans/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/guides/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/promoteurs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/touristes/**").permitAll()
                         // Toutes autres requêtes doivent être authentifiées
                         .anyRequest().authenticated())
                 .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -11,6 +11,4 @@ public interface TouristeRepository extends JpaRepository<TouristeModel, Integer
     Optional<TouristeModel> findByEmail(String email);
 
     boolean existsByEmail(String email);
-
-    Optional<TouristeModel> findByFirebaseUid(String firebaseUid);
 }

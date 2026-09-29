@@ -32,12 +32,6 @@ public class PlatServiceImpl implements PlatService {
 
     @Override
     @Transactional(readOnly = true)
-    public org.springframework.data.domain.Page<PlatResponseDTO> getAllPlats(org.springframework.data.domain.Pageable pageable) {
-        return platRepository.findAll(pageable).map(this::mapToResponseDTO);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<PlatResponseDTO> getAllPlats() {
         return platRepository.findAll()
                 .stream()

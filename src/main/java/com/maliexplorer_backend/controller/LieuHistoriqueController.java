@@ -11,10 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-
 import java.util.List;
 
 @RestController
@@ -26,10 +22,9 @@ public class LieuHistoriqueController {
     private final LieuHistoriqueService lieuHistoriqueService;
 
     @GetMapping
-    @Operation(summary = "Lister tous les lieux historiques avec pagination")
-    public ResponseEntity<Page<LieuHistoriqueResponseDTO>> getAllLieux(
-            @PageableDefault(size = 10, sort = "nomLieu") Pageable pageable) {
-        return ResponseEntity.ok(lieuHistoriqueService.getAllLieux(pageable));
+    @Operation(summary = "Lister tous les lieux historiques")
+    public ResponseEntity<List<LieuHistoriqueResponseDTO>> getAllLieux() {
+        return ResponseEntity.ok(lieuHistoriqueService.getAllLieux());
     }
 
     @GetMapping("/{id}")
