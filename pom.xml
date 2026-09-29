@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- ==================== SPRING BOOT ==================== -->
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version>
+        <version>3.5.13</version>
         <relativePath/>
     </parent>
 
@@ -17,12 +19,20 @@
     <artifactId>maliexplorer-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
+
     <name>maliexplorer-backend</name>
     <description>API REST Spring Boot pour MaliExplorer</description>
 
+    <!-- ==================== VERSIONS ==================== -->
+
     <properties>
+        <!-- Version Java utilisée par le projet -->
         <java.version>17</java.version>
-        <springdoc.version>2.5.0</springdoc.version>
+
+        <!-- Version Springdoc / Swagger -->
+        <springdoc.version>2.8.13</springdoc.version>
+
+        <!-- Version Firebase Admin SDK -->
         <firebase.admin.version>9.3.0</firebase.admin.version>
     </properties>
 
@@ -31,62 +41,67 @@
         <!-- ==================== SPRING BOOT STARTERS ==================== -->
 
         <!-- Spring Web (REST API) -->
+        <!-- Permet de créer les Controllers REST et les endpoints HTTP -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <!-- Spring Data JPA (MySQL) -->
+        <!-- Permet de communiquer avec MySQL via JPA et Hibernate -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
         <!-- Validation des DTOs (@Valid, @NotNull, @Email, @Size...) -->
+        <!-- Permet de vérifier les données reçues par l'API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <!-- WebClient (appels HTTP vers Supabase Storage) -->
+        <!-- Permet au backend d'effectuer des appels HTTP vers des services externes -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
         <!-- Spring Security (RBAC : ROLE_USER, ROLE_ADMIN, etc.) -->
+        <!-- Gestion de la sécurité, authentification et autorisation -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
+
         <!-- ==================== FIREBASE ==================== -->
 
         <!-- Firebase Admin SDK (validation des JWT) -->
+        <!-- Permet au backend de vérifier les tokens Firebase Authentication -->
         <dependency>
             <groupId>com.google.firebase</groupId>
             <artifactId>firebase-admin</artifactId>
             <version>${firebase.admin.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
+
 
         <!-- ==================== BASE DE DONNÉES ==================== -->
 
         <!-- Driver MySQL -->
+        <!-- Permet à Java/Spring Boot de se connecter à MySQL -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <scope>runtime</scope>
         </dependency>
 
+
         <!-- ==================== OUTILS DE DÉVELOPPEMENT ==================== -->
 
         <!-- Lombok (réduction du code boilerplate) -->
+        <!-- Génère automatiquement getters, setters, constructeurs, etc. -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -94,13 +109,15 @@
         </dependency>
 
         <!-- Swagger / OpenAPI (documentation de l'API) -->
+        <!-- Permet de documenter et tester les endpoints REST -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>${springdoc.version}</version>
+            <version>2.8.16</version>
         </dependency>
 
         <!-- DevTools (rechargement à chaud en développement) -->
+        <!-- Facilite le développement en rechargeant automatiquement l'application -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -108,38 +125,52 @@
             <optional>true</optional>
         </dependency>
 
+
         <!-- ==================== TESTS ==================== -->
 
         <!-- Spring Boot Test -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!-- Permet de tester les Controllers, Services, Repositories et le contexte Spring -->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-test</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
         <!-- Spring Security Test -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!-- Permet de tester la sécurité et les rôles RBAC -->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.security</groupId>-->
+<!--            <artifactId>spring-security-test</artifactId>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
     </dependencies>
 
+
+    <!-- ==================== BUILD ==================== -->
+
     <build>
         <plugins>
+
+            <!-- Spring Boot Maven Plugin -->
+            <!-- Permet de compiler, exécuter et générer le JAR Spring Boot -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+
                 <configuration>
+
+                    <!-- Lombok n'est pas inclus dans le JAR final -->
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
