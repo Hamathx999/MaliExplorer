@@ -1,5 +1,7 @@
 package com.maliexplorer_backend.service;
 
+import com.maliexplorer_backend.dto.TouristeRequestDTO;
+import com.maliexplorer_backend.dto.TouristeResponseDTO;
 import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.model.TouristeModel;
 import com.maliexplorer_backend.repository.TouristeRepository;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TouristeService {
@@ -18,28 +21,42 @@ public class TouristeService {
         this.repository = repository;
     }
 
-    public TouristeModel creerTouriste(TouristeModel touriste) {
-        if (repository.existsByEmail(touriste.getEmail())) {
+    public TouristeResponseDTO creerTouriste(TouristeRequestDTO request) {
+        if (repository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
         }
+
+        TouristeModel touriste = new TouristeModel();
+        touriste.setPrenom(request.getPrenom());
+        touriste.setNom(request.getNom());
+        touriste.setEmail(request.getEmail());
+        touriste.setMotDePasse(request.getMotDePasse());
+        touriste.setAdresse(request.getAdresse());
+        touriste.setPhotoUrl(request.getPhotoUrl());
+        touriste.setPoints(request.getPoints());
         touriste.setRole(RoleModel.touriste);
-        if (touriste.getDateCreation() == null) {
-            touriste.setDateCreation(Date.valueOf(LocalDate.now()));
-        }
-        return repository.save(touriste);
+        touriste.setDateCreation(Date.valueOf(LocalDate.now()));
+
+        TouristeModel saved = repository.save(touriste);
+        return mapToResponseDTO(saved);
     }
 
-    public List<TouristeModel> obtenirTousLesTouristes() {
-        return repository.findAll();
+    public List<TouristeResponseDTO> obtenirTousLesTouristes() {
+        return repository.findAll()
+                .stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    public TouristeModel obtenirTouristeParId(int id) {
-        return repository.findById(id)
+    public TouristeResponseDTO obtenirTouristeParId(int id) {
+        TouristeModel touriste = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("TouristeModel introuvable avec l'ID : " + id));
+        return mapToResponseDTO(touriste);
     }
 
-    public TouristeModel mettreAJourTouriste(int id, TouristeModel details) {
-        TouristeModel existant = obtenirTouristeParId(id);
+    public TouristeResponseDTO mettreAJourTouriste(int id, TouristeRequestDTO details) {
+        TouristeModel existant = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("TouristeModel introuvable avec l'ID : " + id));
 
         if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
             throw new IllegalArgumentException("Cet email est déjà pris !");
@@ -56,7 +73,8 @@ public class TouristeService {
             existant.setMotDePasse(details.getMotDePasse());
         }
 
-        return repository.save(existant);
+        TouristeModel updated = repository.save(existant);
+        return mapToResponseDTO(updated);
     }
 
     public void supprimerTouriste(int id) {
@@ -64,5 +82,20 @@ public class TouristeService {
             throw new RuntimeException("TouristeModel introuvable avec l'ID : " + id);
         }
         repository.deleteById(id);
+    }
+
+    private TouristeResponseDTO mapToResponseDTO(TouristeModel model) {
+        return TouristeResponseDTO.builder()
+                .idUsers(model.getIdUsers())
+                .firebaseUid(model.getFirebaseUid())
+                .prenom(model.getPrenom())
+                .nom(model.getNom())
+                .email(model.getEmail())
+                .adresse(model.getAdresse())
+                .photoUrl(model.getPhotoUrl())
+                .dateCreation(model.getDateCreation())
+                .role(model.getRole())
+                .points(model.getPoints())
+                .build();
     }
 }

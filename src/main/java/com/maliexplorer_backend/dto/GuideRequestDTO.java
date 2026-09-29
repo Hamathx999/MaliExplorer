@@ -1,6 +1,7 @@
 package com.maliexplorer_backend.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TouristeRequestDTO {
+public class GuideRequestDTO {
 
     @NotBlank(message = "Le prénom est obligatoire !")
     @Size(min = 2, max = 50, message = "Le prénom doit contenir entre 2 et 50 caractères !")
@@ -29,6 +30,16 @@ public class TouristeRequestDTO {
     private String motDePasse;
     private String adresse;
     private String photoUrl;
-    private int points;
+
+    @Min(value = 0, message = "L'expérience ne peut pas être négative !")
+    private int experience;
+
+    private String description;
+
+    @NotBlank(message = "La langue parlée est obligatoire !")
+    private String langue;
+
+    private String pieceIdentite;
+    private Integer idAdministrateur;
 }
 

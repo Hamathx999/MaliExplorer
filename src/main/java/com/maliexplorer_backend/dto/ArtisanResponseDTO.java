@@ -12,7 +12,7 @@ import java.sql.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TouristeResponseDTO {
+public class ArtisanResponseDTO {
 
     private int idUsers;
     private String firebaseUid;
@@ -23,6 +23,6 @@ public class TouristeResponseDTO {
     private String photoUrl;
     private Date dateCreation;
     private RoleModel role;
-    private int points;
+    private String typeArtisanat;
 }
 

@@ -25,8 +25,10 @@ public class QuestionModel {
     @Column(nullable = false, length = 200)
     private String reponse;
 
-    @Column(nullable = false, columnDefinition ="TEXT")
-    private List<String> propositions;
+    // Remplacement de List<String> par la relation OneToMany vers PropositionModel
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<PropositionModel> propositions = new ArrayList<>();
 
     @Builder.Default
     private Integer points = 0;
@@ -38,6 +40,7 @@ public class QuestionModel {
     @JoinColumn(name = "id_quiz")
     private QuizModel quiz;
 
+    // Getters / Setters personnalisés si nécessaire pour l'interface
     public Long getId() {
         return this.idQuestion;
     }

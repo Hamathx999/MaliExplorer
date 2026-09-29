@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TouristeRequestDTO {
+public class ArtisanRequestDTO {
 
     @NotBlank(message = "Le prénom est obligatoire !")
     @Size(min = 2, max = 50, message = "Le prénom doit contenir entre 2 et 50 caractères !")
@@ -29,6 +29,7 @@ public class TouristeRequestDTO {
     private String motDePasse;
     private String adresse;
     private String photoUrl;
-    private int points;
-}
 
+    @NotBlank(message = "Le type d'artisanat est obligatoire !")
+    private String typeArtisanat;
+}
