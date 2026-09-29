@@ -1,73 +1,31 @@
 package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.model.PromoteurModel;
-import com.maliexplorer_backend.model.RoleModel;
-import com.maliexplorer_backend.repository.PromoteurRepository;
-import org.springframework.stereotype.Service;
+import com.maliexplorer_backend.dto.PromoteurRequestDTO;
+import com.maliexplorer_backend.dto.PromoteurResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 
-@Service
-public class PromoteurService {
+public interface PromoteurService {
 
-    private final PromoteurRepository repository;
+    Page<PromoteurResponseDTO> obtenirTousLesPromoteurs(Pageable pageable);
 
-    public PromoteurService(PromoteurRepository repository) {
-        this.repository = repository;
-    }
+    List<PromoteurResponseDTO> obtenirTousLesPromoteurs();
 
-    public PromoteurModel creerPromoteur(PromoteurModel promoteur) {
-        if (repository.existsByEmail(promoteur.getEmail())) {
-            throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
-        }
-        promoteur.setRole(RoleModel.promoteur);
-        if (promoteur.getDateCreation() == null) {
-            promoteur.setDateCreation(Date.valueOf(LocalDate.now()));
-        }
-        return repository.save(promoteur);
-    }
+    PromoteurResponseDTO obtenirPromoteurParId(int id);
 
-    public List<PromoteurModel> obtenirTousLesPromoteurs() {
-        return repository.findAll();
-    }
+    Page<PromoteurResponseDTO> rechercherParOrganisation(String nomOrganisation, Pageable pageable);
 
-    public PromoteurModel obtenirPromoteurParId(int id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("PromoteurModel introuvable avec l'ID : " + id));
-    }
+    List<PromoteurResponseDTO> rechercherParOrganisation(String nomOrganisation);
 
-    public List<PromoteurModel> rechercherParOrganisation(String nomOrganisation) {
-        return repository.findByNomOrganisationContainingIgnoreCase(nomOrganisation);
-    }
+    PromoteurResponseDTO creerPromoteur(PromoteurRequestDTO requestDTO);
 
-    public PromoteurModel mettreAJourPromoteur(int id, PromoteurModel details) {
-        PromoteurModel existant = obtenirPromoteurParId(id);
+    PromoteurResponseDTO mettreAJourPromoteur(int id, PromoteurRequestDTO requestDTO);
 
-        if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
-            throw new IllegalArgumentException("Cet email est déjà pris !");
-        }
+    void supprimerPromoteur(int id);
 
-        existant.setPrenom(details.getPrenom());
-        existant.setNom(details.getNom());
-        existant.setEmail(details.getEmail());
-        existant.setAdresse(details.getAdresse());
-        existant.setPhotoUrl(details.getPhotoUrl());
-        existant.setNomOrganisation(details.getNomOrganisation());
-        existant.setPieceIdentite(details.getPieceIdentite());
+    PromoteurResponseDTO getProfilUtilisateurConnecte();
 
-        if (details.getMotDePasse() != null && !details.getMotDePasse().isBlank()) {
-            existant.setMotDePasse(details.getMotDePasse());
-        }
-
-        return repository.save(existant);
-    }
-
-    public void supprimerPromoteur(int id) {
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("PromoteurModel introuvable avec l'ID : " + id);
-        }
-        repository.deleteById(id);
-    }
+    PromoteurResponseDTO mettreAJourProfil(PromoteurRequestDTO requestDTO);
 }

@@ -26,6 +26,12 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
 
     @Override
     @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<LieuHistoriqueResponseDTO> getAllLieux(org.springframework.data.domain.Pageable pageable) {
+        return lieuHistoriqueRepository.findAll(pageable).map(this::mapToResponseDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<LieuHistoriqueResponseDTO> getAllLieux() {
         return lieuHistoriqueRepository.findAll()
                 .stream()

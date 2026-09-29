@@ -1,68 +1,31 @@
 package com.maliexplorer_backend.service;
 
-import com.maliexplorer_backend.model.RoleModel;
-import com.maliexplorer_backend.model.TouristeModel;
-import com.maliexplorer_backend.repository.TouristeRepository;
-import org.springframework.stereotype.Service;
+import com.maliexplorer_backend.dto.TouristeRequestDTO;
+import com.maliexplorer_backend.dto.TouristeResponseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.List;
 
-@Service
-public class TouristeService {
+public interface TouristeService {
 
-    private final TouristeRepository repository;
+    Page<TouristeResponseDTO> obtenirTousLesTouristes(Pageable pageable);
 
-    public TouristeService(TouristeRepository repository) {
-        this.repository = repository;
-    }
+    List<TouristeResponseDTO> obtenirTousLesTouristes();
 
-    public TouristeModel creerTouriste(TouristeModel touriste) {
-        if (repository.existsByEmail(touriste.getEmail())) {
-            throw new IllegalArgumentException("Cet email est déjà associé à un compte !");
-        }
-        touriste.setRole(RoleModel.touriste);
-        if (touriste.getDateCreation() == null) {
-            touriste.setDateCreation(Date.valueOf(LocalDate.now()));
-        }
-        return repository.save(touriste);
-    }
+    TouristeResponseDTO obtenirTouristeParId(int id);
 
-    public List<TouristeModel> obtenirTousLesTouristes() {
-        return repository.findAll();
-    }
+    TouristeResponseDTO creerTouriste(TouristeRequestDTO requestDTO);
 
-    public TouristeModel obtenirTouristeParId(int id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("TouristeModel introuvable avec l'ID : " + id));
-    }
+    TouristeResponseDTO mettreAJourTouriste(int id, TouristeRequestDTO requestDTO);
 
-    public TouristeModel mettreAJourTouriste(int id, TouristeModel details) {
-        TouristeModel existant = obtenirTouristeParId(id);
+    void supprimerTouriste(int id);
 
-        if (!existant.getEmail().equalsIgnoreCase(details.getEmail()) && repository.existsByEmail(details.getEmail())) {
-            throw new IllegalArgumentException("Cet email est déjà pris !");
-        }
+    TouristeResponseDTO getProfilUtilisateurConnecte();
 
-        existant.setPrenom(details.getPrenom());
-        existant.setNom(details.getNom());
-        existant.setEmail(details.getEmail());
-        existant.setAdresse(details.getAdresse());
-        existant.setPhotoUrl(details.getPhotoUrl());
-        existant.setPoints(details.getPoints());
+    TouristeResponseDTO mettreAJourProfil(TouristeRequestDTO requestDTO);
 
-        if (details.getMotDePasse() != null && !details.getMotDePasse().isBlank()) {
-            existant.setMotDePasse(details.getMotDePasse());
-        }
+    TouristeResponseDTO ajouterLieuVisite(Long idLieu);
 
-        return repository.save(existant);
-    }
-
-    public void supprimerTouriste(int id) {
-        if (!repository.existsById(id)) {
-            throw new RuntimeException("TouristeModel introuvable avec l'ID : " + id);
-        }
-        repository.deleteById(id);
-    }
+    TouristeResponseDTO ajouterArticleLu(Long idArticle);
 }

@@ -12,6 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+
 import java.util.List;
 
 @RestController
@@ -23,9 +27,10 @@ public class PlatController {
     private final PlatService platService;
 
     @GetMapping
-    @Operation(summary = "Lister tous les plats traditionnels")
-    public ResponseEntity<List<PlatResponseDTO>> getAllPlats() {
-        return ResponseEntity.ok(platService.getAllPlats());
+    @Operation(summary = "Lister tous les plats traditionnels avec pagination")
+    public ResponseEntity<Page<PlatResponseDTO>> getAllPlats(
+            @PageableDefault(size = 10, sort = "nomPlat") Pageable pageable) {
+        return ResponseEntity.ok(platService.getAllPlats(pageable));
     }
 
     @GetMapping("/{id}")

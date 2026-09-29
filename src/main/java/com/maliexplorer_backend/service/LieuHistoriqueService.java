@@ -3,9 +3,14 @@ package com.maliexplorer_backend.service;
 import com.maliexplorer_backend.dto.LieuHistoriqueRequestDTO;
 import com.maliexplorer_backend.dto.LieuHistoriqueResponseDTO;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.List;
 
 public interface LieuHistoriqueService {
+
+    Page<LieuHistoriqueResponseDTO> getAllLieux(Pageable pageable);
 
     List<LieuHistoriqueResponseDTO> getAllLieux();
 

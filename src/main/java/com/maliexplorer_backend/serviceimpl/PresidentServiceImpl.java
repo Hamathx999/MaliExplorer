@@ -22,6 +22,12 @@ public class PresidentServiceImpl implements PresidentService {
 
     @Override
     @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<PresidentResponseDTO> getAllPresidents(org.springframework.data.domain.Pageable pageable) {
+        return presidentRepository.findAll(pageable).map(this::mapToResponseDTO);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<PresidentResponseDTO> getAllPresidents() {
         return presidentRepository.findAll()
                 .stream()

@@ -12,6 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+
 import java.util.List;
 
 @RestController
@@ -23,9 +27,10 @@ public class EthnieController {
     private final EthnieService ethnieService;
 
     @GetMapping
-    @Operation(summary = "Lister toutes les ethnies")
-    public ResponseEntity<List<EthnieResponseDTO>> getAllEthnies() {
-        return ResponseEntity.ok(ethnieService.getAllEthnies());
+    @Operation(summary = "Lister toutes les ethnies avec pagination")
+    public ResponseEntity<Page<EthnieResponseDTO>> getAllEthnies(
+            @PageableDefault(size = 10, sort = "nomEthnie") Pageable pageable) {
+        return ResponseEntity.ok(ethnieService.getAllEthnies(pageable));
     }
 
     @GetMapping("/{id}")
