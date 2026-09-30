@@ -23,8 +23,5 @@ public interface QuizService {
     void deleteQuiz(Long id);
 
     List<QuizResponseDTO> getQuizzesByCategorie(String categorie);
-
-    List<QuizResponseDTO> getQuizzesByNiveau(String niveau);
-
     List<QuizResponseDTO> searchQuizzes(String keyword);
 }

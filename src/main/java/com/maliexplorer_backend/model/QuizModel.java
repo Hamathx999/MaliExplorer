@@ -31,10 +31,13 @@ public class QuizModel {
     @Column(length = 500)
     private String imageQuiz;
 
-  
+    @Column(length = 100)
+    private String categorie;
+
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<QuestionModel> questions = new ArrayList<>();
+
 
     public Long getId() {
         return this.idQuiz;

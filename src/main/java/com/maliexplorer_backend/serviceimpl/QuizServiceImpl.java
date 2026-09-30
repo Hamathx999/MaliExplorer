@@ -1,12 +1,17 @@
 package com.maliexplorer_backend.serviceimpl;
 
+import com.maliexplorer_backend.config.SecurityUtils;
 import com.maliexplorer_backend.dto.*;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
+import com.maliexplorer_backend.model.PropositionModel;
 import com.maliexplorer_backend.model.QuestionModel;
 import com.maliexplorer_backend.model.QuizModel;
+import com.maliexplorer_backend.model.utilisateurModel;
 import com.maliexplorer_backend.repository.QuizRepository;
+import com.maliexplorer_backend.service.BadgeProgressionService;
 import com.maliexplorer_backend.service.QuizService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +24,11 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
+    private final BadgeProgressionService badgeProgressionService;
 
     @Override
     @Transactional(readOnly = true)
@@ -40,10 +47,9 @@ public class QuizServiceImpl implements QuizService {
                 .map(q -> QuizSummaryDTO.builder()
                         .idQuiz(q.getIdQuiz())
                         .nomQuiz(q.getNomQuiz())
-
                         .imageQuiz(q.getImageQuiz())
-
                         .nombreQuestions(q.getQuestions() != null ? q.getQuestions().size() : 0)
+                        .categorie(q.getCategorie())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -65,47 +71,42 @@ public class QuizServiceImpl implements QuizService {
                         .map(q -> QuestionPlayDTO.builder()
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())
-
                                 .duree(q.getDuree())
-
+                                .propositions(q.getPropositions() != null
+                                        ? q.getPropositions().stream().map(PropositionModel::getNomProposition).collect(Collectors.toList())
+                                        : Collections.emptyList())
                                 .build())
                         .collect(Collectors.toList());
 
         return QuizPlayDTO.builder()
                 .idQuiz(quiz.getIdQuiz())
                 .nomQuiz(quiz.getNomQuiz())
-
                 .imageQuiz(quiz.getImageQuiz())
-
                 .questions(playQuestions)
                 .build();
     }
 
     @Override
-    @Transactional(readOnly = true)
     public QuizResultDTO evaluateQuiz(QuizSubmissionDTO submission) {
         QuizModel quiz = findQuizOrThrow(submission.getQuizId());
         Map<Long, String> reponsesSoumises = submission.getReponses() != null ? submission.getReponses()
                 : Collections.emptyMap();
 
-        int scoreTotalObtenu = 0;
+        int scoreQuestionsObtenu = 0;
         int scoreMaxPossible = 0;
         List<QuizResultDTO.QuestionResultDetailDTO> details = new ArrayList<>();
 
         if (quiz.getQuestions() != null) {
             for (QuestionModel q : quiz.getQuestions()) {
-                int pointsQuestion = false ? 0 : 10;
+                int pointsQuestion = (q.getPoints() != null && q.getPoints() > 0) ? q.getPoints() : 10;
                 scoreMaxPossible += pointsQuestion;
 
                 String reponseSoumise = reponsesSoumises.get(q.getIdQuestion());
-                boolean estCorrect = false;
-
-                if (reponseSoumise != null && q.getReponse() != null) {
-                    estCorrect = reponseSoumise.trim().equalsIgnoreCase(q.getReponse().trim());
-                }
+                boolean estCorrect = reponseSoumise != null
+                        && reponseSoumise.trim().equalsIgnoreCase(q.getReponse().trim());
 
                 int pointsGagnes = estCorrect ? pointsQuestion : 0;
-                scoreTotalObtenu += pointsGagnes;
+                scoreQuestionsObtenu += pointsGagnes;
 
                 details.add(QuizResultDTO.QuestionResultDetailDTO.builder()
                         .idQuestion(q.getIdQuestion())
@@ -114,22 +115,71 @@ public class QuizServiceImpl implements QuizService {
                         .bonneReponse(q.getReponse())
                         .estCorrect(estCorrect)
                         .pointsGagnes(pointsGagnes)
-
                         .build());
             }
         }
 
-        double pourcentage = scoreMaxPossible > 0 ? (scoreTotalObtenu * 100.0 / scoreMaxPossible) : 0.0;
+        // ==================== BARÈME DE POINTS & GAMIFICATION ====================
+        // - Bonne réponse : points réels de chaque question (+10 pts par défaut)
+        // - Bonus quiz terminé : +20 points
+        // - Bonus quiz parfait (100% de réussite) : +20 points supplémentaires
+        int bonusTermine = 20;
+        boolean estParfait = (scoreQuestionsObtenu > 0 && scoreQuestionsObtenu == scoreMaxPossible);
+        int bonusParfait = estParfait ? 20 : 0;
+        int pointsGagnesTotal = scoreQuestionsObtenu + bonusTermine + bonusParfait;
+
+        int pointsTotauxUtilisateur = 0;
+        String badgeActuel = "Kalanden";
+        String prochainBadge = "Fasoden";
+        double progressionPourcent = 0.0;
+        String messageProgression = "Connectez-vous pour enregistrer vos points et gagner des badges Bambara !";
+
+        utilisateurModel userConnecte = SecurityUtils.getCurrentUser();
+        if (userConnecte != null && userConnecte.getIdUsers() > 0) {
+            try {
+                String descriptionGain = "Quiz : " + quiz.getNomQuiz()
+                        + (estParfait ? " (Score parfait 100%)" : " (Terminé)");
+
+                ProgressionResponseDTO progression = badgeProgressionService.attribuerPoints(
+                        userConnecte.getIdUsers(),
+                        "QUIZ",
+                        pointsGagnesTotal,
+                        descriptionGain,
+                        "QUIZ_" + quiz.getIdQuiz()
+                );
+
+                pointsTotauxUtilisateur = progression.getPoints();
+                badgeActuel = progression.getBadge();
+                prochainBadge = progression.getNextBadge();
+                progressionPourcent = progression.getProgression();
+                messageProgression = progression.getMessage();
+                log.info("Points attribués à l'utilisateur ID={} pour le Quiz ID={} : +{} points (Nouveau total={})",
+                        userConnecte.getIdUsers(), quiz.getIdQuiz(), pointsGagnesTotal, pointsTotauxUtilisateur);
+            } catch (Exception e) {
+                log.warn("Impossible d'attribuer les points pour l'utilisateur ID={} : {}", userConnecte.getIdUsers(), e.getMessage());
+                messageProgression = e.getMessage();
+            }
+        }
+
+        double pourcentage = scoreMaxPossible > 0
+                ? Math.round(((double) scoreQuestionsObtenu / scoreMaxPossible) * 1000.0) / 10.0
+                : 0.0;
         boolean reussi = pourcentage >= 50.0;
 
         return QuizResultDTO.builder()
                 .quizId(quiz.getIdQuiz())
                 .nomQuiz(quiz.getNomQuiz())
-                .scoreTotalObtenu(scoreTotalObtenu)
+                .scoreTotalObtenu(scoreQuestionsObtenu)
                 .scoreMaxPossible(scoreMaxPossible)
-                .pourcentage(Math.round(pourcentage * 100.0) / 100.0)
+                .pourcentage(pourcentage)
                 .reussi(reussi)
                 .detailsQuestions(details)
+                .pointsGagnesActivite(pointsGagnesTotal)
+                .totalPointsUtilisateur(pointsTotauxUtilisateur)
+                .badgeActuel(badgeActuel)
+                .prochainBadge(prochainBadge)
+                .progressionProchainBadge(progressionPourcent)
+                .messageProgression(messageProgression)
                 .build();
     }
 
@@ -137,10 +187,9 @@ public class QuizServiceImpl implements QuizService {
     public QuizResponseDTO createQuiz(QuizRequestDTO requestDTO) {
         QuizModel quiz = QuizModel.builder()
                 .nomQuiz(requestDTO.getNomQuiz())
-
+                .description(requestDTO.getDescription())
                 .imageQuiz(requestDTO.getImageQuiz())
-
-                .questions(new ArrayList<>())
+                .categorie(requestDTO.getCategorie())
                 .build();
 
         QuizModel saved = quizRepository.save(quiz);
@@ -152,12 +201,9 @@ public class QuizServiceImpl implements QuizService {
         QuizModel quiz = findQuizOrThrow(id);
 
         quiz.setNomQuiz(requestDTO.getNomQuiz());
-
+        quiz.setDescription(requestDTO.getDescription());
         quiz.setImageQuiz(requestDTO.getImageQuiz());
-
-        if (false) {
-
-        }
+        quiz.setCategorie(requestDTO.getCategorie());
 
         QuizModel updated = quizRepository.save(quiz);
         return mapToResponseDTO(updated);
@@ -172,13 +218,10 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional(readOnly = true)
     public List<QuizResponseDTO> getQuizzesByCategorie(String categorie) {
-        return searchQuizzes(categorie);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<QuizResponseDTO> getQuizzesByNiveau(String niveau) {
-        return getAllQuizzes();
+        return quizRepository.findByCategorieIgnoreCase(categorie)
+                .stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -190,9 +233,11 @@ public class QuizServiceImpl implements QuizService {
                 .collect(Collectors.toList());
     }
 
+    // ======================== PRIVATE HELPERS ========================
+
     private QuizModel findQuizOrThrow(Long id) {
         return quizRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("QuizModel introuvable avec l'ID : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Quiz introuvable avec l'ID : " + id));
     }
 
     private QuizResponseDTO mapToResponseDTO(QuizModel quiz) {
@@ -202,19 +247,18 @@ public class QuizServiceImpl implements QuizService {
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())
                                 .reponse(q.getReponse())
-
+                                .points(q.getPoints())
                                 .duree(q.getDuree())
-
-                                .quizId(quiz.getIdQuiz())
                                 .build())
                         .collect(Collectors.toList());
 
         return QuizResponseDTO.builder()
                 .idQuiz(quiz.getIdQuiz())
                 .nomQuiz(quiz.getNomQuiz())
-
+                .description(quiz.getDescription())
                 .imageQuiz(quiz.getImageQuiz())
-
+                .categorie(quiz.getCategorie())
+                .point(quiz.getPoint())
                 .questions(questionDTOs)
                 .build();
     }

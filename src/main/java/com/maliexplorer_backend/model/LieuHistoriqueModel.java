@@ -27,6 +27,13 @@ public class LieuHistoriqueModel {
 
     private String cordonnees;
 
+    @Column(length = 500)
+    private String panorama360Url;
+
+    private Double latitude;
+
+    private Double longitude;
+
     private Long idUsers;
 
     @ManyToOne(fetch = FetchType.LAZY)

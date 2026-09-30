@@ -16,4 +16,5 @@ public class QuestionPlayDTO {
     private Long idQuestion;
     private String nomQuestion;
     private Integer duree;
-    }
+    private List<String> propositions;
+}

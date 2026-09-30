@@ -63,6 +63,9 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
                 .description(requestDTO.getDescription())
                 .epoque(requestDTO.getEpoque())
                 .cordonnees(requestDTO.getCordonnees())
+                .panorama360Url(requestDTO.getPanorama360Url())
+                .latitude(requestDTO.getLatitude())
+                .longitude(requestDTO.getLongitude())
                 .ville(ville)
                 .build();
 
@@ -87,6 +90,9 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
         lieu.setDescription(requestDTO.getDescription());
         lieu.setEpoque(requestDTO.getEpoque());
         lieu.setCordonnees(requestDTO.getCordonnees());
+        lieu.setPanorama360Url(requestDTO.getPanorama360Url());
+        lieu.setLatitude(requestDTO.getLatitude());
+        lieu.setLongitude(requestDTO.getLongitude());
 
         LieuHistoriqueModel updated = lieuHistoriqueRepository.save(lieu);
         return mapToResponseDTO(updated);
@@ -112,6 +118,7 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
     public List<LieuHistoriqueResponseDTO> getLieuxWithPanorama360() {
         return lieuHistoriqueRepository.findAll()
                 .stream()
+                .filter(l -> l.getPanorama360Url() != null && !l.getPanorama360Url().isBlank())
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -136,6 +143,9 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
                 .description(lieu.getDescription())
                 .epoque(lieu.getEpoque())
                 .cordonnees(lieu.getCordonnees())
+                .latitude(lieu.getLatitude())
+                .longitude(lieu.getLongitude())
+                .panorama360Url(lieu.getPanorama360Url())
                 .ville(villeSummary)
                 .build();
     }
