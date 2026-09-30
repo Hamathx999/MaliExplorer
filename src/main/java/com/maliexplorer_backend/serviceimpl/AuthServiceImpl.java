@@ -96,11 +96,24 @@ public class AuthServiceImpl implements AuthService {
                     "Un utilisateur avec l'adresse email '" + requestDTO.getEmail() + "' existe déjà");
         }
 
+        // 1. Validation du rôle demandé (par défaut: touriste)
+        RoleModel roleDemande = requestDTO.getRole() != null ? requestDTO.getRole() : RoleModel.touriste;
+
+        // 2. Sécurité : Blocage absolu des rôles d'administration à l'inscription publique
+        if (roleDemande == RoleModel.admin || roleDemande == RoleModel.superAdmin) {
+            log.warn("Tentative d'inscription non autorisée avec privilèges d'administrateur : Email={}", requestDTO.getEmail());
+            throw new BadRequestException("L'inscription directe avec le rôle '" + roleDemande + "' est strictement interdite.");
+        }
+
         String firebaseUid = null;
+        String photoUrl = requestDTO.getPhotoUrl();
         if (StringUtils.hasText(requestDTO.getIdToken()) && !com.google.firebase.FirebaseApp.getApps().isEmpty()) {
             try {
                 FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(requestDTO.getIdToken());
                 firebaseUid = decodedToken.getUid();
+                if (!StringUtils.hasText(photoUrl) && StringUtils.hasText(decodedToken.getPicture())) {
+                    photoUrl = decodedToken.getPicture();
+                }
             } catch (Exception e) {
                 log.warn("Impossible de vérifier le idToken lors de l'inscription: {}", e.getMessage());
             }
@@ -111,10 +124,9 @@ public class AuthServiceImpl implements AuthService {
                 .prenom(requestDTO.getPrenom())
                 .nom(requestDTO.getNom())
                 .email(requestDTO.getEmail())
-                .motDePasse(requestDTO.getMotDePasse())
                 .adresse(requestDTO.getAdresse())
-                .photoUrl(requestDTO.getPhotoUrl())
-                .role(requestDTO.getRole() != null ? requestDTO.getRole() : RoleModel.touriste)
+                .photoUrl(photoUrl)
+                .role(roleDemande)
                 .dateCreation(new Date(System.currentTimeMillis()))
                 .build();
 

@@ -21,6 +21,14 @@ public class QuizResultDTO {
     private Boolean reussi;
     private List<QuestionResultDetailDTO> detailsQuestions;
 
+    // Champs de progression et Badges Bambara
+    private Integer pointsGagnesActivite;
+    private Integer totalPointsUtilisateur;
+    private String badgeActuel;
+    private String prochainBadge;
+    private Double progressionProchainBadge;
+    private String messageProgression;
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

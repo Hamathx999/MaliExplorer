@@ -5,6 +5,7 @@ import com.maliexplorer_backend.service.UtilisateurService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class UtilisateurControllers {
      * CREATE : Ajouter un nouvel utilisateur
      * POST /api/utilisateurs
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<utilisateurModel> creerUtilisateur(@Valid @RequestBody utilisateurModel utilisateur) {
         utilisateurModel nouveau = service.creerUtilisateur(utilisateur);
@@ -34,6 +36,7 @@ public class UtilisateurControllers {
      * READ ALL : Récupérer tous les utilisateurs
      * GET /api/utilisateurs
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<utilisateurModel>> obtenirTousLesUtilisateurs() {
         List<utilisateurModel> liste = service.obtenirTousLesUtilisateurs();
@@ -44,6 +47,7 @@ public class UtilisateurControllers {
      * READ ONE : Récupérer un utilisateur par son ID
      * GET /api/utilisateurs/{id}
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<utilisateurModel> obtenirUtilisateurParId(@PathVariable int id) {
         utilisateurModel utilisateur = service.obtenirUtilisateurParId(id);
@@ -54,6 +58,7 @@ public class UtilisateurControllers {
      * UPDATE : Mettre à jour un utilisateur
      * PUT /api/utilisateurs/{id}
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<utilisateurModel> mettreAJourUtilisateur(
             @PathVariable int id,
@@ -66,6 +71,7 @@ public class UtilisateurControllers {
      * DELETE : Supprimer un utilisateur
      * DELETE /api/utilisateurs/{id}
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> supprimerUtilisateur(@PathVariable int id) {
         service.supprimerUtilisateur(id);

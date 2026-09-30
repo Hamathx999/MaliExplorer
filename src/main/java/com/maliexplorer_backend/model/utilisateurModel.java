@@ -39,7 +39,6 @@ public class utilisateurModel {
     @Column(unique = true, nullable = false)
     private String email;
 
-    private String motDePasse;
 
     private String adresse;
 
@@ -49,4 +48,7 @@ public class utilisateurModel {
 
     @Enumerated(EnumType.STRING)
     private RoleModel role;
+
+    @Builder.Default
+    private int points = 0;
 }

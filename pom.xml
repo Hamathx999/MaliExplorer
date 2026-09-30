@@ -34,9 +34,19 @@
 
         <!-- Version Firebase Admin SDK -->
         <firebase.admin.version>9.3.0</firebase.admin.version>
+
+        <!-- Alignement versions JUnit avec le cache local -->
+        <junit-jupiter.version>5.10.2</junit-jupiter.version>
+        <junit-platform.version>1.10.2</junit-platform.version>
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
 
         <!-- ==================== SPRING BOOT STARTERS ==================== -->
 
@@ -130,19 +140,19 @@
 
         <!-- Spring Boot Test -->
         <!-- Permet de tester les Controllers, Services, Repositories et le contexte Spring -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-test</artifactId>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Spring Security Test -->
         <!-- Permet de tester la sécurité et les rôles RBAC -->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.security</groupId>-->
-<!--            <artifactId>spring-security-test</artifactId>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -169,6 +179,20 @@
                     </excludes>
 
                 </configuration>
+            </plugin>
+
+            <!-- Maven Surefire Plugin pour tests offline avec JUnit Platform -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-launcher</artifactId>
+                        <version>1.10.2</version>
+                    </dependency>
+                </dependencies>
             </plugin>
 
         </plugins>

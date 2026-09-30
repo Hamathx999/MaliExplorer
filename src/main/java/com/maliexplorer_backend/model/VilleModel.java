@@ -31,6 +31,10 @@ public class VilleModel {
 
     private String cordonnees;
 
+    private Double latitude;
+
+    private Double longitude;
+
     private Long idUsers;
 
     @ManyToOne(fetch = FetchType.LAZY)

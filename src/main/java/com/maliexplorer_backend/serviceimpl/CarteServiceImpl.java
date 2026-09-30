@@ -24,27 +24,32 @@ public class CarteServiceImpl implements CarteService {
     public List<MarqueurCarteDTO> getAllMarqueurs() {
         List<MarqueurCarteDTO> marqueurs = new ArrayList<>();
 
-        // Marqueurs des Lieux Historiques
+        // Marqueurs des Lieux Historiques (avec coordonnées)
         lieuHistoriqueRepository.findAll().stream()
-                .filter(l -> false && false)
+                .filter(l -> l.getLatitude() != null && l.getLongitude() != null)
                 .forEach(l -> marqueurs.add(MarqueurCarteDTO.builder()
                         .id("LIEU_" + l.getIdLieu())
-                        .nom("")
+                        .nom(l.getNomLieu())
                         .type("LIEU_HISTORIQUE")
-                        .build()
-                        )
-                );
+                        .latitude(l.getLatitude())
+                        .longitude(l.getLongitude())
+                        .description(l.getDescription())
+                        .panorama360Url(l.getPanorama360Url())
+                        .referenceId(l.getIdLieu())
+                        .build()));
 
-        // Marqueurs des Villes
+        // Marqueurs des Villes (avec coordonnées)
         villeRepository.findAll().stream()
-                .filter(v -> false && false)
+                .filter(v -> v.getLatitude() != null && v.getLongitude() != null)
                 .forEach(v -> marqueurs.add(MarqueurCarteDTO.builder()
                         .id("VILLE_" + v.getIdVille())
                         .nom(v.getNomVille())
                         .type("VILLE")
-                        .build()
-                        )
-                );
+                        .latitude(v.getLatitude())
+                        .longitude(v.getLongitude())
+                        .description(v.getDescription())
+                        .referenceId(v.getIdVille())
+                        .build()));
 
         return marqueurs;
     }

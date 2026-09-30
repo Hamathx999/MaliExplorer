@@ -16,6 +16,6 @@ public class QuestionResponseDTO {
     private Long idQuestion;
     private String nomQuestion;
     private String reponse;
+    private Integer points;
     private Integer duree;
-    private Long quizId;
 }

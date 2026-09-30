@@ -16,5 +16,8 @@ public class LieuHistoriqueResponseDTO {
     private String description;
     private String epoque;
     private String cordonnees;
+    private Double latitude;
+    private Double longitude;
+    private String panorama360Url;
     private VilleSummaryDTO ville;
 }

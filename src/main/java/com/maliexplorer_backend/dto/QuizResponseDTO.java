@@ -16,8 +16,7 @@ public class QuizResponseDTO {
     private Long idQuiz;
     private String nomQuiz;
     private String description;
-    private String imageQuiz;
-private Long idUsers;
-    private Long referenceId;
+    private String imageQuiz;    private String categorie;
+    private Integer point;
     private List<QuestionResponseDTO> questions;
 }

@@ -10,4 +10,5 @@ import java.util.List;
 public interface QuizRepository extends JpaRepository<QuizModel, Long> {
 
     List<QuizModel> findByNomQuizContainingIgnoreCase(String keyword);
-}
+
+    List<QuizModel> findByCategorieIgnoreCase(String categorie);}

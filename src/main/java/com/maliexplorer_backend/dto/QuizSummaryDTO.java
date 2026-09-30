@@ -15,5 +15,5 @@ public class QuizSummaryDTO {
     private String nomQuiz;
     private String description;
     private String imageQuiz;
-private int nombreQuestions;
+    private int nombreQuestions;    private String categorie;
 }

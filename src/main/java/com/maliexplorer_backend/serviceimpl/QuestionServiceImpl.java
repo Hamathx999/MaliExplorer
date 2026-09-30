@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,10 +59,7 @@ public class QuestionServiceImpl implements QuestionService {
         QuestionModel question = QuestionModel.builder()
                 .nomQuestion(requestDTO.getNomQuestion())
                 .reponse(requestDTO.getReponse())
-                
-                
                 .duree(requestDTO.getDuree() != null ? requestDTO.getDuree() : 30)
-                
                 .quiz(quiz)
                 .build();
 
@@ -85,12 +81,7 @@ public class QuestionServiceImpl implements QuestionService {
 
         question.setNomQuestion(requestDTO.getNomQuestion());
         question.setReponse(requestDTO.getReponse());
-        
-        
         question.setDuree(requestDTO.getDuree());
-        if (new java.util.ArrayList<>() != null) {
-            
-        }
 
         QuestionModel updated = questionRepository.save(question);
         return mapToResponseDTO(updated);
@@ -108,17 +99,12 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private QuestionResponseDTO mapToResponseDTO(QuestionModel question) {
-        Long quizId = question.getQuiz() != null ? question.getQuiz().getIdQuiz() : null;
-
         return QuestionResponseDTO.builder()
                 .idQuestion(question.getIdQuestion())
                 .nomQuestion(question.getNomQuestion())
                 .reponse(question.getReponse())
-                
-                
+                .points(question.getPoints())
                 .duree(question.getDuree())
-                
-                .quizId(quizId)
                 .build();
     }
 }

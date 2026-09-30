@@ -79,12 +79,6 @@ public class QuizController {
         return ResponseEntity.ok(quizService.getQuizzesByCategorie(categorie));
     }
 
-    @GetMapping("/niveau/{niveau}")
-    @Operation(summary = "Lister les quiz par niveau de difficulté (FACILE, MOYEN, DIFFICILE)")
-    public ResponseEntity<List<QuizResponseDTO>> getQuizzesByNiveau(@PathVariable String niveau) {
-        return ResponseEntity.ok(quizService.getQuizzesByNiveau(niveau));
-    }
-
     @GetMapping("/search")
     @Operation(summary = "Rechercher des quiz par mot-clé")
     public ResponseEntity<List<QuizResponseDTO>> searchQuizzes(@RequestParam String q) {

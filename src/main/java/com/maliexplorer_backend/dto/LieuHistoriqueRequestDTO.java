@@ -18,5 +18,8 @@ public class LieuHistoriqueRequestDTO {
     private String description;
     private String epoque;
     private String cordonnees;
+    private Double latitude;
+    private Double longitude;
+    private String panorama360Url;
     private Long villeId;
 }

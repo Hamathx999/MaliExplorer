@@ -22,8 +22,6 @@ public class TouristeModel extends utilisateurModel {
 
     private Long idTouriste;
 
-    private int points = 0;
-
     @ManyToMany
     @JoinTable(name = "touriste_article", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_article"))
     private List<ArticleModel> articlesLus;
@@ -49,15 +47,14 @@ public class TouristeModel extends utilisateurModel {
     private List<QuizModel> quizJoues;
 
 
-    public TouristeModel(String prenom, String nom, String email, String motDePasse, String adresse, String photoUrl,
+    public TouristeModel(String prenom, String nom, String email, String adresse, String photoUrl,
             int points) {
         setPrenom(prenom);
         setNom(nom);
         setEmail(email);
-        setMotDePasse(motDePasse);
         setAdresse(adresse);
         setPhotoUrl(photoUrl);
         setRole(RoleModel.touriste);
-        this.points = points;
+        setPoints(points);
     }
 }
