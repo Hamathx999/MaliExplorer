@@ -1,0 +1,186 @@
+@startuml MaliExplorer_Diagramme_Cas_Utilisation
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam roundcorner 12
+
+' ========================================================
+' STYLES CHARTE GRAPHIQUE MALIEXPLORER
+' ========================================================
+skinparam actor {
+    BackgroundColor #075E4D
+    BorderColor #04382E
+    FontColor #0F172A
+    FontSize 13
+    FontStyle bold
+}
+
+skinparam arrow {
+    Color #334155
+    FontSize 11
+    FontStyle bold
+}
+
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #0E8F76
+    BorderThickness 1.8
+    FontColor #0F172A
+    FontSize 12
+}
+
+' ========================================================
+' ACTEURS DU SYSTÈME ET HIÉRARCHIE (GÉNÉRALISATION)
+' ========================================================
+actor "Visiteur\n(Non connecté)" as Visiteur
+actor "Utilisateur\n(Connecté / Touriste)" as User
+actor "Promoteur\n(Événements)" as Promoteur
+actor "Artisan\n(Produits)" as Artisan
+actor "Guide\n(Touristique)" as Guide
+actor "Administrateur\n(Modération & Gestion)" as Admin
+
+' Arbre de généralisation (validé par l'encadreur)
+Visiteur <|-- User
+User <|-- Promoteur
+User <|-- Artisan
+User <|-- Guide
+User <|-- Admin
+
+' ========================================================
+' CADRE SYSTÈME MALIEXPLORER
+' ========================================================
+rectangle "Système MaliExplorer" {
+
+    ' ----------------------------------------------------
+    ' 1. AUTHENTIFICATION & PROFIL
+    ' ----------------------------------------------------
+    package "1. Authentification & Profil" {
+        usecase "Créer un compte\n(Inscription)" as UC_Register
+        usecase "Valider données\n& format email" as UC_Verify #ECFDF5;line:059669;line.bold
+        usecase "S'authentifier\n(Connexion)" as UC_Login
+        usecase "Réinitialiser le\nmot de passe" as UC_ResetPwd #FFFBEB;line:D97706;line.dashed
+        usecase "Gérer son profil\n& préférences" as UC_Profile
+    }
+
+    ' ----------------------------------------------------
+    ' 2. DÉCOUVERTE DU PATRIMOINE MALIEN
+    ' ----------------------------------------------------
+    package "2. Découverte du Patrimoine Malien" {
+        usecase "Consulter le patrimoine\n(Régions, Villes, Plats...)" as UC_Explore
+        usecase "Rechercher & filtrer\nles contenus" as UC_Filter #FFFBEB;line:D97706;line.dashed
+        usecase "Localiser sur la carte\ninteractive (GPS)" as UC_Map #FFFBEB;line:D97706;line.dashed
+        usecase "Changer de thème\n(Clair / Sombre)" as UC_Theme
+
+        usecase "Consulter détails\nd'un lieu historique" as UC_ViewLieu
+        usecase "Visionner panorama\nimmersif 360°" as UC_360 #FFFBEB;line:D97706;line.dashed
+        usecase "Ajouter / Retirer\ndes favoris" as UC_Fav #FFFBEB;line:D97706;line.dashed
+        usecase "Rédiger un avis\nou commentaire" as UC_Review
+    }
+
+    ' ----------------------------------------------------
+    ' 3. QUIZ CULTURELS & GAMIFICATION (BADGES)
+    ' ----------------------------------------------------
+    package "3. Quiz Culturels & Gamification (Badges)" {
+        usecase "Participer à un quiz\nculturel malien" as UC_Quiz
+        usecase "Évaluer réponses &\ncalculer le score" as UC_Eval #ECFDF5;line:059669;line.bold
+        usecase "Attribuer badges Bambara\n(Kalanden, Fasoden...)" as UC_Badge #ECFDF5;line:059669;line.bold
+        usecase "Consulter ses scores\net progression badges" as UC_Scores
+    }
+
+    ' ----------------------------------------------------
+    ' 4. SERVICES MÉTIERS & PARTENARIATS
+    ' ----------------------------------------------------
+    package "4. Services Métiers & Partenariats" {
+        usecase "Contacter un partenaire\n(Guide / Artisan)" as UC_Contact
+        usecase "Proposer un événement\nculturel" as UC_Event
+        usecase "Modifier / Annuler\nl'événement" as UC_EditEvent #FFFBEB;line:D97706;line.dashed
+
+        usecase "Publier un produit\nartisanal local" as UC_Product
+        usecase "Modifier / Mettre à\njour le produit" as UC_EditProduct #FFFBEB;line:D97706;line.dashed
+
+        usecase "Proposer ses prestations\nde guidage" as UC_GuideServ
+        usecase "Gérer langues &\ndisponibilités" as UC_EditGuide #FFFBEB;line:D97706;line.dashed
+    }
+
+    ' ----------------------------------------------------
+    ' 5. ADMINISTRATION & MODÉRATION
+    ' ----------------------------------------------------
+    package "5. Administration & Modération" {
+        usecase "Gérer le catalogue\n(CRUD Régions, Villes...)" as UC_CRUDCat
+        usecase "Gérer les quiz &\nquestions (CRUD)" as UC_CRUDQuiz
+
+        usecase "Modérer publications\nd'événements" as UC_ModEvent
+        usecase "Valider l'événement\n(Publication)" as UC_ValEvent #FFFBEB;line:D97706;line.dashed
+        usecase "Rejeter l'événement\n(Avec motif)" as UC_RejEvent #FFFBEB;line:D97706;line.dashed
+
+        usecase "Traiter candidatures\npartenaires (Guide/Artisan)" as UC_ModPart
+        usecase "Valider & certifier\nle partenaire" as UC_ValPart #FFFBEB;line:D97706;line.dashed
+        usecase "Rejeter la candidature\n(Dossier incomplet)" as UC_RejPart #FFFBEB;line:D97706;line.dashed
+    }
+}
+
+' ========================================================
+' ASSOCIATIONS DIRECTES ACTEURS -> CAS PRINCIPAUX
+' ========================================================
+
+' Visiteur (et par héritage tous les utilisateurs)
+Visiteur --> UC_Register
+Visiteur --> UC_Login
+Visiteur --> UC_Explore
+Visiteur --> UC_ViewLieu
+Visiteur --> UC_Theme
+
+' Utilisateur Connecté (actions réservées au compte)
+User --> UC_Profile
+User --> UC_Review
+User --> UC_Quiz
+User --> UC_Scores
+User --> UC_Contact
+
+' Promoteur
+Promoteur --> UC_Event
+
+' Artisan
+Artisan --> UC_Product
+
+' Guide
+Guide --> UC_GuideServ
+
+' Administrateur
+Admin --> UC_CRUDCat
+Admin --> UC_CRUDQuiz
+Admin --> UC_ModEvent
+Admin --> UC_ModPart
+
+' ========================================================
+' RELATIONS <<include>> (DÉPENDANCES OBLIGATOIRES EN VERT)
+' ========================================================
+UC_Register ..> UC_Verify : <<include>> #059669
+UC_Quiz ..> UC_Eval : <<include>> #059669
+UC_Eval ..> UC_Badge : <<include>> #059669
+
+' ========================================================
+' RELATIONS <<extend>> (EXTENSIONS OPTIONNELLES EN ORANGE)
+' ========================================================
+
+' Authentification
+UC_ResetPwd ..> UC_Login : <<extend>> #D97706
+
+' Découverte & Patrimoine
+UC_Filter ..> UC_Explore : <<extend>> #D97706
+UC_Map ..> UC_Explore : <<extend>> #D97706
+UC_360 ..> UC_ViewLieu : <<extend>> #D97706
+UC_Fav ..> UC_ViewLieu : <<extend>> #D97706
+
+' Métiers & Partenaires
+UC_EditEvent ..> UC_Event : <<extend>> #D97706
+UC_EditProduct ..> UC_Product : <<extend>> #D97706
+UC_EditGuide ..> UC_GuideServ : <<extend>> #D97706
+
+' Administration & Modération
+UC_ValEvent ..> UC_ModEvent : <<extend>> #D97706
+UC_RejEvent ..> UC_ModEvent : <<extend>> #D97706
+UC_ValPart ..> UC_ModPart : <<extend>> #D97706
+UC_RejPart ..> UC_ModPart : <<extend>> #D97706
+
+@enduml

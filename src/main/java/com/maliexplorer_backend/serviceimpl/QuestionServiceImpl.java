@@ -1,5 +1,6 @@
 package com.maliexplorer_backend.serviceimpl;
 
+import com.maliexplorer_backend.config.SecurityUtils;
 import com.maliexplorer_backend.dto.QuestionRequestDTO;
 import com.maliexplorer_backend.dto.QuestionResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
@@ -99,10 +100,11 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private QuestionResponseDTO mapToResponseDTO(QuestionModel question) {
+        boolean isAdmin = SecurityUtils.isAdmin();
         return QuestionResponseDTO.builder()
                 .idQuestion(question.getIdQuestion())
                 .nomQuestion(question.getNomQuestion())
-                .reponse(question.getReponse())
+                .reponse(isAdmin ? question.getReponse() : null)
                 .points(question.getPoints())
                 .duree(question.getDuree())
                 .build();

@@ -32,6 +32,16 @@ public class SupabaseStorageServiceImpl implements StorageService {
             "jpg", "jpeg", "png", "webp", "gif", "svg", "pdf", "mp4"
     );
 
+    private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
+            "image/jpeg",
+            "image/png",
+            "image/webp",
+            "image/gif",
+            "image/svg+xml",
+            "application/pdf",
+            "video/mp4"
+    );
+
     @Override
     public FileUploadResponseDTO uploadFile(MultipartFile file, String folder) {
         return uploadFile(file, supabaseConfig.getDefaultBucket(), folder);
@@ -50,9 +60,10 @@ public class SupabaseStorageServiceImpl implements StorageService {
             throw new BadRequestException("Format de fichier non supporté (." + extension + "). Formats acceptés : " + ALLOWED_EXTENSIONS);
         }
 
-        String uniqueFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + "." + extension;
-        String sanitizedFolder = (StringUtils.hasText(folder)) ? folder.replaceAll("^/+|/+$", "") : "general";
-        String fullPath = sanitizedFolder + "/" + uniqueFileName;
+        String contentType = file.getContentType();
+        if (!StringUtils.hasText(contentType) || !ALLOWED_MIME_TYPES.contains(contentType.toLowerCase())) {
+            throw new BadRequestException("Type MIME non autorisé ou invalide (" + contentType + "). Types acceptés : " + ALLOWED_MIME_TYPES);
+        }
 
         byte[] fileBytes;
         try {
@@ -62,10 +73,12 @@ public class SupabaseStorageServiceImpl implements StorageService {
             throw new BadRequestException("Erreur lors de la lecture du fichier : " + e.getMessage());
         }
 
-        String contentType = file.getContentType();
-        if (!StringUtils.hasText(contentType)) {
-            contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
-        }
+        // Validation de la signature binaire (magic bytes)
+        validateFileSignature(extension, fileBytes);
+
+        String uniqueFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + "." + extension;
+        String sanitizedFolder = (StringUtils.hasText(folder)) ? folder.replaceAll("^/+|/+$", "") : "general";
+        String fullPath = sanitizedFolder + "/" + uniqueFileName;
 
         log.info("Téléversement vers Supabase Storage : Bucket={}, Path={}, Taille={} octets", bucket, fullPath, fileBytes.length);
 
@@ -160,6 +173,70 @@ public class SupabaseStorageServiceImpl implements StorageService {
             return "bin";
         }
         return filename.substring(lastDotIndex + 1);
+    }
+
+    private void validateFileSignature(String extension, byte[] fileBytes) {
+        if (fileBytes == null || fileBytes.length < 4) {
+            throw new BadRequestException("Fichier invalide ou corrompu (taille insuffisante).");
+        }
+
+        String ext = extension.toLowerCase();
+        boolean valid = switch (ext) {
+            case "jpg", "jpeg" ->
+                fileBytes.length >= 3
+                && (fileBytes[0] & 0xFF) == 0xFF
+                && (fileBytes[1] & 0xFF) == 0xD8
+                && (fileBytes[2] & 0xFF) == 0xFF;
+
+            case "png" ->
+                fileBytes.length >= 8
+                && (fileBytes[0] & 0xFF) == 0x89
+                && fileBytes[1] == 0x50
+                && fileBytes[2] == 0x4E
+                && fileBytes[3] == 0x47;
+
+            case "gif" ->
+                fileBytes.length >= 6
+                && fileBytes[0] == 'G'
+                && fileBytes[1] == 'I'
+                && fileBytes[2] == 'F'
+                && fileBytes[3] == '8';
+
+            case "webp" ->
+                fileBytes.length >= 12
+                && fileBytes[0] == 'R'
+                && fileBytes[1] == 'I'
+                && fileBytes[2] == 'F'
+                && fileBytes[3] == 'F'
+                && fileBytes[8] == 'W'
+                && fileBytes[9] == 'E'
+                && fileBytes[10] == 'B'
+                && fileBytes[11] == 'P';
+
+            case "pdf" ->
+                fileBytes.length >= 4
+                && fileBytes[0] == '%'
+                && fileBytes[1] == 'P'
+                && fileBytes[2] == 'D'
+                && fileBytes[3] == 'F';
+
+            case "mp4" ->
+                fileBytes.length >= 12
+                && ((fileBytes[4] == 'f' && fileBytes[5] == 't' && fileBytes[6] == 'y' && fileBytes[7] == 'p')
+                    || (fileBytes[0] == 0 && fileBytes[1] == 0));
+
+            case "svg" -> {
+                String head = new String(fileBytes, 0, Math.min(fileBytes.length, 512)).toLowerCase();
+                yield head.contains("<svg") || (head.contains("<?xml") && head.contains("<svg"));
+            }
+
+            default -> false;
+        };
+
+        if (!valid) {
+            log.warn("Rejet de fichier : la signature binaire (magic bytes) ne correspond pas à l'extension .{}", ext);
+            throw new BadRequestException("La signature binaire du fichier ne correspond pas au format ." + ext + " autorisé.");
+        }
     }
 }
 

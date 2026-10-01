@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class PresidentController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Ajouter un président")
     public ResponseEntity<PresidentResponseDTO> createPresident(@Valid @RequestBody PresidentRequestDTO requestDTO) {
         PresidentResponseDTO created = presidentService.createPresident(requestDTO);
@@ -41,6 +43,7 @@ public class PresidentController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Modifier les informations d'un président")
     public ResponseEntity<PresidentResponseDTO> updatePresident(
             @PathVariable Long id,
@@ -49,6 +52,7 @@ public class PresidentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Supprimer un président")
     public ResponseEntity<Void> deletePresident(@PathVariable Long id) {
         presidentService.deletePresident(id);
