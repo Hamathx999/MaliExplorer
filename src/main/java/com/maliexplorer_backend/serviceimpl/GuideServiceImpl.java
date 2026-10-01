@@ -117,6 +117,10 @@ public class GuideServiceImpl implements GuideService {
                 .langue(model.getLangue())
                 .pieceIdentite(model.getPieceIdentite())
                 .idAdministrateur(model.getIdAdministrateur())
+                .recherchePartenariat(model.isRecherchePartenariat())
+                .titreProjet(model.getTitreProjet())
+                .besoinPartenariat(model.getBesoinPartenariat())
+                .statutModeration(model.getStatutModeration())
                 .build();
     }
 }

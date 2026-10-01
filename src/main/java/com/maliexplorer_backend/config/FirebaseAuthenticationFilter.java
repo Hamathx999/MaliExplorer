@@ -71,6 +71,12 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
                             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
                             authorities.add(new SimpleGrantedAuthority("ROLE_admin"));
                         }
+                        if (role == RoleModel.artisan || role == RoleModel.guide || role == RoleModel.promoteur || role == RoleModel.partenaire) {
+                            authorities.add(new SimpleGrantedAuthority("ROLE_PARTENAIRE"));
+                        }
+                        if (role == RoleModel.investisseur) {
+                            authorities.add(new SimpleGrantedAuthority("ROLE_INVESTISSEUR"));
+                        }
                     }
                     authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
                 } else {

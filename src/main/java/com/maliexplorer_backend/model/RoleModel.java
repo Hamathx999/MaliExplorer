@@ -5,6 +5,8 @@ public enum RoleModel {
     artisan,
     guide,
     promoteur,
+    partenaire,
+    investisseur,
     admin,
     superAdmin
 }

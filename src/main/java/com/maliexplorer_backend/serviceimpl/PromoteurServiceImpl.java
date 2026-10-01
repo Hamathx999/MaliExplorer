@@ -108,6 +108,10 @@ public class PromoteurServiceImpl implements PromoteurService {
                 .idPromoteur(model.getIdPromoteur())
                 .nomOrganisation(model.getNomOrganisation())
                 .pieceIdentite(model.getPieceIdentite())
+                .recherchePartenariat(model.isRecherchePartenariat())
+                .titreProjet(model.getTitreProjet())
+                .besoinPartenariat(model.getBesoinPartenariat())
+                .statutModeration(model.getStatutModeration())
                 .build();
     }
 }
