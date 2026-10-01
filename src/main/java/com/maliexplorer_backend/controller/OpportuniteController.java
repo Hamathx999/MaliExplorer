@@ -19,10 +19,11 @@ public class OpportuniteController {
     private final OpportuniteService opportuniteService;
 
     @GetMapping
-    @Operation(summary = "Lister les opportunités validées", description = "Retourne la liste des artisans, guides et promoteurs ayant activé la recherche de partenariat et validés par l'administrateur. Filtrage optionnel par type (ARTISAN, PROMOTEUR, GUIDE).")
+    @Operation(summary = "Lister les opportunités validées", description = "Retourne la liste des artisans, guides et promoteurs ayant activé la recherche de partenariat et validés par l'administrateur. Filtrage optionnel par type (ARTISAN, PROMOTEUR, GUIDE) et recherche textuelle (q).")
     public ResponseEntity<List<OpportuniteResponseDTO>> getOpportunites(
-            @RequestParam(required = false) String type) {
-        return ResponseEntity.ok(opportuniteService.getOpportunitesValidees(type));
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String q) {
+        return ResponseEntity.ok(opportuniteService.getOpportunitesValidees(type, q));
     }
 
     @GetMapping("/{idUsers}")

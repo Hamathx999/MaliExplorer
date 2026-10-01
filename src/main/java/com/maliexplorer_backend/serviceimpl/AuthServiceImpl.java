@@ -2,8 +2,7 @@ package com.maliexplorer_backend.serviceimpl;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
-import com.maliexplorer_backend.model.RoleModel;
-import com.maliexplorer_backend.model.utilisateurModel;
+import com.maliexplorer_backend.model.*;
 import com.maliexplorer_backend.repository.utilisateurRepository;
 import com.maliexplorer_backend.service.AuthService;
 import com.maliexplorer_backend.dto.AuthResponseDTO;
@@ -119,16 +118,33 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        utilisateurModel user = utilisateurModel.builder()
-                .firebaseUid(firebaseUid)
-                .prenom(requestDTO.getPrenom())
-                .nom(requestDTO.getNom())
-                .email(requestDTO.getEmail())
-                .adresse(requestDTO.getAdresse())
-                .photoUrl(photoUrl)
-                .role(roleDemande)
-                .dateCreation(new Date(System.currentTimeMillis()))
-                .build();
+        utilisateurModel user;
+        if (roleDemande == RoleModel.artisan) {
+            ArtisanModel a = new ArtisanModel();
+            a.setTypeArtisanat("Artisan");
+            user = a;
+        } else if (roleDemande == RoleModel.promoteur || roleDemande == RoleModel.partenaire) {
+            PromoteurModel p = new PromoteurModel();
+            p.setNomOrganisation("Organisation Partenaire");
+            user = p;
+        } else if (roleDemande == RoleModel.guide) {
+            GuideModel g = new GuideModel();
+            g.setLangue("Français");
+            user = g;
+        } else if (roleDemande == RoleModel.touriste) {
+            user = new TouristeModel();
+        } else {
+            user = new utilisateurModel();
+        }
+
+        user.setFirebaseUid(firebaseUid);
+        user.setPrenom(requestDTO.getPrenom());
+        user.setNom(requestDTO.getNom());
+        user.setEmail(requestDTO.getEmail());
+        user.setAdresse(requestDTO.getAdresse());
+        user.setPhotoUrl(photoUrl);
+        user.setRole(roleDemande);
+        user.setDateCreation(new Date(System.currentTimeMillis()));
 
         utilisateurModel saved = userRepository.save(user);
         log.info("Utilisateur inscrit avec succès: ID={}, Email={}, Role={}", saved.getIdUsers(), saved.getEmail(),

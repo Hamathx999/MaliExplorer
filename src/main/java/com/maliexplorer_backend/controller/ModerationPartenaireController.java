@@ -35,8 +35,10 @@ public class ModerationPartenaireController {
     }
 
     @PatchMapping("/{idUsers}/rejeter")
-    @Operation(summary = "Rejeter une fiche partenaire (Statut -> REJETE)")
-    public ResponseEntity<OpportuniteResponseDTO> rejeter(@PathVariable int idUsers) {
-        return ResponseEntity.ok(opportuniteService.rejeterOpportunite(idUsers));
+    @Operation(summary = "Rejeter une fiche partenaire (Statut -> REJETE) avec motif optionnel")
+    public ResponseEntity<OpportuniteResponseDTO> rejeter(
+            @PathVariable int idUsers,
+            @RequestParam(required = false) String motif) {
+        return ResponseEntity.ok(opportuniteService.rejeterOpportunite(idUsers, motif));
     }
 }

@@ -4,6 +4,7 @@ import com.maliexplorer_backend.config.SecurityUtils;
 import com.maliexplorer_backend.dto.OpportuniteResponseDTO;
 import com.maliexplorer_backend.dto.PartenariatSubmissionDTO;
 import com.maliexplorer_backend.model.utilisateurModel;
+import com.maliexplorer_backend.repository.utilisateurRepository;
 import com.maliexplorer_backend.service.OpportuniteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class PartenaireController {
 
     private final OpportuniteService opportuniteService;
+    private final utilisateurRepository userRepository;
 
     @PutMapping("/mon-projet")
     @PreAuthorize("hasRole('PARTENAIRE') or hasRole('ADMIN')")
@@ -31,10 +33,7 @@ public class PartenaireController {
             description = "Active la recherche de partenariat et soumet le titre du projet et le besoin. Le projet passe automatiquement au statut EN_ATTENTE_VALIDATION pour modération admin.")
     public ResponseEntity<OpportuniteResponseDTO> soumettreProjet(
             @Valid @RequestBody PartenariatSubmissionDTO submissionDTO) {
-        utilisateurModel currentUser = SecurityUtils.getCurrentUser();
-        if (currentUser == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifié");
-        }
+        utilisateurModel currentUser = resolveCurrentUser();
 
         OpportuniteResponseDTO response = opportuniteService.soumettreProjetPartenaire(
                 currentUser.getIdUsers(),
@@ -49,11 +48,21 @@ public class PartenaireController {
     @PreAuthorize("hasRole('PARTENAIRE') or hasRole('ADMIN')")
     @Operation(summary = "Consulter l'état de modération de sa propre fiche partenaire")
     public ResponseEntity<OpportuniteResponseDTO> getMonProjet() {
+        utilisateurModel currentUser = resolveCurrentUser();
+        return ResponseEntity.ok(opportuniteService.getMonStatutPartenaire(currentUser.getIdUsers()));
+    }
+
+    private utilisateurModel resolveCurrentUser() {
         utilisateurModel currentUser = SecurityUtils.getCurrentUser();
+        if (currentUser == null) {
+            String email = SecurityUtils.getCurrentUserEmail();
+            if (email != null) {
+                currentUser = userRepository.findByEmail(email).orElse(null);
+            }
+        }
         if (currentUser == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur non authentifié");
         }
-
-        return ResponseEntity.ok(opportuniteService.getMonStatutPartenaire(currentUser.getIdUsers()));
+        return currentUser;
     }
 }

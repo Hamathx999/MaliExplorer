@@ -43,4 +43,7 @@ public class GuideModel extends utilisateurModel {
     @Enumerated(EnumType.STRING)
     @Column(name = "statut_moderation", length = 30)
     private StatutModeration statutModeration = StatutModeration.VALIDE;
+
+    @Column(name = "motif_rejet", length = 500)
+    private String motifRejet;
 }

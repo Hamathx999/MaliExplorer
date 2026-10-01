@@ -31,5 +31,6 @@ public class OpportuniteResponseDTO {
     private String titreProjet;
     private String besoinPartenariat;
     private StatutModeration statutModeration;
+    private String motifRejet;
     private Date dateCreation;
 }

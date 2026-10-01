@@ -9,8 +9,9 @@ public interface OpportuniteService {
     /**
      * Récupère la liste de toutes les fiches d'artisans, guides et promoteurs
      * avec "Recherche de partenariat" validées pour l'espace B2B et touristes.
+     * Permet le filtrage optionnel par type et recherche par mot-clé.
      */
-    List<OpportuniteResponseDTO> getOpportunitesValidees(String type);
+    List<OpportuniteResponseDTO> getOpportunitesValidees(String type, String keyword);
 
     /**
      * Récupère toutes les fiches soumises par les partenaires en attente de modération admin.
@@ -23,9 +24,9 @@ public interface OpportuniteService {
     OpportuniteResponseDTO validerOpportunite(int idUsers);
 
     /**
-     * Rejette une fiche partenaire par l'administrateur.
+     * Rejette une fiche partenaire par l'administrateur avec motif optionnel.
      */
-    OpportuniteResponseDTO rejeterOpportunite(int idUsers);
+    OpportuniteResponseDTO rejeterOpportunite(int idUsers, String motifRejet);
 
     /**
      * Permet à un partenaire connecté d'activer/mettre à jour son statut "Recherche de partenariat"
