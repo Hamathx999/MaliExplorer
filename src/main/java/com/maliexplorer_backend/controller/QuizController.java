@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,6 +53,7 @@ public class QuizController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Créer un nouveau quiz")
     public ResponseEntity<QuizResponseDTO> createQuiz(@Valid @RequestBody QuizRequestDTO requestDTO) {
         QuizResponseDTO created = quizService.createQuiz(requestDTO);
@@ -59,6 +61,7 @@ public class QuizController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Modifier un quiz existant")
     public ResponseEntity<QuizResponseDTO> updateQuiz(
             @PathVariable Long id,
@@ -67,6 +70,7 @@ public class QuizController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Supprimer un quiz")
     public ResponseEntity<Void> deleteQuiz(@PathVariable Long id) {
         quizService.deleteQuiz(id);

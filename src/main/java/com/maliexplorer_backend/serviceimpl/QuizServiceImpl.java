@@ -241,12 +241,13 @@ public class QuizServiceImpl implements QuizService {
     }
 
     private QuizResponseDTO mapToResponseDTO(QuizModel quiz) {
+        boolean isAdmin = SecurityUtils.isAdmin();
         List<QuestionResponseDTO> questionDTOs = quiz.getQuestions() == null ? Collections.emptyList()
                 : quiz.getQuestions().stream()
                         .map(q -> QuestionResponseDTO.builder()
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())
-                                .reponse(q.getReponse())
+                                .reponse(isAdmin ? q.getReponse() : null)
                                 .points(q.getPoints())
                                 .duree(q.getDuree())
                                 .build())

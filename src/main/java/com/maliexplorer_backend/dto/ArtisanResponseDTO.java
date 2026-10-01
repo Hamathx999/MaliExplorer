@@ -1,6 +1,7 @@
 package com.maliexplorer_backend.dto;
 
 import com.maliexplorer_backend.model.RoleModel;
+import com.maliexplorer_backend.model.StatutModeration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,5 +25,8 @@ public class ArtisanResponseDTO {
     private Date dateCreation;
     private RoleModel role;
     private String typeArtisanat;
+    private boolean recherchePartenariat;
+    private String titreProjet;
+    private String besoinPartenariat;
+    private StatutModeration statutModeration;
 }
-

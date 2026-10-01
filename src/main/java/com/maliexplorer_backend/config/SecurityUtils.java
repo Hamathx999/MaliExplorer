@@ -52,4 +52,15 @@ public final class SecurityUtils {
         return auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || a.getAuthority().equals("ROLE_admin"));
     }
+
+    /**
+     * Vérifie si l'utilisateur connecté est un administrateur ou le propriétaire du compte spécifié par son ID.
+     */
+    public static boolean isCurrentUserOrAdmin(int userId) {
+        if (isAdmin()) {
+            return true;
+        }
+        utilisateurModel user = getCurrentUser();
+        return user != null && user.getIdUsers() == userId;
+    }
 }

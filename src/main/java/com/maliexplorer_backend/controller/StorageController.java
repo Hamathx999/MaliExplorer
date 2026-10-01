@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import com.maliexplorer_backend.config.SecurityUtils;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +38,10 @@ public class StorageController {
             @RequestParam("file") MultipartFile file,
             @Parameter(description = "Nom du sous-dossier de destination (ex: lieux, villes, avatars)")
             @RequestParam(value = "folder", defaultValue = "general") String folder) {
+
+        if (!SecurityUtils.isAdmin() && !"general".equalsIgnoreCase(folder) && !"avatars".equalsIgnoreCase(folder)) {
+            throw new AccessDeniedException("Accès refusé : seuls les administrateurs peuvent téléverser dans le dossier '" + folder + "'.");
+        }
 
         FileUploadResponseDTO response = storageService.uploadFile(file, folder);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

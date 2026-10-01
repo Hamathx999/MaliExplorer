@@ -1,6 +1,7 @@
 package com.maliexplorer_backend.repository;
 
 import com.maliexplorer_backend.model.PromoteurModel;
+import com.maliexplorer_backend.model.StatutModeration;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,8 @@ public interface PromoteurRepository extends JpaRepository<PromoteurModel, Integ
     boolean existsByEmail(String email);
 
     List<PromoteurModel> findByNomOrganisationContainingIgnoreCase(String nomOrganisation);
+
+    List<PromoteurModel> findByRecherchePartenariatTrueAndStatutModeration(StatutModeration statut);
+
+    List<PromoteurModel> findByStatutModeration(StatutModeration statut);
 }

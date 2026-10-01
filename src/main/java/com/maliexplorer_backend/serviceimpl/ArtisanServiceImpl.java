@@ -104,6 +104,10 @@ public class ArtisanServiceImpl implements ArtisanService {
                 .dateCreation(model.getDateCreation())
                 .role(model.getRole())
                 .typeArtisanat(model.getTypeArtisanat())
+                .recherchePartenariat(model.isRecherchePartenariat())
+                .titreProjet(model.getTitreProjet())
+                .besoinPartenariat(model.getBesoinPartenariat())
+                .statutModeration(model.getStatutModeration())
                 .build();
     }
 }

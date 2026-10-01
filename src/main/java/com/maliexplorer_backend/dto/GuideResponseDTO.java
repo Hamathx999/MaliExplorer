@@ -1,6 +1,7 @@
 package com.maliexplorer_backend.dto;
 
 import com.maliexplorer_backend.model.RoleModel;
+import com.maliexplorer_backend.model.StatutModeration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,11 +24,14 @@ public class GuideResponseDTO {
     private String photoUrl;
     private Date dateCreation;
     private RoleModel role;
-
     private Long idGuide;
     private int experience;
     private String description;
     private String langue;
     private String pieceIdentite;
     private Integer idAdministrateur;
+    private boolean recherchePartenariat;
+    private String titreProjet;
+    private String besoinPartenariat;
+    private StatutModeration statutModeration;
 }
