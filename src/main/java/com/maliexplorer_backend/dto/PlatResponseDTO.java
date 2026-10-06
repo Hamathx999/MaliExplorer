@@ -1,11 +1,13 @@
 package com.maliexplorer_backend.dto;
 
+import com.maliexplorer_backend.model.IngredientModel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -17,6 +19,9 @@ public class PlatResponseDTO {
     private String nom;
     private String description;
     private Integer nbrePersonnes;
-private List<RegionSummaryDTO> regions;
+    private Integer tempsPreparation;
+    private String imageUrl;
+    private Set<IngredientModel> ingredientModelList;
+    private List<RegionSummaryDTO> regions;
     private List<EthnieSummaryDTO> ethnies;
 }

@@ -53,6 +53,21 @@ public class FirebaseConfig {
             }
 
             if (options == null) {
+                // Essai automatique avec le fichier de clé Firebase complet maliexplorer-firebase-adminsdk-*.json
+                Resource fallbackRes = new ClassPathResource("maliexplorer-firebase-adminsdk-fbsvc-03c3cd21ba.json");
+                if (fallbackRes.exists()) {
+                    try (InputStream is = fallbackRes.getInputStream()) {
+                        options = FirebaseOptions.builder()
+                                .setCredentials(GoogleCredentials.fromStream(is))
+                                .build();
+                        log.info("Chargement des credentials Firebase depuis le fallback : maliexplorer-firebase-adminsdk-fbsvc-03c3cd21ba.json");
+                    } catch (Exception ex) {
+                        log.warn("Erreur lecture fallback Firebase : {}", ex.getMessage());
+                    }
+                }
+            }
+
+            if (options == null) {
                 log.warn(
                         "Tentative d'initialisation Firebase avec les identifiants par défaut Google Application Credentials...");
                 try {

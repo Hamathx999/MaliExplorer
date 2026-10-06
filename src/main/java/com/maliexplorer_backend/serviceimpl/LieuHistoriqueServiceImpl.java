@@ -53,19 +53,32 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
     public LieuHistoriqueResponseDTO createLieu(LieuHistoriqueRequestDTO requestDTO) {
         VilleModel ville = null;
         if (requestDTO.getVilleId() != null) {
-            ville = villeRepository.findById(requestDTO.getVilleId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "VilleModel introuvable avec l'ID : " + requestDTO.getVilleId()));
+            ville = villeRepository.findById(requestDTO.getVilleId()).orElse(null);
+        }
+        String cityName = requestDTO.getNomVille() != null && !requestDTO.getNomVille().isBlank()
+                ? requestDTO.getNomVille().trim()
+                : (requestDTO.getVille() != null ? requestDTO.getVille().trim() : null);
+
+        if (ville == null && cityName != null && !cityName.isBlank()) {
+            ville = villeRepository.findByNomVilleIgnoreCase(cityName).orElse(null);
+        }
+
+        String regionName = requestDTO.getRegion();
+        if ((regionName == null || regionName.isBlank()) && ville != null) {
+            regionName = ville.getRegion();
         }
 
         LieuHistoriqueModel lieu = LieuHistoriqueModel.builder()
                 .nomLieu(requestDTO.getNomLieuHisto())
+                .nomHistoire(requestDTO.getNomLieuHisto())
                 .description(requestDTO.getDescription())
                 .epoque(requestDTO.getEpoque())
                 .cordonnees(requestDTO.getCordonnees())
                 .panorama360Url(requestDTO.getPanorama360Url())
                 .latitude(requestDTO.getLatitude())
                 .longitude(requestDTO.getLongitude())
+                .nomVille(cityName != null ? cityName : (ville != null ? ville.getNomVille() : null))
+                .region(regionName)
                 .ville(ville)
                 .build();
 
@@ -78,15 +91,27 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
         LieuHistoriqueModel lieu = findLieuOrThrow(id);
 
         if (requestDTO.getVilleId() != null) {
-            VilleModel ville = villeRepository.findById(requestDTO.getVilleId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "VilleModel introuvable avec l'ID : " + requestDTO.getVilleId()));
+            VilleModel ville = villeRepository.findById(requestDTO.getVilleId()).orElse(null);
             lieu.setVille(ville);
-        } else {
-            lieu.setVille(null);
+        }
+
+        String cityName = requestDTO.getNomVille() != null && !requestDTO.getNomVille().isBlank()
+                ? requestDTO.getNomVille().trim()
+                : (requestDTO.getVille() != null ? requestDTO.getVille().trim() : null);
+
+        if (cityName != null && !cityName.isBlank()) {
+            lieu.setNomVille(cityName);
+            if (lieu.getVille() == null) {
+                villeRepository.findByNomVilleIgnoreCase(cityName).ifPresent(lieu::setVille);
+            }
+        }
+
+        if (requestDTO.getRegion() != null && !requestDTO.getRegion().isBlank()) {
+            lieu.setRegion(requestDTO.getRegion().trim());
         }
 
         lieu.setNomLieu(requestDTO.getNomLieuHisto());
+        lieu.setNomHistoire(requestDTO.getNomLieuHisto());
         lieu.setDescription(requestDTO.getDescription());
         lieu.setEpoque(requestDTO.getEpoque());
         lieu.setCordonnees(requestDTO.getCordonnees());
@@ -129,11 +154,29 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
     }
 
     private LieuHistoriqueResponseDTO mapToResponseDTO(LieuHistoriqueModel lieu) {
-        VilleSummaryDTO villeSummary = null;
+        String villeNom = lieu.getNomVille();
+        String regionNom = lieu.getRegion();
+        Long villeId = null;
+
         if (lieu.getVille() != null) {
+            villeId = lieu.getVille().getIdVille();
+            if (villeNom == null || villeNom.isBlank()) {
+                villeNom = lieu.getVille().getNomVille();
+            }
+            if (regionNom == null || regionNom.isBlank()) {
+                regionNom = lieu.getVille().getRegion();
+                if ((regionNom == null || regionNom.isBlank()) && lieu.getVille().getRegionParent() != null) {
+                    regionNom = lieu.getVille().getRegionParent().getNomRegion();
+                }
+            }
+        }
+
+        VilleSummaryDTO villeSummary = null;
+        if (villeNom != null && !villeNom.isBlank()) {
             villeSummary = VilleSummaryDTO.builder()
-                    .id(lieu.getVille().getIdVille())
-                    .nom(lieu.getVille().getNomVille())
+                    .id(villeId)
+                    .nom(villeNom)
+                    .region(regionNom)
                     .build();
         }
 
@@ -146,6 +189,8 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
                 .latitude(lieu.getLatitude())
                 .longitude(lieu.getLongitude())
                 .panorama360Url(lieu.getPanorama360Url())
+                .nomVille(villeNom)
+                .region(regionNom != null && !regionNom.isBlank() ? regionNom : "Mali")
                 .ville(villeSummary)
                 .build();
     }

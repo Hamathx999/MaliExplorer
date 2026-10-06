@@ -12,9 +12,14 @@ import lombok.NoArgsConstructor;
 @Builder
 public class QuizRequestDTO {
 
+    @com.fasterxml.jackson.annotation.JsonAlias({"titre", "nom", "nomQuiz"})
     @NotBlank(message = "Le titre du quiz est obligatoire")
     private String nomQuiz;
 
     private String description;
-    private String imageQuiz;    private String categorie;
+    private String imageQuiz;
+    private String categorie;
+
+    @com.fasterxml.jackson.annotation.JsonAlias({"points", "point"})
+    private Integer point;
 }

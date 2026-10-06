@@ -51,4 +51,13 @@ public class utilisateurModel {
 
     @Builder.Default
     private int points = 0;
+
+    @com.fasterxml.jackson.annotation.JsonProperty("id")
+    public int getId() {
+        return this.idUsers;
+    }
+
+    public void setId(int id) {
+        this.idUsers = id;
+    }
 }

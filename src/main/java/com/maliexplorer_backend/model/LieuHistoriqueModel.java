@@ -19,6 +19,9 @@ public class LieuHistoriqueModel {
     @Column(nullable = false, length = 150)
     private String nomLieu;
 
+    @Column(name = "nom_histoire", length = 150)
+    private String nomHistoire;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
@@ -35,6 +38,12 @@ public class LieuHistoriqueModel {
     private Double longitude;
 
     private Long idUsers;
+
+    @Column(name = "nom_ville", length = 100)
+    private String nomVille;
+
+    @Column(length = 100)
+    private String region;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_ville")
