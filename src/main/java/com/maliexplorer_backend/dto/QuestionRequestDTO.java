@@ -1,8 +1,7 @@
 package com.maliexplorer_backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,14 +16,24 @@ import java.util.List;
 public class QuestionRequestDTO {
 
     @NotBlank(message = "L'intitulé de la question est obligatoire")
+    @JsonAlias({"question", "nom"})
     private String nomQuestion;
 
     @NotBlank(message = "La réponse correcte est obligatoire")
     private String reponse;
 
-    @NotNull(message = "Le nombre de points est obligatoire")
-    private Integer duree;
+    @Builder.Default
+    private Integer duree = 30;
 
-    @NotEmpty(message = "Au moins une proposition de réponse est requise")
+    @Builder.Default
+    private Integer points = 10;
+
+    @JsonAlias("theme")
+    private String theme;
+
     private Long quizId;
+
+    private String explication;
+
+    private List<String> propositions;
 }

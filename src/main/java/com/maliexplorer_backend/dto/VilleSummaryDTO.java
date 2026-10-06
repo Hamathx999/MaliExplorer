@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class VilleSummaryDTO {
     private Long id;
     private String nom;
+    private String region;
     private String cordonnees;
-    }
+}
