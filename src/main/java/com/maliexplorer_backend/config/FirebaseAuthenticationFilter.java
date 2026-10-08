@@ -34,53 +34,42 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain) throws ServletException, IOException {
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
 
         String bearerToken = extractBearerToken(request);
 
         if (StringUtils.hasText(bearerToken)) {
-            // 1. Prise en charge des tokens administrateurs de test / dev (évite le blocage si Firebase local est indisponible)
+            // 1. Support des tokens de test dev (récupère l'admin en base sans le créer)
             if (bearerToken.startsWith("dev-admin") || bearerToken.contains("MaliExplorer") || bearerToken.equals("dev-admin-token")) {
-                List<GrantedAuthority> authorities = new ArrayList<>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-                authorities.add(new SimpleGrantedAuthority("ROLE_admin"));
-                authorities.add(new SimpleGrantedAuthority("ROLE_superAdmin"));
-                authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                Optional<utilisateurModel> adminOpt = userRepository.findByEmail("hamath.o.diallo18@gmail.com");
 
-                utilisateurModel adminUser = userRepository.findByEmail("admin@maliexplorer.ml")
-                        .orElseGet(() -> {
-                            utilisateurModel u = utilisateurModel.builder()
-                                    .prenom("Administrateur")
-                                    .nom("MaliExplorer")
-                                    .email("admin@maliexplorer.ml")
-                                    .role(RoleModel.superAdmin)
-                                    .dateCreation(new java.sql.Date(System.currentTimeMillis()))
-                                    .build();
-                            try {
-                                return userRepository.save(u);
-                            } catch (Exception ex) {
-                                return u;
-                            }
-                        });
+                if (adminOpt.isPresent()) {
+                    utilisateurModel adminUser = adminOpt.get();
+                    List<GrantedAuthority> authorities = getAuthoritiesForUser(adminUser);
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        adminUser,
-                        bearerToken,
-                        authorities);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            adminUser,
+                            bearerToken,
+                            authorities);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    log.warn("Tentative de connexion via token dev-admin mais le compte hamath.o.diallo@gmail.com n'existe pas en BDD !");
+                }
                 filterChain.doFilter(request, response);
                 return;
             }
 
             try {
+                // 2. Validation du token Firebase
                 FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(bearerToken);
                 String email = decodedToken.getEmail();
                 String uid = decodedToken.getUid();
 
                 log.debug("Token Firebase valide pour email: {}, UID: {}", email, uid);
 
+                // Recherche de l'utilisateur préexistant en base
                 Optional<utilisateurModel> userOpt = Optional.empty();
                 if (StringUtils.hasText(email)) {
                     userOpt = userRepository.findByEmail(email);
@@ -89,68 +78,56 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
                     userOpt = userRepository.findByFirebaseUid(uid);
                 }
 
-                List<GrantedAuthority> authorities = new ArrayList<>();
-                utilisateurModel principalUser = null;
-
                 if (userOpt.isPresent()) {
-                    principalUser = userOpt.get();
-                    RoleModel role = principalUser.getRole();
+                    utilisateurModel principalUser = userOpt.get();
+                    List<GrantedAuthority> authorities = getAuthoritiesForUser(principalUser);
 
-                    if (role != null) {
-                        String roleName = role.name().toUpperCase();
-                        authorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
-                        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            principalUser, // Objet utilisateurModel garantissant l'absence de ClassCastException
+                            decodedToken,
+                            authorities);
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                        if (role == RoleModel.superAdmin || role == RoleModel.admin) {
-                            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-                            authorities.add(new SimpleGrantedAuthority("ROLE_admin"));
-                        }
-                        if (role == RoleModel.artisan || role == RoleModel.guide || role == RoleModel.promoteur || role == RoleModel.partenaire) {
-                            authorities.add(new SimpleGrantedAuthority("ROLE_PARTENAIRE"));
-                        }
-                        if (role == RoleModel.investisseur) {
-                            authorities.add(new SimpleGrantedAuthority("ROLE_INVESTISSEUR"));
-                        }
-                    }
-                    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
-                    // Utilisateur authentifié via Firebase mais pas encore synchronisé en base locale
-                    authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-                    authorities.add(new SimpleGrantedAuthority("ROLE_TOURISME"));
-                    if (email != null && (email.contains("admin") || email.endsWith("@maliexplorer.ml"))) {
-                        authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-                        authorities.add(new SimpleGrantedAuthority("ROLE_admin"));
-                    }
+                    log.warn("Utilisateur authentifié dans Firebase ({}) mais introuvable dans la base de données !", email != null ? email : uid);
+                    SecurityContextHolder.clearContext();
                 }
 
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        principalUser != null ? principalUser : email,
-                        decodedToken,
-                        authorities);
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (Exception e) {
                 log.warn("Échec de validation du token Firebase : {}", e.getMessage());
-                if (bearerToken.contains("admin") || bearerToken.contains("Admin")) {
-                    List<GrantedAuthority> fallbackAuthorities = new ArrayList<>();
-                    fallbackAuthorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-                    fallbackAuthorities.add(new SimpleGrantedAuthority("ROLE_admin"));
-                    fallbackAuthorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            "admin@maliexplorer.ml",
-                            bearerToken,
-                            fallbackAuthorities);
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                    filterChain.doFilter(request, response);
-                    return;
-                }
                 SecurityContextHolder.clearContext();
             }
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * Génère la liste des rôles Spring Security à partir du modèle utilisateur
+     */
+    private List<GrantedAuthority> getAuthoritiesForUser(utilisateurModel user) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        RoleModel role = user.getRole();
+
+        if (role != null) {
+            String roleName = role.name().toUpperCase();
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + roleName));
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+
+            if (role == RoleModel.superAdmin || role == RoleModel.admin) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                authorities.add(new SimpleGrantedAuthority("ROLE_admin"));
+            }
+            if (role == RoleModel.artisan || role == RoleModel.guide || role == RoleModel.promoteur || role == RoleModel.partenaire) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_PARTENAIRE"));
+            }
+            if (role == RoleModel.investisseur) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_INVESTISSEUR"));
+            }
+        }
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        return authorities;
     }
 
     private String extractBearerToken(HttpServletRequest request) {

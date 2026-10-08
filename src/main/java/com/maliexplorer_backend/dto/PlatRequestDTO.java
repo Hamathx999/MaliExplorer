@@ -33,8 +33,11 @@ public class PlatRequestDTO {
     @Size(max = 500, message = "L'URL de l'image ne peut pas dépasser 500 caractères")
     private String imageUrl;
 
-//    @com.fasterxml.jackson.annotation.JsonAlias({"ingredientPrincipal", "ingredients"})
-//    private String ingredients;
+    @com.fasterxml.jackson.annotation.JsonAlias({"ingredientIds", "ingredientsIds", "idIngredients"})
+    private List<Long> ingredientIds;
+
+    @com.fasterxml.jackson.annotation.JsonAlias({"ingredientPrincipal", "ingredients"})
+    private String ingredientPrincipal;
 
     private Set<IngredientModel> ingredientModelList;
 
