@@ -72,6 +72,8 @@ public class QuizServiceImpl implements QuizService {
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())
                                 .duree(q.getDuree())
+                                .points((q.getPoints() != null && q.getPoints() > 0) ? q.getPoints() : 10)
+                                .reponse(q.getReponse())
                                 .propositions(q.getPropositions() != null
                                         ? q.getPropositions().stream().map(PropositionModel::getNomProposition).collect(Collectors.toList())
                                         : Collections.emptyList())
@@ -101,12 +103,22 @@ public class QuizServiceImpl implements QuizService {
                 int pointsQuestion = (q.getPoints() != null && q.getPoints() > 0) ? q.getPoints() : 10;
                 scoreMaxPossible += pointsQuestion;
 
-                String reponseSoumise = reponsesSoumises.get(q.getIdQuestion());
-                boolean estCorrect = reponseSoumise != null
-                        && reponseSoumise.trim().equalsIgnoreCase(q.getReponse().trim());
+                String reponseSoumise = null;
+                if (reponsesSoumises != null) {
+                    reponseSoumise = reponsesSoumises.get(q.getIdQuestion());
+                    if (reponseSoumise == null) {
+                        // Support pour clé transmise sous forme de String
+                        reponseSoumise = ((Map<?, String>) (Map<?, ?>) reponsesSoumises).get(String.valueOf(q.getIdQuestion()));
+                    }
+                }
+
+                boolean estCorrect = areAnswersEqual(reponseSoumise, q.getReponse());
 
                 int pointsGagnes = estCorrect ? pointsQuestion : 0;
                 scoreQuestionsObtenu += pointsGagnes;
+
+                log.info("Évaluation Quiz ID={} Q#{}: soumise='{}', attendue='{}', correct={}",
+                        quiz.getIdQuiz(), q.getIdQuestion(), reponseSoumise, q.getReponse(), estCorrect);
 
                 details.add(QuizResultDTO.QuestionResultDetailDTO.builder()
                         .idQuestion(q.getIdQuestion())
@@ -135,17 +147,29 @@ public class QuizServiceImpl implements QuizService {
         String messageProgression = "Connectez-vous pour enregistrer vos points et gagner des badges Bambara !";
 
         utilisateurModel userConnecte = SecurityUtils.getCurrentUser();
+        Integer targetUserId = null;
         if (userConnecte != null && userConnecte.getIdUsers() > 0) {
+            targetUserId = Integer.valueOf(userConnecte.getIdUsers());
+        } else if (submission.getUserId() != null && submission.getUserId() > 0) {
+            targetUserId = submission.getUserId().intValue();
+        }
+
+        if (targetUserId != null && targetUserId > 0) {
             try {
                 String descriptionGain = "Quiz : " + quiz.getNomQuiz()
                         + (estParfait ? " (Score parfait 100%)" : " (Terminé)");
 
+                // Référence d'activité : si un sessionId est transmis par le client, on l'utilise pour garantir l'unicité par partie
+                String refActivite = (submission.getSessionId() != null && !submission.getSessionId().isBlank())
+                        ? "QUIZ_" + quiz.getIdQuiz() + "_" + submission.getSessionId()
+                        : "QUIZ_" + quiz.getIdQuiz() + "_" + System.currentTimeMillis();
+
                 ProgressionResponseDTO progression = badgeProgressionService.attribuerPoints(
-                        userConnecte.getIdUsers(),
+                        targetUserId,
                         "QUIZ",
                         pointsGagnesTotal,
                         descriptionGain,
-                        "QUIZ_" + quiz.getIdQuiz()
+                        refActivite
                 );
 
                 pointsTotauxUtilisateur = progression.getPoints();
@@ -154,9 +178,9 @@ public class QuizServiceImpl implements QuizService {
                 progressionPourcent = progression.getProgression();
                 messageProgression = progression.getMessage();
                 log.info("Points attribués à l'utilisateur ID={} pour le Quiz ID={} : +{} points (Nouveau total={})",
-                        userConnecte.getIdUsers(), quiz.getIdQuiz(), pointsGagnesTotal, pointsTotauxUtilisateur);
+                        targetUserId, quiz.getIdQuiz(), pointsGagnesTotal, pointsTotauxUtilisateur);
             } catch (Exception e) {
-                log.warn("Impossible d'attribuer les points pour l'utilisateur ID={} : {}", userConnecte.getIdUsers(), e.getMessage());
+                log.warn("Impossible d'attribuer les points pour l'utilisateur ID={} : {}", targetUserId, e.getMessage());
                 messageProgression = e.getMessage();
             }
         }
@@ -241,15 +265,17 @@ public class QuizServiceImpl implements QuizService {
     }
 
     private QuizResponseDTO mapToResponseDTO(QuizModel quiz) {
-        boolean isAdmin = SecurityUtils.isAdmin();
         List<QuestionResponseDTO> questionDTOs = quiz.getQuestions() == null ? Collections.emptyList()
                 : quiz.getQuestions().stream()
                         .map(q -> QuestionResponseDTO.builder()
                                 .idQuestion(q.getIdQuestion())
                                 .nomQuestion(q.getNomQuestion())
-                                .reponse(isAdmin ? q.getReponse() : null)
-                                .points(q.getPoints())
+                                .reponse(q.getReponse())
+                                .points((q.getPoints() != null && q.getPoints() > 0) ? q.getPoints() : 10)
                                 .duree(q.getDuree())
+                                .propositions(q.getPropositions() != null
+                                        ? q.getPropositions().stream().map(PropositionModel::getNomProposition).collect(Collectors.toList())
+                                        : Collections.emptyList())
                                 .build())
                         .collect(Collectors.toList());
 
@@ -262,5 +288,24 @@ public class QuizServiceImpl implements QuizService {
                 .point(quiz.getPoint())
                 .questions(questionDTOs)
                 .build();
+    }
+
+    private boolean areAnswersEqual(String ans1, String ans2) {
+        if (ans1 == null || ans2 == null) {
+            return false;
+        }
+        return normalizeText(ans1).equalsIgnoreCase(normalizeText(ans2));
+    }
+
+    private String normalizeText(String text) {
+        if (text == null) {
+            return "";
+        }
+        return text.trim()
+                .replace('\u00A0', ' ')
+                .replace('\u2019', '\'')
+                .replace('\u2018', '\'')
+                .replace('`', '\'')
+                .replaceAll("\\s+", " ");
     }
 }

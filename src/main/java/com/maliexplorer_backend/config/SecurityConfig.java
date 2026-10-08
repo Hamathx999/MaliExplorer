@@ -87,7 +87,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/presidents/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/carte/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/quiz/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/quiz/soumettre").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/questions/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/propositions/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/opportunites/**").permitAll()
                         // Toutes autres requêtes doivent être authentifiées
                         .anyRequest().authenticated())

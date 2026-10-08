@@ -34,3 +34,4 @@ build/
 /src/main/resources/application.properties
 src/main/resources/*.json
 src/main/resources/application.properties
+maliexplorer-backend/src/main/resources/firebase-service-account.json

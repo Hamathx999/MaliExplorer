@@ -10,8 +10,9 @@ import lombok.*;
 @Table(name = "propositions")
 
 public class PropositionModel {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idProposition;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idProposition;
     private String nomProposition;
 
     @ManyToOne

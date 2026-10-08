@@ -7,7 +7,7 @@ public interface PropositionService {
 
     PropositionModel creerProposition(PropositionModel proposition, Long idQuestion);
 
-    List<PropositionModel> ObtenirPropositionsParQuestion(Long idQuestion);
+    List<PropositionModel> obtenirPropositionsParQuestion(Long idQuestion);
 
     PropositionModel obtenirPropositionParId(Long id);
 

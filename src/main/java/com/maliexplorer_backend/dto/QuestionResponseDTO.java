@@ -18,5 +18,6 @@ public class QuestionResponseDTO {
     private String reponse;
     private Integer points;
     private Integer duree;
+    private java.util.List<String> propositions;
 }
 
