@@ -1,7 +1,7 @@
 package com.maliexplorer_backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,16 +20,29 @@ public class VilleRequestDTO {
 
     private String region;
 
+    @JsonAlias("population")
     private String nbreHbt;
 
     private String description;
 
     private String cordonnees;
 
-    @Size(max = 500, message = "L'URL de l'image ne peut pas dépasser 500 caractères")
-    @NotNull(message = "L'identifiant de la région est obligatoire")
+    @JsonAlias({"regionId", "id_region"})
     private Long idRegion;
 
-    public Long getRegionId() { return this.idRegion; }
-    public void setRegionId(Long idRegion) { this.idRegion = idRegion; }
+    public String getPopulation() {
+        return this.nbreHbt;
+    }
+
+    public void setPopulation(String population) {
+        this.nbreHbt = population;
+    }
+
+    public Long getRegionId() {
+        return this.idRegion;
+    }
+
+    public void setRegionId(Long idRegion) {
+        this.idRegion = idRegion;
+    }
 }

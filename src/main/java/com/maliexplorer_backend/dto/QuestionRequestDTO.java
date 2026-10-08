@@ -31,6 +31,7 @@ public class QuestionRequestDTO {
     @JsonAlias("theme")
     private String theme;
 
+    @JsonAlias({"idQuiz", "id_quiz"})
     private Long quizId;
 
     private String explication;

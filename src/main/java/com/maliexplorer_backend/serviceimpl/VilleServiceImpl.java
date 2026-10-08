@@ -13,6 +13,7 @@ import com.maliexplorer_backend.service.VilleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,14 +55,15 @@ public class VilleServiceImpl implements VilleService {
     public VilleResponseDTO createVille(VilleRequestDTO requestDTO) {
         RegionModel regionParent = null;
         if (requestDTO.getRegionId() != null) {
-            regionParent = regionRepository.findById(requestDTO.getRegionId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Région introuvable avec l'ID : " + requestDTO.getRegionId()));
+            regionParent = regionRepository.findById(requestDTO.getRegionId()).orElse(null);
+        }
+        if (regionParent == null && StringUtils.hasText(requestDTO.getRegion())) {
+            regionParent = regionRepository.findByNomRegionIgnoreCase(requestDTO.getRegion().trim()).orElse(null);
         }
 
         VilleModel ville = VilleModel.builder()
                 .nomVille(requestDTO.getNom())
-                .region(requestDTO.getRegion())
+                .region(requestDTO.getRegion() != null ? requestDTO.getRegion() : (regionParent != null ? regionParent.getNomRegion() : "Mali"))
                 .nbreHbt(requestDTO.getNbreHbt())
                 .description(requestDTO.getDescription())
                 .cordonnees(requestDTO.getCordonnees())
@@ -76,13 +78,15 @@ public class VilleServiceImpl implements VilleService {
     public VilleResponseDTO updateVille(Long id, VilleRequestDTO requestDTO) {
         VilleModel ville = findVilleOrThrow(id);
 
+        RegionModel regionParent = null;
         if (requestDTO.getRegionId() != null) {
-            RegionModel regionParent = regionRepository.findById(requestDTO.getRegionId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Région introuvable avec l'ID : " + requestDTO.getRegionId()));
+            regionParent = regionRepository.findById(requestDTO.getRegionId()).orElse(null);
+        }
+        if (regionParent == null && StringUtils.hasText(requestDTO.getRegion())) {
+            regionParent = regionRepository.findByNomRegionIgnoreCase(requestDTO.getRegion().trim()).orElse(null);
+        }
+        if (regionParent != null) {
             ville.setRegionParent(regionParent);
-        } else {
-            ville.setRegionParent(null);
         }
 
         ville.setNomVille(requestDTO.getNom());
