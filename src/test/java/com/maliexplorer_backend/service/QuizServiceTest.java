@@ -38,10 +38,10 @@ class QuizServiceTest {
                 .reponse("Niani")
                 .build();
 
-        PropositionModel p1 = new PropositionModel(1, "Niani", null);
-        PropositionModel p2 = new PropositionModel(2, "Tombouctou", null);
-        PropositionModel p3 = new PropositionModel(3, "Gao", null);
-        PropositionModel p4 = new PropositionModel(4, "Kouroussa", null);
+        PropositionModel p1 = new PropositionModel(1L, "Niani", null);
+        PropositionModel p2 = new PropositionModel(2L, "Tombouctou", null);
+        PropositionModel p3 = new PropositionModel(3L, "Gao", null);
+        PropositionModel p4 = new PropositionModel(4L, "Kouroussa", null);
 
         question.setPropositions(List.of(p1, p2, p3, p4));
 

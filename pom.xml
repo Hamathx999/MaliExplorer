@@ -181,7 +181,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Maven Compiler Plugin avec Lombok annotation processor -->
+            <!-- Maven Compiler Plugin avec processeur d'annotations Lombok -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

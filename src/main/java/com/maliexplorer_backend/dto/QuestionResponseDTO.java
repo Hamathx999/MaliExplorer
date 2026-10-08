@@ -33,8 +33,5 @@ public class QuestionResponseDTO {
     private String reponse;
     private Integer points;
     private Integer duree;
-    private String theme;
-    private String explication;
-    private Long quizId;
-    private List<String> propositions;
+    private java.util.List<String> propositions;
 }
