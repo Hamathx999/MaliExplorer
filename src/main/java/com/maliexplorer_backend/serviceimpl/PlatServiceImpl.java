@@ -6,9 +6,11 @@ import com.maliexplorer_backend.dto.PlatResponseDTO;
 import com.maliexplorer_backend.dto.RegionSummaryDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
 import com.maliexplorer_backend.model.EthnieModel;
+import com.maliexplorer_backend.model.IngredientModel;
 import com.maliexplorer_backend.model.PlatModel;
 import com.maliexplorer_backend.model.RegionModel;
 import com.maliexplorer_backend.repository.EthnieRepository;
+import com.maliexplorer_backend.repository.IngredientRepository;
 import com.maliexplorer_backend.repository.PlatRepository;
 import com.maliexplorer_backend.repository.RegionRepository;
 import com.maliexplorer_backend.service.PlatService;
@@ -18,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +33,7 @@ public class PlatServiceImpl implements PlatService {
     private final PlatRepository platRepository;
     private final EthnieRepository ethnieRepository;
     private final RegionRepository regionRepository;
+    private final IngredientRepository ingredientRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -52,9 +57,19 @@ public class PlatServiceImpl implements PlatService {
                 .nomPlat(requestDTO.getNom())
                 .description(requestDTO.getDescription())
                 .nbrePersonnes(requestDTO.getNbrePersonnes())
+                .tempsPreparation(requestDTO.getTempsPreparation())
+                .imageUrl(requestDTO.getImageUrl())
+                .ingredients(new HashSet<>())
                 .ethnies(new ArrayList<>())
                 .regions(new ArrayList<>())
                 .build();
+
+        if (requestDTO.getIngredientIds() != null && !requestDTO.getIngredientIds().isEmpty()) {
+            List<IngredientModel> ingredients = ingredientRepository.findAllById(requestDTO.getIngredientIds());
+            plat.setIngredients(new HashSet<>(ingredients));
+        } else if (requestDTO.getIngredientModelList() != null && !requestDTO.getIngredientModelList().isEmpty()) {
+            plat.setIngredients(requestDTO.getIngredientModelList());
+        }
 
         if (requestDTO.getEthnieIds() != null && !requestDTO.getEthnieIds().isEmpty()) {
             List<EthnieModel> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
@@ -84,6 +99,19 @@ public class PlatServiceImpl implements PlatService {
         plat.setNomPlat(requestDTO.getNom());
         plat.setDescription(requestDTO.getDescription());
         plat.setNbrePersonnes(requestDTO.getNbrePersonnes());
+        if (requestDTO.getTempsPreparation() != null) {
+            plat.setTempsPreparation(requestDTO.getTempsPreparation());
+        }
+        if (requestDTO.getImageUrl() != null) {
+            plat.setImageUrl(requestDTO.getImageUrl());
+        }
+
+        if (requestDTO.getIngredientIds() != null) {
+            List<IngredientModel> ingredients = ingredientRepository.findAllById(requestDTO.getIngredientIds());
+            plat.setIngredients(new HashSet<>(ingredients));
+        } else if (requestDTO.getIngredientModelList() != null) {
+            plat.setIngredients(requestDTO.getIngredientModelList());
+        }
 
         if (requestDTO.getEthnieIds() != null) {
             List<EthnieModel> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
@@ -154,6 +182,9 @@ public class PlatServiceImpl implements PlatService {
                 .nom(plat.getNomPlat())
                 .description(plat.getDescription())
                 .nbrePersonnes(plat.getNbrePersonnes())
+                .tempsPreparation(plat.getTempsPreparation())
+                .imageUrl(plat.getImageUrl())
+                .ingredientModelList(plat.getIngredients())
                 .regions(regions)
                 .ethnies(ethnies)
                 .build();

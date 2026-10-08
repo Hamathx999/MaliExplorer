@@ -214,6 +214,7 @@ public class QuizServiceImpl implements QuizService {
                 .description(requestDTO.getDescription())
                 .imageQuiz(requestDTO.getImageQuiz())
                 .categorie(requestDTO.getCategorie())
+                .point(requestDTO.getPoint() != null ? requestDTO.getPoint() : 100)
                 .build();
 
         QuizModel saved = quizRepository.save(quiz);
@@ -228,6 +229,9 @@ public class QuizServiceImpl implements QuizService {
         quiz.setDescription(requestDTO.getDescription());
         quiz.setImageQuiz(requestDTO.getImageQuiz());
         quiz.setCategorie(requestDTO.getCategorie());
+        if (requestDTO.getPoint() != null) {
+            quiz.setPoint(requestDTO.getPoint());
+        }
 
         QuizModel updated = quizRepository.save(quiz);
         return mapToResponseDTO(updated);

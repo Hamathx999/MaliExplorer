@@ -33,8 +33,15 @@ public class QuestionModel {
     @Builder.Default
     private Integer points = 0;
 
+    @Column(length = 100)
+    @Builder.Default
+    private String theme = "Culture générale";
+
     @Builder.Default
     private Integer duree = 30; // en secondes
+
+    @Column(columnDefinition = "TEXT")
+    private String explication;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_quiz")

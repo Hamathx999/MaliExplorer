@@ -22,4 +22,7 @@ public class LieuHistoriqueRequestDTO {
     private Double longitude;
     private String panorama360Url;
     private Long villeId;
+    private String nomVille;
+    private String ville;
+    private String region;
 }

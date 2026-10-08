@@ -20,4 +20,6 @@ public class LieuHistoriqueResponseDTO {
     private Double longitude;
     private String panorama360Url;
     private VilleSummaryDTO ville;
+    private String region;
+    private String nomVille;
 }
