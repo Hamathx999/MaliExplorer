@@ -1,5 +1,5 @@
 package com.maliexplorer_backend.model;
-
+//
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
