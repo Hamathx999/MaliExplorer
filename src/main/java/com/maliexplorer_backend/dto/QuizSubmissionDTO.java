@@ -23,4 +23,7 @@ public class QuizSubmissionDTO {
     // Map: idQuestion -> reponseChoisie
     @NotEmpty(message = "Les réponses sont obligatoires")
     private Map<Long, String> reponses;
+
+    // Identifiant unique de session de jeu pour éviter les doubles soumissions accidentelles
+    private String sessionId;
 }

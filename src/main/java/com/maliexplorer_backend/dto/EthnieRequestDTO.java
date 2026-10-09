@@ -1,5 +1,6 @@
 package com.maliexplorer_backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -17,16 +18,25 @@ public class EthnieRequestDTO {
 
     @NotBlank(message = "Le nom de l'ethnie est obligatoire")
     @Size(max = 100, message = "Le nom ne peut pas dépasser 100 caractères")
+    @JsonAlias({"nomEthnie", "nom"})
     private String nom;
 
     private String region;
 
     private String population;
 
-    @Size(max = 100, message = "La langue ne peut pas dépasser 100 caractères")
+    @JsonAlias({"langues", "langue"})
+    private String langue;
+
     private String description;
 
-    @Size(max = 500, message = "L'URL de l'image ne peut pas dépasser 500 caractères")
+    @Size(max = 5000, message = "L'URL de l'image ne peut pas dépasser 5000 caractères")
+    @JsonAlias({"image", "photoUrl", "image_url"})
+    private String imageUrl;
+
+    @JsonAlias({"images", "imageUrls"})
+    private List<String> images;
+
     private List<Long> regionIds;
 
     private List<Long> platIds;

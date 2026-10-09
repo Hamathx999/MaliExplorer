@@ -2,7 +2,6 @@ package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.dto.FavoriResponseDTO;
 import com.maliexplorer_backend.exception.BadRequestException;
-import com.maliexplorer_backend.exception.ResourceNotFoundException;
 import com.maliexplorer_backend.model.*;
 import com.maliexplorer_backend.repository.ArticleRepository;
 import com.maliexplorer_backend.repository.FavoriRepository;
