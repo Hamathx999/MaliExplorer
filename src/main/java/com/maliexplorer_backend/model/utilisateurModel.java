@@ -42,7 +42,11 @@ public class utilisateurModel {
 
     private String adresse;
 
+    private String telephone;
+
     private String photoUrl;
+
+    private String pieceIdentite;
 
     private Date dateCreation;
 

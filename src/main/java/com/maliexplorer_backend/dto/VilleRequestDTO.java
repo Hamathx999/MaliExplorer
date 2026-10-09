@@ -27,6 +27,13 @@ public class VilleRequestDTO {
 
     private String cordonnees;
 
+    @Size(max = 5000, message = "L'URL de l'image ne peut pas dépasser 5000 caractères")
+    @JsonAlias({"image", "photoUrl", "image_url"})
+    private String imageUrl;
+
+    @JsonAlias({"images", "imageUrls"})
+    private java.util.List<String> images;
+
     @JsonAlias({"regionId", "id_region"})
     private Long idRegion;
 

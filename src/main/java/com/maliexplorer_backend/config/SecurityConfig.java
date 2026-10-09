@@ -93,6 +93,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/opportunites/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ingredients/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/evenements/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/images", "/api/images/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/images", "/api/images/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/upload", "/api/upload/**").permitAll()
                         // Toutes autres requêtes doivent être authentifiées
                         .anyRequest().authenticated())
                 .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

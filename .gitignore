@@ -31,7 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
-/src/main/resources/application.properties
+/src/main/resources/application-local.properties
 src/main/resources/*.json
 src/main/resources/application.properties
 maliexplorer-backend/src/main/resources/firebase-service-account.json

@@ -36,4 +36,14 @@ public class QuizResponseDTO {
     public Integer getPoints() {
         return this.point;
     }
+
+    @JsonProperty("imageUrl")
+    public String getImageUrl() {
+        return this.imageQuiz;
+    }
+
+    @JsonProperty("logoUrl")
+    public String getLogoUrl() {
+        return this.imageQuiz;
+    }
 }

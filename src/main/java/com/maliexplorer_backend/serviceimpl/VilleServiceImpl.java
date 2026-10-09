@@ -61,12 +61,18 @@ public class VilleServiceImpl implements VilleService {
             regionParent = regionRepository.findByNomRegionIgnoreCase(requestDTO.getRegion().trim()).orElse(null);
         }
 
+        String resolvedImageUrl = requestDTO.getImageUrl();
+        if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
+            resolvedImageUrl = String.join(",", requestDTO.getImages());
+        }
+
         VilleModel ville = VilleModel.builder()
                 .nomVille(requestDTO.getNom())
                 .region(requestDTO.getRegion() != null ? requestDTO.getRegion() : (regionParent != null ? regionParent.getNomRegion() : "Mali"))
                 .nbreHbt(requestDTO.getNbreHbt())
                 .description(requestDTO.getDescription())
                 .cordonnees(requestDTO.getCordonnees())
+                .imageUrl(resolvedImageUrl)
                 .regionParent(regionParent)
                 .build();
 
@@ -94,6 +100,11 @@ public class VilleServiceImpl implements VilleService {
         ville.setNbreHbt(requestDTO.getNbreHbt());
         ville.setDescription(requestDTO.getDescription());
         ville.setCordonnees(requestDTO.getCordonnees());
+        if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
+            ville.setImageUrl(String.join(",", requestDTO.getImages()));
+        } else if (requestDTO.getImageUrl() != null) {
+            ville.setImageUrl(requestDTO.getImageUrl());
+        }
 
         VilleModel updated = villeRepository.save(ville);
         return mapToResponseDTO(updated);
@@ -138,6 +149,14 @@ public class VilleServiceImpl implements VilleService {
                                 .build())
                         .collect(Collectors.toList());
 
+        List<String> imagesList = (ville.getImageUrl() != null && !ville.getImageUrl().isBlank())
+                ? java.util.Arrays.stream(ville.getImageUrl().split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList())
+                : java.util.Collections.emptyList();
+        String mainImageUrl = imagesList.isEmpty() ? null : imagesList.get(0);
+
         return VilleResponseDTO.builder()
                 .id(ville.getIdVille())
                 .nom(ville.getNomVille())
@@ -145,6 +164,8 @@ public class VilleServiceImpl implements VilleService {
                 .nbreHbt(ville.getNbreHbt())
                 .description(ville.getDescription())
                 .cordonnees(ville.getCordonnees())
+                .imageUrl(mainImageUrl)
+                .images(imagesList)
                 .regionParent(regionSummary)
                 .lieuxHistoriques(lieuxHistoriques)
                 .build();
