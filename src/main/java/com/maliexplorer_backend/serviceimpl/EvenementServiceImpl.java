@@ -30,10 +30,11 @@ public class EvenementServiceImpl implements EvenementService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public EvenementModel getById(Long id) {
-        return repository.findById(id)
+        EvenementModel e = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Événement introuvable avec l'id " + id));
+        e.setVues(e.getVues() == null ? 1L : e.getVues() + 1);
+        return repository.save(e);
     }
 
     @Override

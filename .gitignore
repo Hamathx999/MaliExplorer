@@ -35,3 +35,10 @@ build/
 src/main/resources/*.json
 src/main/resources/application.properties
 maliexplorer-backend/src/main/resources/firebase-service-account.json
+
+# Fichiers de secrets locaux
+.env
+.env.*
+.env.properties
+application-local.properties
+src/main/resources/application-local.properties
