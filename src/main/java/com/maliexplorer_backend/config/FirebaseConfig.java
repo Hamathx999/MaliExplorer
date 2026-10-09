@@ -28,9 +28,15 @@ public class FirebaseConfig {
         }
 
         try {
-            Resource resource = serviceAccountPath.startsWith("classpath:")
-                    ? new ClassPathResource(serviceAccountPath.replace("classpath:", ""))
-                    : new FileSystemResource(serviceAccountPath);
+            Resource resource = null;
+            Resource localRes = new ClassPathResource("firebase-service-account-local.json");
+            if (localRes.exists()) {
+                resource = localRes;
+            } else {
+                resource = serviceAccountPath.startsWith("classpath:")
+                        ? new ClassPathResource(serviceAccountPath.replace("classpath:", ""))
+                        : new FileSystemResource(serviceAccountPath);
+            }
 
             FirebaseOptions options = null;
 

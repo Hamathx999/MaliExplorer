@@ -1,0 +1,14 @@
+# ====================================================================
+# MODÈLE DE CONFIGURATION SUPABASE POUR L'ÉQUIPE (Versionné dans Git)
+# ====================================================================
+# Pour utiliser votre propre configuration locale :
+# 1. Copiez ce fichier et renommez-le en 'application-local.properties' :
+#    cp application-local.properties.example application-local.properties
+# 2. Renseignez la clé secrète fournie en privé par votre coéquipier.
+# 3. Le fichier 'application-local.properties' est ignoré par Git et ne sera jamais exposé.
+# ====================================================================
+
+supabase.url=https://dzhqwkpwaljqsjwoqvso.supabase.co
+supabase.key=VOTRE_CLE_SECRETE_SUPABASE_ICI
+supabase.bucket.default=maliexplorer-media
+

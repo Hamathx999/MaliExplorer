@@ -54,6 +54,12 @@ public class EvenementModel {
     @Builder.Default
     private Statut statut = Statut.EN_ATTENTE;
 
+    @Builder.Default
+    private Long vues = 0L;
+
+    @Builder.Default
+    private Long nombreCommentaires = 0L;
+
     @Column(columnDefinition = "TEXT")
     private String motifRejet;
 
@@ -63,6 +69,8 @@ public class EvenementModel {
     void onCreate() {
         if (dateSoumission == null) dateSoumission = LocalDateTime.now();
         if (statut == null) statut = Statut.EN_ATTENTE;
+        if (vues == null) vues = 0L;
+        if (nombreCommentaires == null) nombreCommentaires = 0L;
     }
 }
 
