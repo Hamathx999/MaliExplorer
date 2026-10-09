@@ -68,7 +68,9 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         existant.setNom(utilisateurModifie.getNom());
         existant.setEmail(utilisateurModifie.getEmail());
         existant.setAdresse(utilisateurModifie.getAdresse());
+        existant.setTelephone(utilisateurModifie.getTelephone());
         existant.setPhotoUrl(utilisateurModifie.getPhotoUrl());
+        existant.setPieceIdentite(utilisateurModifie.getPieceIdentite());
         existant.setRole(utilisateurModifie.getRole());
 
 

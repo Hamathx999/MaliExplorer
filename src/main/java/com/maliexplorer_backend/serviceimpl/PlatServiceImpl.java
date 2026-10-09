@@ -53,12 +53,26 @@ public class PlatServiceImpl implements PlatService {
 
     @Override
     public PlatResponseDTO createPlat(PlatRequestDTO requestDTO) {
+        String resolvedImageUrl = null;
+        if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
+            List<String> validImages = requestDTO.getImages().stream()
+                    .filter(img -> img != null && !img.trim().isEmpty())
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+            if (!validImages.isEmpty()) {
+                resolvedImageUrl = String.join(",", validImages);
+            }
+        }
+        if ((resolvedImageUrl == null || resolvedImageUrl.isBlank()) && requestDTO.getImageUrl() != null && !requestDTO.getImageUrl().isBlank()) {
+            resolvedImageUrl = requestDTO.getImageUrl().trim();
+        }
+
         PlatModel plat = PlatModel.builder()
                 .nomPlat(requestDTO.getNom())
                 .description(requestDTO.getDescription())
                 .nbrePersonnes(requestDTO.getNbrePersonnes())
                 .tempsPreparation(requestDTO.getTempsPreparation())
-                .imageUrl(requestDTO.getImageUrl())
+                .imageUrl(resolvedImageUrl)
                 .ingredients(new HashSet<>())
                 .ethnies(new ArrayList<>())
                 .regions(new ArrayList<>())
@@ -102,20 +116,48 @@ public class PlatServiceImpl implements PlatService {
         if (requestDTO.getTempsPreparation() != null) {
             plat.setTempsPreparation(requestDTO.getTempsPreparation());
         }
-        if (requestDTO.getImageUrl() != null) {
-            plat.setImageUrl(requestDTO.getImageUrl());
+        String resolvedImageUrl = null;
+        if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
+            List<String> validImages = requestDTO.getImages().stream()
+                    .filter(img -> img != null && !img.trim().isEmpty())
+                    .map(String::trim)
+                    .collect(Collectors.toList());
+            if (!validImages.isEmpty()) {
+                resolvedImageUrl = String.join(",", validImages);
+            }
+        }
+        if ((resolvedImageUrl == null || resolvedImageUrl.isBlank()) && requestDTO.getImageUrl() != null && !requestDTO.getImageUrl().isBlank()) {
+            resolvedImageUrl = requestDTO.getImageUrl().trim();
+        }
+        if (resolvedImageUrl != null && !resolvedImageUrl.isBlank()) {
+            plat.setImageUrl(resolvedImageUrl);
         }
 
         if (requestDTO.getIngredientIds() != null) {
             List<IngredientModel> ingredients = ingredientRepository.findAllById(requestDTO.getIngredientIds());
-            plat.setIngredients(new HashSet<>(ingredients));
+            if (plat.getIngredients() == null) {
+                plat.setIngredients(new HashSet<>());
+            } else {
+                plat.getIngredients().clear();
+            }
+            plat.getIngredients().addAll(ingredients);
         } else if (requestDTO.getIngredientModelList() != null) {
-            plat.setIngredients(requestDTO.getIngredientModelList());
+            if (plat.getIngredients() == null) {
+                plat.setIngredients(new HashSet<>());
+            } else {
+                plat.getIngredients().clear();
+            }
+            plat.getIngredients().addAll(requestDTO.getIngredientModelList());
         }
 
         if (requestDTO.getEthnieIds() != null) {
             List<EthnieModel> ethnies = ethnieRepository.findAllById(requestDTO.getEthnieIds());
-            plat.setEthnies(ethnies);
+            if (plat.getEthnies() == null) {
+                plat.setEthnies(new ArrayList<>());
+            } else {
+                plat.getEthnies().clear();
+            }
+            plat.getEthnies().addAll(ethnies);
         }
 
         PlatModel updated = platRepository.save(plat);
@@ -177,13 +219,22 @@ public class PlatServiceImpl implements PlatService {
                                 .build())
                         .collect(Collectors.toList());
 
+        List<String> imagesList = (plat.getImageUrl() != null && !plat.getImageUrl().isBlank())
+                ? java.util.Arrays.stream(plat.getImageUrl().split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList())
+                : java.util.Collections.emptyList();
+        String mainImageUrl = imagesList.isEmpty() ? null : imagesList.get(0);
+
         return PlatResponseDTO.builder()
                 .id(plat.getIdPlat())
                 .nom(plat.getNomPlat())
                 .description(plat.getDescription())
                 .nbrePersonnes(plat.getNbrePersonnes())
                 .tempsPreparation(plat.getTempsPreparation())
-                .imageUrl(plat.getImageUrl())
+                .imageUrl(mainImageUrl)
+                .images(imagesList)
                 .ingredientModelList(plat.getIngredients())
                 .regions(regions)
                 .ethnies(ethnies)

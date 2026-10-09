@@ -12,6 +12,8 @@ import java.util.Set;
 @Table(name = "plats")
 @Getter
 @Setter
+@ToString(exclude = {"ingredients", "regions", "ethnies"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -19,6 +21,7 @@ public class PlatModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long idPlat;
 
     @Column(nullable = false, length = 150)
@@ -31,7 +34,7 @@ public class PlatModel {
 
     private Integer tempsPreparation;
 
-    @Column(length = 500)
+    @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
 //    @Column(columnDefinition = "TEXT")

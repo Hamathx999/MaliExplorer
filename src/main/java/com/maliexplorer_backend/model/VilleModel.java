@@ -35,6 +35,9 @@ public class VilleModel {
 
     private Double longitude;
 
+    @Column(columnDefinition = "TEXT")
+    private String imageUrl;
+
     private Long idUsers;
 
     @ManyToOne(fetch = FetchType.LAZY)
