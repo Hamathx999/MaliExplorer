@@ -20,7 +20,13 @@ public class VilleResponseDTO {
     private String description;
     private String cordonnees;
     private String imageUrl;
+<<<<<<< HEAD
+    private String superficie;
+    private Boolean misEnAvantHome;
+    private Integer ordreHome;
+=======
     private List<String> images;
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
     private RegionSummaryDTO regionParent;
     private List<LieuHistoriqueSummaryDTO> lieuxHistoriques;
 }

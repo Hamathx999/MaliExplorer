@@ -74,6 +74,14 @@ public class FavoriController {
         return ResponseEntity.ok(favoriService.getMesFavorisArticles());
     }
 
+    @GetMapping("/recommandations")
+    @Operation(summary = "Obtenir des recommandations personnalisées basées sur les favoris de l'utilisateur")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<FavoriResponseDTO>> getRecommandations() {
+        return ResponseEntity.ok(favoriService.getRecommandations());
+    }
+
+
     @GetMapping("/lieux/{lieuId}/exists")
     @Operation(summary = "Vérifier si un lieu historique est dans les favoris")
     @PreAuthorize("isAuthenticated()")

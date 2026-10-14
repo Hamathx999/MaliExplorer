@@ -88,14 +88,24 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/carte/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/quiz/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/quiz/soumettre").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/quiz/abandonner").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/questions/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/propositions/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/opportunites/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/ingredients/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/evenements/**").permitAll()
+<<<<<<< HEAD
+                        .requestMatchers(HttpMethod.GET, "/api/home-slides/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/religions/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/recherche/**").permitAll()
+                        // Téléversement d'images et ressources statiques locales
+                        .requestMatchers("/api/images/**").permitAll()
+                        .requestMatchers("/api/uploads/**").permitAll()
+=======
                         .requestMatchers(HttpMethod.GET, "/api/images", "/api/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/images", "/api/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/upload", "/api/upload/**").permitAll()
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                         // Toutes autres requêtes doivent être authentifiées
                         .anyRequest().authenticated())
                 .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -188,6 +188,30 @@ public class BadgeProgressionServiceImpl implements BadgeProgressionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé avec l'email : " + email));
     }
 
+    @Override
+    @Transactional
+    public void supprimerHistoriquePoint(Long idHistorique) {
+        utilisateurModel user = getCurrentAuthenticatedUser();
+        HistoriquePointModel item = historiquePointRepository.findById(idHistorique)
+                .orElseThrow(() -> new ResourceNotFoundException("Entrée d'historique non trouvée avec l'ID : " + idHistorique));
+
+        // Vérifier que l'entrée appartient bien à l'utilisateur connecté (ou admin)
+        if (item.getUtilisateur().getIdUsers() != user.getIdUsers()) {
+            throw new BadRequestException("Vous n'êtes pas autorisé à supprimer cette entrée d'historique.");
+        }
+
+        historiquePointRepository.delete(item);
+        log.info("Entrée d'historique ID={} supprimée pour l'utilisateur ID={}", idHistorique, user.getIdUsers());
+    }
+
+    @Override
+    @Transactional
+    public void viderMonHistorique() {
+        utilisateurModel user = getCurrentAuthenticatedUser();
+        historiquePointRepository.deleteByUtilisateurIdUsers(user.getIdUsers());
+        log.info("Historique complet vidé pour l'utilisateur ID={}", user.getIdUsers());
+    }
+
     private HistoriquePointResponseDTO mapToHistoriqueDTO(HistoriquePointModel h) {
         return HistoriquePointResponseDTO.builder()
                 .idHistorique(h.getIdHistorique())

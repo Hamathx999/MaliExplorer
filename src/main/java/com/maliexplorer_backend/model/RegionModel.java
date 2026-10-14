@@ -24,6 +24,18 @@ public class RegionModel {
 
     private Long nbreHbt;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    @Column(length = 100)
+    private String chefLieu;
+
+    @Column(length = 50)
+    private String superficie;
+
+    @Column(length = 500)
+    private String imageUrl;
+
     @OneToMany(mappedBy = "regionParent", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<VilleModel> villes = new ArrayList<>();

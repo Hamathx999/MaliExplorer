@@ -23,6 +23,7 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
 
     private final LieuHistoriqueRepository lieuHistoriqueRepository;
     private final VilleRepository villeRepository;
+    private final jakarta.persistence.EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -74,6 +75,8 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
                 .description(requestDTO.getDescription())
                 .epoque(requestDTO.getEpoque())
                 .cordonnees(requestDTO.getCordonnees())
+                .imageUrl(requestDTO.getImageUrl())
+                .classeUnesco(requestDTO.getClasseUnesco() != null ? requestDTO.getClasseUnesco() : false)
                 .panorama360Url(requestDTO.getPanorama360Url())
                 .latitude(requestDTO.getLatitude())
                 .longitude(requestDTO.getLongitude())
@@ -115,6 +118,8 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
         lieu.setDescription(requestDTO.getDescription());
         lieu.setEpoque(requestDTO.getEpoque());
         lieu.setCordonnees(requestDTO.getCordonnees());
+        if (requestDTO.getImageUrl() != null) lieu.setImageUrl(requestDTO.getImageUrl());
+        if (requestDTO.getClasseUnesco() != null) lieu.setClasseUnesco(requestDTO.getClasseUnesco());
         lieu.setPanorama360Url(requestDTO.getPanorama360Url());
         lieu.setLatitude(requestDTO.getLatitude());
         lieu.setLongitude(requestDTO.getLongitude());
@@ -126,6 +131,15 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
     @Override
     public void deleteLieu(Long id) {
         LieuHistoriqueModel lieu = findLieuOrThrow(id);
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM favoris WHERE id_lieu = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {
+            // Pas de favoris associés
+        }
+
         lieuHistoriqueRepository.delete(lieu);
     }
 
@@ -188,6 +202,8 @@ public class LieuHistoriqueServiceImpl implements LieuHistoriqueService {
                 .cordonnees(lieu.getCordonnees())
                 .latitude(lieu.getLatitude())
                 .longitude(lieu.getLongitude())
+                .imageUrl(lieu.getImageUrl())
+                .classeUnesco(lieu.getClasseUnesco())
                 .panorama360Url(lieu.getPanorama360Url())
                 .nomVille(villeNom)
                 .region(regionNom != null && !regionNom.isBlank() ? regionNom : "Mali")

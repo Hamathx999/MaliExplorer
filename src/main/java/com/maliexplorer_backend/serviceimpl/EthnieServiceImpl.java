@@ -27,6 +27,7 @@ public class EthnieServiceImpl implements EthnieService {
 
     private final EthnieRepository ethnieRepository;
     private final RegionRepository regionRepository;
+    private final jakarta.persistence.EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -58,10 +59,16 @@ public class EthnieServiceImpl implements EthnieService {
         EthnieModel ethnie = EthnieModel.builder()
                 .nomEthnie(requestDTO.getNom())
                 .region(requestDTO.getRegion())
+                .ville(requestDTO.getVille())
+                .langues(requestDTO.getLangues())
                 .population(requestDTO.getPopulation())
                 .langue(requestDTO.getLangue())
                 .description(requestDTO.getDescription())
+<<<<<<< HEAD
+                .imageUrl(requestDTO.getImageUrl())
+=======
                 .imageUrl(resolvedImageUrl)
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .regions(new ArrayList<>())
                 .plats(new ArrayList<>())
                 .build();
@@ -93,16 +100,22 @@ public class EthnieServiceImpl implements EthnieService {
 
         ethnie.setNomEthnie(requestDTO.getNom());
         ethnie.setRegion(requestDTO.getRegion());
+        if (requestDTO.getVille() != null) ethnie.setVille(requestDTO.getVille());
+        if (requestDTO.getLangues() != null) ethnie.setLangues(requestDTO.getLangues());
         ethnie.setPopulation(requestDTO.getPopulation());
         if (requestDTO.getLangue() != null) {
             ethnie.setLangue(requestDTO.getLangue());
         }
         ethnie.setDescription(requestDTO.getDescription());
+<<<<<<< HEAD
+        if (requestDTO.getImageUrl() != null) ethnie.setImageUrl(requestDTO.getImageUrl());
+=======
         if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
             ethnie.setImageUrl(String.join(",", requestDTO.getImages()));
         } else if (requestDTO.getImageUrl() != null) {
             ethnie.setImageUrl(requestDTO.getImageUrl());
         }
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
 
         EthnieModel updated = ethnieRepository.save(ethnie);
         return mapToResponseDTO(updated);
@@ -111,6 +124,19 @@ public class EthnieServiceImpl implements EthnieService {
     @Override
     public void deleteEthnie(Long id) {
         EthnieModel ethnie = findEthnieOrThrow(id);
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM region_ethnie WHERE ethnie_id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM plat_ethnie WHERE ethnie_id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {}
+
         ethnieRepository.delete(ethnie);
     }
 
@@ -155,11 +181,17 @@ public class EthnieServiceImpl implements EthnieService {
                 .id(ethnie.getIdEthnie())
                 .nom(ethnie.getNomEthnie())
                 .region(ethnie.getRegion())
+                .ville(ethnie.getVille())
+                .langues(ethnie.getLangues())
                 .population(ethnie.getPopulation())
                 .langue(ethnie.getLangue())
                 .description(ethnie.getDescription())
+<<<<<<< HEAD
+                .imageUrl(ethnie.getImageUrl())
+=======
                 .imageUrl(mainImageUrl)
                 .images(imagesList)
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .regions(regions)
                 .plats(plats)
                 .build();

@@ -13,13 +13,17 @@ import lombok.NoArgsConstructor;
 public class LieuHistoriqueRequestDTO {
 
     @NotBlank(message = "Le nom du lieu historique est obligatoire")
+    @com.fasterxml.jackson.annotation.JsonAlias({"nom", "nomLieu", "nomLieuHisto"})
     private String nomLieuHisto;
 
     private String description;
     private String epoque;
+    @com.fasterxml.jackson.annotation.JsonAlias({"cordonnees", "coordonneesGps"})
     private String cordonnees;
     private Double latitude;
     private Double longitude;
+    private String imageUrl;
+    private Boolean classeUnesco;
     private String panorama360Url;
     private Long villeId;
     private String nomVille;

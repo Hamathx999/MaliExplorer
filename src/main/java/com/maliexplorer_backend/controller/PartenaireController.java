@@ -26,6 +26,7 @@ public class PartenaireController {
 
     private final OpportuniteService opportuniteService;
     private final utilisateurRepository userRepository;
+    private final com.maliexplorer_backend.repository.EvenementRepository evenementRepository;
 
     @PutMapping("/mon-projet")
     @PreAuthorize("hasRole('PARTENAIRE') or hasRole('ADMIN')")
@@ -50,6 +51,36 @@ public class PartenaireController {
     public ResponseEntity<OpportuniteResponseDTO> getMonProjet() {
         utilisateurModel currentUser = resolveCurrentUser();
         return ResponseEntity.ok(opportuniteService.getMonStatutPartenaire(currentUser.getIdUsers()));
+    }
+
+    @GetMapping("/statistiques")
+    @PreAuthorize("hasRole('PARTENAIRE') or hasRole('ADMIN')")
+    @Operation(summary = "Obtenir les statistiques réelles du partenaire connecté")
+    public ResponseEntity<java.util.Map<String, Object>> getStatistiques() {
+        utilisateurModel currentUser = resolveCurrentUser();
+        java.util.Map<String, Object> stats = new java.util.HashMap<>();
+        OpportuniteResponseDTO projet = opportuniteService.getMonStatutPartenaire(currentUser.getIdUsers());
+        long vues = 0L;
+        long commentaires = 0L;
+        long publications = 0L;
+
+        if (projet != null && projet.isRecherchePartenariat()) {
+            publications++;
+        }
+        if (currentUser.getRole() == com.maliexplorer_backend.model.RoleModel.promoteur) {
+            java.util.List<com.maliexplorer_backend.model.EvenementModel> events =
+                    evenementRepository.findByEmailOrganisateur(currentUser.getEmail());
+            publications += events.size();
+            for (com.maliexplorer_backend.model.EvenementModel ev : events) {
+                if (ev.getVues() != null) vues += ev.getVues();
+                if (ev.getNombreCommentaires() != null) commentaires += ev.getNombreCommentaires();
+            }
+        }
+        stats.put("vues", vues);
+        stats.put("commentaires", commentaires);
+        stats.put("publications", publications);
+        stats.put("statutModeration", projet != null && projet.getStatutModeration() != null ? projet.getStatutModeration().name() : "VALIDE");
+        return ResponseEntity.ok(stats);
     }
 
     private utilisateurModel resolveCurrentUser() {

@@ -23,13 +23,22 @@ public class EvenementController {
     private final EvenementService service;
 
     @GetMapping
-    @Operation(summary = "Lister les événements (filtre optionnel ?statut=EN_ATTENTE)")
+    @Operation(summary = "Lister les événements (public: événements validés par défaut, admin: tous)")
     public ResponseEntity<List<EvenementModel>> getAll(@RequestParam(required = false) EvenementModel.Statut statut) {
-        return ResponseEntity.ok(statut == null ? service.getAll() : service.getByStatut(statut));
+        if (statut != null) {
+            return ResponseEntity.ok(service.getByStatut(statut));
+        }
+        if (com.maliexplorer_backend.config.SecurityUtils.isAdmin()) {
+            return ResponseEntity.ok(service.getAll());
+        }
+        List<EvenementModel> valides = new java.util.ArrayList<>(service.getByStatut(EvenementModel.Statut.VALIDE));
+        valides.addAll(service.getByStatut(EvenementModel.Statut.APPROUVE));
+        return ResponseEntity.ok(valides);
     }
 
     @GetMapping("/en-attente")
-    @Operation(summary = "Lister les événements en attente de validation")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Lister les événements en attente de validation (Admin)")
     public ResponseEntity<List<EvenementModel>> getEnAttente() {
         return ResponseEntity.ok(service.getByStatut(EvenementModel.Statut.EN_ATTENTE));
     }
@@ -41,7 +50,8 @@ public class EvenementController {
     }
 
     @PostMapping
-    @Operation(summary = "Soumettre un événement")
+    @PreAuthorize("hasRole('PROMOTEUR') or hasRole('ADMIN')")
+    @Operation(summary = "Soumettre un événement (Promoteur ou Admin)")
     public ResponseEntity<EvenementModel> create(@Valid @RequestBody EvenementModel evenement) {
         return new ResponseEntity<>(service.create(evenement), HttpStatus.CREATED);
     }

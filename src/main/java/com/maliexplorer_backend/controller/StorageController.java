@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class StorageController {
 
     private final StorageService storageService;
+    private final com.maliexplorer_backend.repository.utilisateurRepository userRepository;
 
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
@@ -44,6 +45,18 @@ public class StorageController {
         }
 
         FileUploadResponseDTO response = storageService.uploadFile(file, folder);
+
+        // Si upload dans le dossier avatars, synchroniser automatiquement sur le profil MySQL de l'utilisateur
+        if ("avatars".equalsIgnoreCase(folder)) {
+            String email = SecurityUtils.getCurrentUserEmail();
+            if (email != null && !email.isBlank()) {
+                userRepository.findByEmail(email).ifPresent(user -> {
+                    user.setPhotoUrl(response.getFileUrl());
+                    userRepository.save(user);
+                });
+            }
+        }
+
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -88,6 +101,16 @@ public class StorageController {
             @RequestParam("file") MultipartFile file) {
 
         FileUploadResponseDTO response = storageService.uploadFile(file, "avatars");
+
+        // Persistance directe dans MySQL sur l'entité utilisateur connectée
+        String email = SecurityUtils.getCurrentUserEmail();
+        if (email != null && !email.isBlank()) {
+            userRepository.findByEmail(email).ifPresent(user -> {
+                user.setPhotoUrl(response.getFileUrl());
+                userRepository.save(user);
+            });
+        }
+
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 

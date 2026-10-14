@@ -31,6 +31,12 @@ public class LieuHistoriqueModel {
     private String cordonnees;
 
     @Column(length = 500)
+    private String imageUrl;
+
+    @Builder.Default
+    private Boolean classeUnesco = false;
+
+    @Column(length = 500)
     private String panorama360Url;
 
     private Double latitude;

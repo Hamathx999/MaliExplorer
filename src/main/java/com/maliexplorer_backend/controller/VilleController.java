@@ -28,6 +28,12 @@ public class VilleController {
         return ResponseEntity.ok(villeService.getAllVilles());
     }
 
+    @GetMapping("/home")
+    @Operation(summary = "Lister les villes mises en avant sur le carrousel du Home")
+    public ResponseEntity<List<VilleResponseDTO>> getHomeVilles() {
+        return ResponseEntity.ok(villeService.getHomeVilles());
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Obtenir les détails d'une ville par ID")
     public ResponseEntity<VilleResponseDTO> getVilleById(@PathVariable Long id) {

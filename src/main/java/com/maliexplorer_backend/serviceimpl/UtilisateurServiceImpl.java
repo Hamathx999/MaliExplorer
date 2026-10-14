@@ -4,8 +4,11 @@ import com.maliexplorer_backend.exception.ResourceNotFoundException;
 import com.maliexplorer_backend.model.utilisateurModel;
 import com.maliexplorer_backend.repository.utilisateurRepository;
 import com.maliexplorer_backend.service.UtilisateurService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -13,9 +16,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UtilisateurServiceImpl implements UtilisateurService {
 
     private final utilisateurRepository repository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     /**
      * CREATE : Créer un nouvel utilisateur
@@ -64,6 +71,18 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             throw new IllegalArgumentException("Cet email est déjà utilisé par un autre compte !");
         }
 
+<<<<<<< HEAD
+        if (utilisateurModifie.getPrenom() != null) existant.setPrenom(utilisateurModifie.getPrenom());
+        if (utilisateurModifie.getNom() != null) existant.setNom(utilisateurModifie.getNom());
+        if (utilisateurModifie.getEmail() != null) existant.setEmail(utilisateurModifie.getEmail());
+        if (utilisateurModifie.getAdresse() != null) existant.setAdresse(utilisateurModifie.getAdresse());
+        if (utilisateurModifie.getPhotoUrl() != null) existant.setPhotoUrl(utilisateurModifie.getPhotoUrl());
+        if (utilisateurModifie.getRole() != null) existant.setRole(utilisateurModifie.getRole());
+        if (utilisateurModifie.getStatut() != null && !utilisateurModifie.getStatut().isBlank()) {
+            existant.setStatut(utilisateurModifie.getStatut());
+        }
+        existant.setPoints(utilisateurModifie.getPoints());
+=======
         existant.setPrenom(utilisateurModifie.getPrenom());
         existant.setNom(utilisateurModifie.getNom());
         existant.setEmail(utilisateurModifie.getEmail());
@@ -73,6 +92,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         existant.setPieceIdentite(utilisateurModifie.getPieceIdentite());
         existant.setRole(utilisateurModifie.getRole());
 
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
 
         return repository.save(existant);
     }
@@ -85,6 +105,55 @@ public class UtilisateurServiceImpl implements UtilisateurService {
         if (!repository.existsById(id)) {
             throw new ResourceNotFoundException("utilisateurModel", "id", id);
         }
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM favoris WHERE id_users = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception ignored) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM touriste_quiz WHERE touriste_id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception ignored) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM historique_points WHERE touriste_id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception ignored) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM touriste WHERE id_users = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception ignored) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM guide WHERE id_users = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception ignored) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM artisan WHERE id_users = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception ignored) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM promoteur WHERE id_users = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception ignored) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM administrateur WHERE id_users = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception ignored) {}
+
         repository.deleteById(id);
     }
 }

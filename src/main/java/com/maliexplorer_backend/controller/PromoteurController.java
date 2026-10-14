@@ -23,7 +23,7 @@ public class PromoteurController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('PROMOTEUR') or hasRole('ADMIN')")
     public ResponseEntity<PromoteurResponseDTO> creerPromoteur(@Valid @RequestBody PromoteurRequestDTO promoteur) {
         PromoteurResponseDTO nouveau = service.creerPromoteur(promoteur);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
@@ -45,7 +45,7 @@ public class PromoteurController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('PROMOTEUR') or hasRole('ADMIN')")
     public ResponseEntity<PromoteurResponseDTO> mettreAJourPromoteur(@PathVariable int id,
             @Valid @RequestBody PromoteurRequestDTO promoteur) {
         return ResponseEntity.ok(service.mettreAJourPromoteur(id, promoteur));

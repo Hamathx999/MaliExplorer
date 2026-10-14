@@ -34,6 +34,7 @@ public class PlatServiceImpl implements PlatService {
     private final EthnieRepository ethnieRepository;
     private final RegionRepository regionRepository;
     private final IngredientRepository ingredientRepository;
+    private final jakarta.persistence.EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -72,7 +73,14 @@ public class PlatServiceImpl implements PlatService {
                 .description(requestDTO.getDescription())
                 .nbrePersonnes(requestDTO.getNbrePersonnes())
                 .tempsPreparation(requestDTO.getTempsPreparation())
+<<<<<<< HEAD
+                .imageUrl(requestDTO.getImageUrl())
+                .ingredientPrincipal(requestDTO.getIngredientPrincipal())
+                .region(requestDTO.getRegion())
+                .difficulte(requestDTO.getDifficulte())
+=======
                 .imageUrl(resolvedImageUrl)
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .ingredients(new HashSet<>())
                 .ethnies(new ArrayList<>())
                 .regions(new ArrayList<>())
@@ -132,6 +140,15 @@ public class PlatServiceImpl implements PlatService {
         if (resolvedImageUrl != null && !resolvedImageUrl.isBlank()) {
             plat.setImageUrl(resolvedImageUrl);
         }
+        if (requestDTO.getIngredientPrincipal() != null) {
+            plat.setIngredientPrincipal(requestDTO.getIngredientPrincipal());
+        }
+        if (requestDTO.getRegion() != null) {
+            plat.setRegion(requestDTO.getRegion());
+        }
+        if (requestDTO.getDifficulte() != null) {
+            plat.setDifficulte(requestDTO.getDifficulte());
+        }
 
         if (requestDTO.getIngredientIds() != null) {
             List<IngredientModel> ingredients = ingredientRepository.findAllById(requestDTO.getIngredientIds());
@@ -167,6 +184,25 @@ public class PlatServiceImpl implements PlatService {
     @Override
     public void deletePlat(Long id) {
         PlatModel plat = findPlatOrThrow(id);
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM plat_ingredient WHERE plat_id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM plat_ethnie WHERE plat_id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM region_plat WHERE plat_id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {}
+
         platRepository.delete(plat);
     }
 
@@ -233,8 +269,15 @@ public class PlatServiceImpl implements PlatService {
                 .description(plat.getDescription())
                 .nbrePersonnes(plat.getNbrePersonnes())
                 .tempsPreparation(plat.getTempsPreparation())
+<<<<<<< HEAD
+                .imageUrl(plat.getImageUrl())
+                .ingredientPrincipal(plat.getIngredientPrincipal())
+                .region(plat.getRegion())
+                .difficulte(plat.getDifficulte())
+=======
                 .imageUrl(mainImageUrl)
                 .images(imagesList)
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .ingredientModelList(plat.getIngredients())
                 .regions(regions)
                 .ethnies(ethnies)

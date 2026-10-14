@@ -54,11 +54,22 @@ public class AuthServiceImpl implements AuthService {
             utilisateurModel user;
             if (userOpt.isPresent()) {
                 user = userOpt.get();
+                if ("BLOQUE".equalsIgnoreCase(user.getStatut())) {
+                    log.warn("Tentative de connexion par un utilisateur bloqué : {}", user.getEmail());
+                    throw new BadRequestException("Votre compte a été bloqué par un administrateur. Veuillez contacter le support.");
+                }
                 if (!StringUtils.hasText(user.getFirebaseUid())) {
                     user.setFirebaseUid(uid);
                 }
                 if (StringUtils.hasText(picture) && !StringUtils.hasText(user.getPhotoUrl())) {
                     user.setPhotoUrl(picture);
+                }
+                // Élévation automatique si compte administrateur reconnu
+                if (email != null && (email.equalsIgnoreCase("famoryjosuesissoko@gmail.com") || email.equalsIgnoreCase("hamath.o.diallo18@gmail.com"))) {
+                    if (user.getRole() != RoleModel.admin && user.getRole() != RoleModel.superAdmin) {
+                        log.info("Élévation automatique lors du login de {} au rôle ADMIN", email);
+                        user.setRole(RoleModel.admin);
+                    }
                 }
                 user = userRepository.save(user);
             } else {
@@ -67,18 +78,23 @@ public class AuthServiceImpl implements AuthService {
                 String prenom = parts[0];
                 String nom = parts.length > 1 ? parts[1] : "MaliExplorer";
 
+                RoleModel initialRole = RoleModel.touriste;
+                if (email != null && (email.equalsIgnoreCase("famoryjosuesissoko@gmail.com") || email.equalsIgnoreCase("hamath.o.diallo18@gmail.com"))) {
+                    initialRole = RoleModel.admin;
+                }
+
                 user = utilisateurModel.builder()
                         .firebaseUid(uid)
                         .email(email != null ? email : uid + "@firebase.user")
                         .prenom(prenom)
                         .nom(nom)
                         .photoUrl(picture)
-                        .role(RoleModel.touriste)
+                        .role(initialRole)
                         .dateCreation(new Date(System.currentTimeMillis()))
                         .build();
 
                 user = userRepository.save(user);
-                log.info("Nouvel utilisateur créé automatiquement via Firebase: {}", user.getEmail());
+                log.info("Nouvel utilisateur créé automatiquement via Firebase: {} avec rôle {}", user.getEmail(), user.getRole());
             }
 
             return mapToAuthResponseDTO(user, "Connexion réussie");

@@ -23,7 +23,7 @@ public class ArtisanController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ARTISAN') or hasRole('ADMIN')")
     public ResponseEntity<ArtisanResponseDTO> creerArtisan(@Valid @RequestBody ArtisanRequestDTO artisan) {
         ArtisanResponseDTO nouveau = service.creerArtisan(artisan);
         return new ResponseEntity<>(nouveau, HttpStatus.CREATED);
@@ -45,7 +45,7 @@ public class ArtisanController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ARTISAN') or hasRole('ADMIN')")
     public ResponseEntity<ArtisanResponseDTO> mettreAJourArtisan(@PathVariable int id,
             @Valid @RequestBody ArtisanRequestDTO artisan) {
         return ResponseEntity.ok(service.mettreAJourArtisan(id, artisan));

@@ -29,6 +29,12 @@ public class VilleModel {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(length = 500)
+    private String imageUrl;
+
+    @Column(length = 50)
+    private String superficie;
+
     private String cordonnees;
 
     private Double latitude;
@@ -39,6 +45,14 @@ public class VilleModel {
     private String imageUrl;
 
     private Long idUsers;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean misEnAvantHome = false;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer ordreHome = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_region")

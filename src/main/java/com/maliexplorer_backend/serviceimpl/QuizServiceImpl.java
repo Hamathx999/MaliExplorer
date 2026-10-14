@@ -7,6 +7,8 @@ import com.maliexplorer_backend.model.PropositionModel;
 import com.maliexplorer_backend.model.QuestionModel;
 import com.maliexplorer_backend.model.QuizModel;
 import com.maliexplorer_backend.model.utilisateurModel;
+import com.maliexplorer_backend.repository.PropositionRepository;
+import com.maliexplorer_backend.repository.QuestionRepository;
 import com.maliexplorer_backend.repository.QuizRepository;
 import com.maliexplorer_backend.service.BadgeProgressionService;
 import com.maliexplorer_backend.service.QuizService;
@@ -28,7 +30,10 @@ import java.util.stream.Collectors;
 public class QuizServiceImpl implements QuizService {
 
     private final QuizRepository quizRepository;
+    private final QuestionRepository questionRepository;
+    private final PropositionRepository propositionRepository;
     private final BadgeProgressionService badgeProgressionService;
+    private final jakarta.persistence.EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -156,8 +161,12 @@ public class QuizServiceImpl implements QuizService {
 
         if (targetUserId != null && targetUserId > 0) {
             try {
-                String descriptionGain = "Quiz : " + quiz.getNomQuiz()
-                        + (estParfait ? " (Score parfait 100%)" : " (Terminé)");
+                String resultatLabel = estParfait ? "Parfait (100%)" : (scoreQuestionsObtenu >= (scoreMaxPossible / 2) ? "Terminé (Réussi)" : "Terminé (Non validé)");
+                String descriptionGain = String.format("Quiz : %s • Score : %d/%d • Résultat : %s",
+                        quiz.getNomQuiz(),
+                        scoreQuestionsObtenu,
+                        scoreMaxPossible,
+                        resultatLabel);
 
                 // Référence d'activité : si un sessionId est transmis par le client, on l'utilise pour garantir l'unicité par partie
                 String refActivite = (submission.getSessionId() != null && !submission.getSessionId().isBlank())
@@ -240,7 +249,30 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public void deleteQuiz(Long id) {
         QuizModel quiz = findQuizOrThrow(id);
+
+        // 1. Nettoyer les liaisons de jeu dans touriste_quiz
+        try {
+            entityManager.createNativeQuery("DELETE FROM touriste_quiz WHERE id_quiz = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {
+            log.warn("Nettoyage touriste_quiz ID={} : {}", id, e.getMessage());
+        }
+
+        // 2. Nettoyer proprement via Spring Data JPA toutes les questions et propositions
+        List<QuestionModel> questions = questionRepository.findByQuizIdQuiz(id);
+        if (questions != null && !questions.isEmpty()) {
+            for (QuestionModel q : questions) {
+                if (q.getPropositions() != null && !q.getPropositions().isEmpty()) {
+                    propositionRepository.deleteAll(q.getPropositions());
+                }
+            }
+            questionRepository.deleteAll(questions);
+        }
+
+        // 3. Supprimer le quiz
         quizRepository.delete(quiz);
+        log.info("Quiz ID={} supprimé avec succès avec toutes ses questions et historiques associés.", id);
     }
 
     @Override
@@ -290,6 +322,7 @@ public class QuizServiceImpl implements QuizService {
                 .imageQuiz(quiz.getImageQuiz())
                 .categorie(quiz.getCategorie())
                 .point(quiz.getPoint())
+                .dateCreation(quiz.getDateCreation())
                 .questions(questionDTOs)
                 .build();
     }
@@ -311,5 +344,28 @@ public class QuizServiceImpl implements QuizService {
                 .replace('\u2018', '\'')
                 .replace('`', '\'')
                 .replaceAll("\\s+", " ");
+    }
+
+    @Override
+    public void recordQuizAbandon(Long quizId, String sessionId) {
+        if (quizId == null) return;
+        QuizModel quiz = findQuizOrThrow(quizId);
+        utilisateurModel user = com.maliexplorer_backend.config.SecurityUtils.getCurrentUser();
+        if (user == null || user.getIdUsers() <= 0) {
+            log.info("Abandon de quiz non enregistré : aucun utilisateur connecté.");
+            return;
+        }
+
+        String refActivite = "QUIZ_ABANDON_" + quiz.getIdQuiz() + "_" + (sessionId != null && !sessionId.isBlank() ? sessionId : System.currentTimeMillis());
+        String description = "Quiz : " + quiz.getNomQuiz() + " • Résultat : Abandonné (0 pt)";
+
+        badgeProgressionService.attribuerPoints(
+                user.getIdUsers(),
+                "QUIZ_ABANDON",
+                0,
+                description,
+                refActivite
+        );
+        log.info("Quiz abandonné consigné dans l'historique : Utilisateur ID={}, Quiz ID={}", user.getIdUsers(), quiz.getIdQuiz());
     }
 }

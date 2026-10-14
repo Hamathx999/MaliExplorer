@@ -25,6 +25,11 @@ public class VilleRequestDTO {
 
     private String description;
 
+    @com.fasterxml.jackson.annotation.JsonAlias({"imageUrl", "photoUrl", "image"})
+    private String imageUrl;
+
+    private String superficie;
+
     private String cordonnees;
 
     @Size(max = 5000, message = "L'URL de l'image ne peut pas dépasser 5000 caractères")
@@ -36,6 +41,9 @@ public class VilleRequestDTO {
 
     @JsonAlias({"regionId", "id_region"})
     private Long idRegion;
+
+    private Boolean misEnAvantHome;
+    private Integer ordreHome;
 
     public String getPopulation() {
         return this.nbreHbt;

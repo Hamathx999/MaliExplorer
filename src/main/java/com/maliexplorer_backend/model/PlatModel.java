@@ -37,6 +37,15 @@ public class PlatModel {
     @Column(name = "image_url", columnDefinition = "TEXT")
     private String imageUrl;
 
+    @Column(length = 100)
+    private String ingredientPrincipal;
+
+    @Column(length = 100)
+    private String region;
+
+    @Column(length = 50)
+    private String difficulte;
+
 //    @Column(columnDefinition = "TEXT")
     @ManyToMany
     @JoinTable(
@@ -44,6 +53,7 @@ public class PlatModel {
             joinColumns = @JoinColumn(name = "plat_id"),
             inverseJoinColumns = @JoinColumn(name = "ingredient_id")
     )
+    @Builder.Default
     private Set<IngredientModel> ingredients = new HashSet<>();
 
 //    private Long idIngredient;

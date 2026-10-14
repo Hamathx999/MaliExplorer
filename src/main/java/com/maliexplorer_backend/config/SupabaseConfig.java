@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -18,7 +17,7 @@ public class SupabaseConfig {
     @Value("${supabase.url:https://dzhqwkpwaljqsjwoqvso.supabase.co}")
     private String supabaseUrl;
 
-    @Value("${supabase.key:sb_publishable_7yi5d-qBrG9OnmKavJZ39Q_0OGGAciz}")
+    @Value("${supabase.key:}")
     private String supabaseKey;
 
     @Value("${supabase.bucket.default:maliexplorer-media}")
@@ -31,11 +30,15 @@ public class SupabaseConfig {
                 .codecs(codecs -> codecs.defaultCodecs().maxInMemorySize(50 * 1024 * 1024))
                 .build();
 
-        return WebClient.builder()
+        WebClient.Builder builder = WebClient.builder()
                 .baseUrl(supabaseUrl)
-                .exchangeStrategies(strategies)
-                .defaultHeader("apikey", supabaseKey)
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + supabaseKey)
-                .build();
+                .exchangeStrategies(strategies);
+
+        if (supabaseKey != null && !supabaseKey.isBlank()) {
+            builder.defaultHeader("apikey", supabaseKey)
+                   .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + supabaseKey);
+        }
+
+        return builder.build();
     }
 }

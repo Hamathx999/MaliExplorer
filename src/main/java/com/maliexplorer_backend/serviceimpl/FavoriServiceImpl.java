@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -139,6 +140,84 @@ public class FavoriServiceImpl implements FavoriService {
     public boolean estArticleFavori(Long articleId) {
         utilisateurModel user = getCurrentUser();
         return favoriRepository.existsByUtilisateurIdUsersAndTypeContenuAndArticleIdArticle(user.getIdUsers(), TypeFavori.ARTICLE, articleId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FavoriResponseDTO> getRecommandations() {
+        utilisateurModel user = getCurrentUser();
+        List<FavoriModel> mesFavoris = favoriRepository.findByUtilisateurIdUsersOrderByDateAjoutDesc(user.getIdUsers());
+
+        // Extraction des IDs déjà mis en favoris pour exclusion stricte
+        java.util.Set<Long> lieuIdsFavoris = mesFavoris.stream()
+                .filter(f -> f.getTypeContenu() == TypeFavori.LIEU_HISTORIQUE && f.getLieu() != null)
+                .map(f -> f.getLieu().getIdLieu())
+                .collect(Collectors.toSet());
+
+        java.util.Set<Long> articleIdsFavoris = mesFavoris.stream()
+                .filter(f -> f.getTypeContenu() == TypeFavori.ARTICLE && f.getArticle() != null)
+                .map(f -> f.getArticle().getIdArticle())
+                .collect(Collectors.toSet());
+
+        // Identifier les villes / régions d'intérêt d'après les lieux favoris
+        java.util.Set<Long> villeIdsInteret = mesFavoris.stream()
+                .filter(f -> f.getTypeContenu() == TypeFavori.LIEU_HISTORIQUE && f.getLieu() != null && f.getLieu().getVille() != null)
+                .map(f -> f.getLieu().getVille().getIdVille())
+                .collect(Collectors.toSet());
+
+        List<FavoriResponseDTO> recommandations = new ArrayList<>();
+
+        // 1. Recommander d'autres lieux dans les mêmes villes ou régions
+        if (!villeIdsInteret.isEmpty()) {
+            for (Long villeId : villeIdsInteret) {
+                lieuHistoriqueRepository.findByVilleIdVille(villeId).stream()
+                        .filter(l -> !lieuIdsFavoris.contains(l.getIdLieu()))
+                        .limit(3)
+                        .forEach(l -> {
+                            FavoriModel temp = FavoriModel.builder()
+                                    .idFavori(0L)
+                                    .utilisateur(user)
+                                    .typeContenu(TypeFavori.LIEU_HISTORIQUE)
+                                    .lieu(l)
+                                    .build();
+                            recommandations.add(mapToDTO(temp, "Recommandé car vous aimez des lieux de cette ville"));
+                            lieuIdsFavoris.add(l.getIdLieu());
+                        });
+            }
+        }
+
+        // 2. Si moins de 4 recommandations, compléter avec les lieux historiques remarquables (fallback propre)
+        if (recommandations.size() < 4) {
+            lieuHistoriqueRepository.findAll().stream()
+                    .filter(l -> !lieuIdsFavoris.contains(l.getIdLieu()))
+                    .limit(4 - recommandations.size())
+                    .forEach(l -> {
+                        FavoriModel temp = FavoriModel.builder()
+                                .idFavori(0L)
+                                .utilisateur(user)
+                                .typeContenu(TypeFavori.LIEU_HISTORIQUE)
+                                .lieu(l)
+                                .build();
+                        recommandations.add(mapToDTO(temp, "Découverte incontournable du Mali"));
+                        lieuIdsFavoris.add(l.getIdLieu());
+                    });
+        }
+
+        // 3. Compléter avec les articles du patrimoine les plus populaires non encore favorisés
+        articleRepository.findAll().stream()
+                .filter(a -> !articleIdsFavoris.contains(a.getIdArticle()))
+                .limit(2)
+                .forEach(a -> {
+                    FavoriModel temp = FavoriModel.builder()
+                            .idFavori(0L)
+                            .utilisateur(user)
+                            .typeContenu(TypeFavori.ARTICLE)
+                            .article(a)
+                            .build();
+                    recommandations.add(mapToDTO(temp, "Article culturel populaire"));
+                });
+
+        return recommandations;
     }
 
     // ======================== PRIVATE HELPERS ========================

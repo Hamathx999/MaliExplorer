@@ -27,11 +27,13 @@ public class PresidentRequestDTO {
 
     private LocalDate dateDeces;
 
+    @com.fasterxml.jackson.annotation.JsonAlias({"periodeMandat", "periode"})
     @Size(max = 100, message = "La période du mandat ne peut pas dépasser 100 caractères")
     private String periodeMandat;
 
     private String biographie;
 
+    @com.fasterxml.jackson.annotation.JsonAlias({"photoUrl", "imageUrl"})
     @Size(max = 500, message = "L'URL de la photo ne peut pas dépasser 500 caractères")
     private String photoUrl;
 

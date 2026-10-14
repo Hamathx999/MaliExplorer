@@ -3,6 +3,8 @@ package com.maliexplorer_backend.serviceimpl;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
 import com.maliexplorer_backend.model.IngredientModel;
 import com.maliexplorer_backend.repository.IngredientRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,9 @@ import java.util.List;
 public class IngredientServiceImpl {
 
     private final IngredientRepository ingredient;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Transactional(readOnly = true)
     public List<IngredientModel> listerIngredient() {
@@ -49,6 +54,11 @@ public class IngredientServiceImpl {
 
     public void suppIngredient(Long id) {
         if (ingredient.existsById(id)) {
+            try {
+                entityManager.createNativeQuery("DELETE FROM plat_ingredient WHERE ingredient_id = :id")
+                        .setParameter("id", id)
+                        .executeUpdate();
+            } catch (Exception ignored) {}
             ingredient.deleteById(id);
         }
     }
