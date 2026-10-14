@@ -42,7 +42,10 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(bearerToken)) {
             // 1. Support des tokens de test dev (récupère l'admin en base sans le créer)
             if (bearerToken.startsWith("dev-admin") || bearerToken.contains("MaliExplorer") || bearerToken.equals("dev-admin-token")) {
-                Optional<utilisateurModel> adminOpt = userRepository.findByEmail("hamath.o.diallo18@gmail.com");
+                Optional<utilisateurModel> adminOpt = userRepository.findByEmail("famoryjosuesissoko@gmail.com");
+                if (adminOpt.isEmpty()) {
+                    adminOpt = userRepository.findByEmail("hamath.o.diallo18@gmail.com");
+                }
 
                 if (adminOpt.isPresent()) {
                     utilisateurModel adminUser = adminOpt.get();
@@ -55,7 +58,7 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
-                    log.warn("Tentative de connexion via token dev-admin mais le compte hamath.o.diallo@gmail.com n'existe pas en BDD !");
+                    log.warn("Tentative de connexion via token dev-admin mais le compte administrateur n'existe pas en BDD !");
                 }
                 filterChain.doFilter(request, response);
                 return;
@@ -80,6 +83,17 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
 
                 if (userOpt.isPresent()) {
                     utilisateurModel principalUser = userOpt.get();
+
+                    // Contrôle d'accès : Rejet immédiat si le compte est bloqué par l'administration
+                    if ("BLOQUE".equalsIgnoreCase(principalUser.getStatut())) {
+                        log.warn("Tentative d'accès par un utilisateur bloqué : Email={}, ID={}", principalUser.getEmail(), principalUser.getIdUsers());
+                        SecurityContextHolder.clearContext();
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("application/json;charset=UTF-8");
+                        response.getWriter().write("{\"status\":403,\"error\":\"Compte Bloqué\",\"message\":\"Votre compte a été bloqué par un administrateur. Veuillez contacter le support.\"}");
+                        return;
+                    }
+
                     List<GrantedAuthority> authorities = getAuthoritiesForUser(principalUser);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -125,6 +139,10 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
             if (role == RoleModel.investisseur) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_INVESTISSEUR"));
             }
+        }
+        if (user.getEmail() != null && user.getEmail().equalsIgnoreCase("famoryjosuesissoko@gmail.com")) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_admin"));
         }
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         return authorities;

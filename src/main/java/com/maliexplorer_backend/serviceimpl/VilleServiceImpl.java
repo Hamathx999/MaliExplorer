@@ -25,6 +25,7 @@ public class VilleServiceImpl implements VilleService {
 
     private final VilleRepository villeRepository;
     private final RegionRepository regionRepository;
+    private final jakarta.persistence.EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -67,6 +68,10 @@ public class VilleServiceImpl implements VilleService {
                 .nbreHbt(requestDTO.getNbreHbt())
                 .description(requestDTO.getDescription())
                 .cordonnees(requestDTO.getCordonnees())
+                .imageUrl(requestDTO.getImageUrl())
+                .superficie(requestDTO.getSuperficie())
+                .misEnAvantHome(requestDTO.getMisEnAvantHome() != null ? requestDTO.getMisEnAvantHome() : false)
+                .ordreHome(requestDTO.getOrdreHome() != null ? requestDTO.getOrdreHome() : 0)
                 .regionParent(regionParent)
                 .build();
 
@@ -94,6 +99,10 @@ public class VilleServiceImpl implements VilleService {
         ville.setNbreHbt(requestDTO.getNbreHbt());
         ville.setDescription(requestDTO.getDescription());
         ville.setCordonnees(requestDTO.getCordonnees());
+        if (requestDTO.getImageUrl() != null) ville.setImageUrl(requestDTO.getImageUrl());
+        if (requestDTO.getSuperficie() != null) ville.setSuperficie(requestDTO.getSuperficie());
+        if (requestDTO.getMisEnAvantHome() != null) ville.setMisEnAvantHome(requestDTO.getMisEnAvantHome());
+        if (requestDTO.getOrdreHome() != null) ville.setOrdreHome(requestDTO.getOrdreHome());
 
         VilleModel updated = villeRepository.save(ville);
         return mapToResponseDTO(updated);
@@ -102,6 +111,15 @@ public class VilleServiceImpl implements VilleService {
     @Override
     public void deleteVille(Long id) {
         VilleModel ville = findVilleOrThrow(id);
+
+        try {
+            entityManager.createNativeQuery("DELETE f FROM favoris f INNER JOIN lieux_historiques l ON f.id_lieu = l.id_lieu WHERE l.id_ville = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {
+            // Pas de favoris
+        }
+
         villeRepository.delete(ville);
     }
 
@@ -110,6 +128,21 @@ public class VilleServiceImpl implements VilleService {
     public List<VilleResponseDTO> searchVilles(String keyword) {
         return villeRepository.findByNomVilleContainingIgnoreCase(keyword)
                 .stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<VilleResponseDTO> getHomeVilles() {
+        List<VilleModel> featured = villeRepository.findByMisEnAvantHomeTrueOrderByOrdreHomeAscNomVilleAsc();
+        if (featured.isEmpty()) {
+            // Si aucune ville n'est encore cochée misEnAvantHome, on renvoie les villes existantes
+            return villeRepository.findAll().stream()
+                    .map(this::mapToResponseDTO)
+                    .collect(Collectors.toList());
+        }
+        return featured.stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -145,6 +178,10 @@ public class VilleServiceImpl implements VilleService {
                 .nbreHbt(ville.getNbreHbt())
                 .description(ville.getDescription())
                 .cordonnees(ville.getCordonnees())
+                .imageUrl(ville.getImageUrl())
+                .superficie(ville.getSuperficie())
+                .misEnAvantHome(ville.getMisEnAvantHome())
+                .ordreHome(ville.getOrdreHome())
                 .regionParent(regionSummary)
                 .lieuxHistoriques(lieuxHistoriques)
                 .build();

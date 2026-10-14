@@ -17,16 +17,24 @@ public class EthnieRequestDTO {
 
     @NotBlank(message = "Le nom de l'ethnie est obligatoire")
     @Size(max = 100, message = "Le nom ne peut pas dépasser 100 caractères")
+    @com.fasterxml.jackson.annotation.JsonAlias({"nom", "nomEthnie"})
     private String nom;
 
     private String region;
 
+    private String ville;
+
+    @com.fasterxml.jackson.annotation.JsonAlias({"langues", "langue"})
+    private String langues;
+
+    @com.fasterxml.jackson.annotation.JsonAlias({"population", "populationEstimee"})
     private String population;
 
-    @Size(max = 100, message = "La langue ne peut pas dépasser 100 caractères")
     private String description;
 
-    @Size(max = 500, message = "L'URL de l'image ne peut pas dépasser 500 caractères")
+    @com.fasterxml.jackson.annotation.JsonAlias({"imageUrl", "photoUrl", "photoHomme"})
+    private String imageUrl;
+
     private List<Long> regionIds;
 
     private List<Long> platIds;

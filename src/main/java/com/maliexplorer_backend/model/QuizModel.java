@@ -34,6 +34,10 @@ public class QuizModel {
     @Column(length = 100)
     private String categorie;
 
+    @Column(name = "date_creation")
+    @Builder.Default
+    private java.time.LocalDateTime dateCreation = java.time.LocalDateTime.now();
+
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<QuestionModel> questions = new ArrayList<>();

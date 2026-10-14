@@ -20,4 +20,6 @@ public interface VilleService {
     void deleteVille(Long id);
 
     List<VilleResponseDTO> searchVilles(String keyword);
+
+    List<VilleResponseDTO> getHomeVilles();
 }

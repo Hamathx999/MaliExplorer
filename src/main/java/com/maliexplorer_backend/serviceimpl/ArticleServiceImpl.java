@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
+    private final jakarta.persistence.EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -74,6 +75,15 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public void deleteArticle(Long id) {
         ArticleModel article = findArticleOrThrow(id);
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM favoris WHERE id_article = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {
+            // Pas de favoris associés
+        }
+
         articleRepository.delete(article);
     }
 

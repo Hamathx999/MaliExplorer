@@ -1,6 +1,8 @@
 package com.maliexplorer_backend.controller;
 
+import com.maliexplorer_backend.config.SecurityUtils;
 import com.maliexplorer_backend.model.utilisateurModel;
+import com.maliexplorer_backend.repository.utilisateurRepository;
 import com.maliexplorer_backend.service.UtilisateurService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -9,16 +11,103 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/utilisateurs")
-@CrossOrigin(origins = "*") // Permet de tester facilement avec frontend (React/Flutter/Vue, etc.)
+@CrossOrigin(origins = "*")
 public class UtilisateurControllers {
 
     private final UtilisateurService service;
+    private final utilisateurRepository userRepository;
 
-    public UtilisateurControllers(UtilisateurService service) {
+    public UtilisateurControllers(UtilisateurService service, utilisateurRepository userRepository) {
         this.service = service;
+        this.userRepository = userRepository;
+    }
+
+    /**
+     * READ ME : Récupérer son propre profil connecté
+     * GET /api/utilisateurs/me
+     */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/me")
+    public ResponseEntity<utilisateurModel> obtenirMonProfil() {
+        String email = SecurityUtils.getCurrentUserEmail();
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return userRepository.findByEmail(email)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    /**
+     * UPDATE ME PHOTO : Mettre à jour sa propre photo de profil
+     * PUT /api/utilisateurs/me/photo
+     */
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/me/photo")
+    public ResponseEntity<utilisateurModel> mettreAJourMaPhoto(@RequestBody Map<String, String> payload) {
+        String email = SecurityUtils.getCurrentUserEmail();
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        String photoUrl = payload.get("photoUrl");
+        if (photoUrl == null || photoUrl.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        return userRepository.findByEmail(email)
+                .map(user -> {
+                    user.setPhotoUrl(photoUrl);
+                    utilisateurModel saved = userRepository.save(user);
+                    return ResponseEntity.ok(saved);
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    /**
+     * UPDATE ME INFOS : Mettre à jour ses propres informations personnelles
+     * PUT /api/utilisateurs/me
+     */
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/me")
+    public ResponseEntity<utilisateurModel> mettreAJourMesInfos(@RequestBody Map<String, String> payload) {
+        String email = SecurityUtils.getCurrentUserEmail();
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return userRepository.findByEmail(email)
+                .map(user -> {
+                    if (payload.containsKey("prenom")) user.setPrenom(payload.get("prenom"));
+                    if (payload.containsKey("nom")) user.setNom(payload.get("nom"));
+                    if (payload.containsKey("adresse")) user.setAdresse(payload.get("adresse"));
+                    if (payload.containsKey("photoUrl") && payload.get("photoUrl") != null && !payload.get("photoUrl").isBlank()) {
+                        user.setPhotoUrl(payload.get("photoUrl"));
+                    }
+                    utilisateurModel saved = userRepository.save(user);
+                    return ResponseEntity.ok(saved);
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+    /**
+     * TOGGLE STATUS : Bloquer ou débloquer un utilisateur (Admin)
+     * PATCH /api/utilisateurs/{id}/toggle-status
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{id}/toggle-status")
+    public ResponseEntity<utilisateurModel> toggleStatutUtilisateur(@PathVariable int id) {
+        return userRepository.findById(id).map(user -> {
+            String current = user.getStatut();
+            if ("BLOQUE".equalsIgnoreCase(current)) {
+                user.setStatut("ACTIF");
+            } else {
+                user.setStatut("BLOQUE");
+            }
+            utilisateurModel saved = userRepository.save(user);
+            return ResponseEntity.ok(saved);
+        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     /**

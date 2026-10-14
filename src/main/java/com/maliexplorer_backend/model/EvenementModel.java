@@ -72,5 +72,10 @@ public class EvenementModel {
         if (vues == null) vues = 0L;
         if (nombreCommentaires == null) nombreCommentaires = 0L;
     }
+
+    @JsonProperty("type")
+    public String getType() {
+        return "festivalEvenement";
+    }
 }
 

@@ -19,6 +19,10 @@ public class VilleResponseDTO {
     private String nbreHbt;
     private String description;
     private String cordonnees;
+    private String imageUrl;
+    private String superficie;
+    private Boolean misEnAvantHome;
+    private Integer ordreHome;
     private RegionSummaryDTO regionParent;
     private List<LieuHistoriqueSummaryDTO> lieuxHistoriques;
 }

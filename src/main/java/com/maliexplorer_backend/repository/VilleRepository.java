@@ -14,4 +14,6 @@ public interface VilleRepository extends JpaRepository<VilleModel, Long> {
     List<VilleModel> findByNomVilleContainingIgnoreCase(String keyword);
 
     java.util.Optional<VilleModel> findByNomVilleIgnoreCase(String nomVille);
+
+    List<VilleModel> findByMisEnAvantHomeTrueOrderByOrdreHomeAscNomVilleAsc();
 }

@@ -14,5 +14,7 @@ public interface EvenementRepository extends JpaRepository<EvenementModel, Long>
     List<EvenementModel> findByStatutOrderByDateSoumissionDesc(EvenementModel.Statut statut);
 
     List<EvenementModel> findByEmailOrganisateur(String emailOrganisateur);
+
+    List<EvenementModel> findByTitreContainingIgnoreCase(String keyword);
 }
 

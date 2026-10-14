@@ -25,10 +25,18 @@ public class VilleRequestDTO {
 
     private String description;
 
+    @com.fasterxml.jackson.annotation.JsonAlias({"imageUrl", "photoUrl", "image"})
+    private String imageUrl;
+
+    private String superficie;
+
     private String cordonnees;
 
     @JsonAlias({"regionId", "id_region"})
     private Long idRegion;
+
+    private Boolean misEnAvantHome;
+    private Integer ordreHome;
 
     public String getPopulation() {
         return this.nbreHbt;

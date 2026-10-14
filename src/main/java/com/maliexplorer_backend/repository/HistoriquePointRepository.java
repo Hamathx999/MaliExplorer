@@ -12,4 +12,6 @@ public interface HistoriquePointRepository extends JpaRepository<HistoriquePoint
     List<HistoriquePointModel> findByUtilisateurIdUsersOrderByDateGainDesc(int idUsers);
 
     boolean existsByUtilisateurIdUsersAndReferenceActivite(int idUsers, String referenceActivite);
+
+    void deleteByUtilisateurIdUsers(int idUsers);
 }

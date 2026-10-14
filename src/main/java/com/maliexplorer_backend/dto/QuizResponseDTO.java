@@ -20,6 +20,7 @@ public class QuizResponseDTO {
     private String imageQuiz;
     private String categorie;
     private Integer point;
+    private java.time.LocalDateTime dateCreation;
     private List<QuestionResponseDTO> questions;
 
     @JsonProperty("id")
@@ -35,5 +36,15 @@ public class QuizResponseDTO {
     @JsonProperty("points")
     public Integer getPoints() {
         return this.point;
+    }
+
+    @JsonProperty("imageUrl")
+    public String getImageUrl() {
+        return this.imageQuiz;
+    }
+
+    @JsonProperty("logoUrl")
+    public String getLogoUrl() {
+        return this.imageQuiz;
     }
 }

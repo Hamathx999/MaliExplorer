@@ -52,6 +52,15 @@ public class QuizController {
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping("/abandonner")
+    @Operation(summary = "Enregistrer l'abandon d'un quiz par l'utilisateur connecté dans son historique")
+    public ResponseEntity<java.util.Map<String, Object>> abandonQuiz(@RequestBody java.util.Map<String, Object> body) {
+        Long quizId = body.get("quizId") != null ? Long.valueOf(body.get("quizId").toString()) : null;
+        String sessionId = body.get("sessionId") != null ? body.get("sessionId").toString() : null;
+        quizService.recordQuizAbandon(quizId, sessionId);
+        return ResponseEntity.ok(java.util.Map.of("message", "Abandon de quiz enregistré dans l'historique"));
+    }
+
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Créer un nouveau quiz")

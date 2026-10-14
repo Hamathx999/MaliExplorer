@@ -22,5 +22,15 @@ public class FileUploadResponseDTO {
     private long size;
     private LocalDateTime uploadedAt;
     private String message;
+
+    @com.fasterxml.jackson.annotation.JsonProperty("imageUrl")
+    public String getImageUrl() {
+        return this.fileUrl;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("fileName")
+    public String getFileName() {
+        return this.storedFileName;
+    }
 }
 

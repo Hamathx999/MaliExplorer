@@ -21,4 +21,19 @@ public class PresidentResponseDTO {
     private String periodeMandat;
     private String biographie;
     private String photoUrl;
+
+    @com.fasterxml.jackson.annotation.JsonProperty("idPresident")
+    public Long getIdPresident() {
+        return this.id;
     }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("imageUrl")
+    public String getImageUrl() {
+        return this.photoUrl;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("periode")
+    public String getPeriode() {
+        return this.periodeMandat;
+    }
+}

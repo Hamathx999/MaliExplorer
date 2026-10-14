@@ -40,9 +40,20 @@ public class utilisateurModel {
     private String email;
 
 
-    private String adresse;
+    @Builder.Default
+    private String adresse = "";
 
-    private String photoUrl;
+    @Builder.Default
+    private String telephone = "";
+
+    @Builder.Default
+    private String pieceIdentite = "";
+
+    @Builder.Default
+    private String nomOrganisation = "";
+
+    @Builder.Default
+    private String photoUrl = "";
 
     private Date dateCreation;
 
@@ -51,6 +62,9 @@ public class utilisateurModel {
 
     @Builder.Default
     private int points = 0;
+
+    @Builder.Default
+    private String statut = "ACTIF";
 
     @com.fasterxml.jackson.annotation.JsonProperty("id")
     public int getId() {

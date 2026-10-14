@@ -27,4 +27,8 @@ public interface BadgeProgressionService {
     boolean aDejaValideActivite(int userId, String referenceActivite);
 
     ProgressionResponseDTO calculerProgression(int points, utilisateurModel user);
+
+    void supprimerHistoriquePoint(Long idHistorique);
+
+    void viderMonHistorique();
 }

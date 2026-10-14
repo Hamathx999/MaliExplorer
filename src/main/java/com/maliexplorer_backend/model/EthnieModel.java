@@ -24,10 +24,17 @@ public class EthnieModel {
 
     private String region;
 
+    private String ville;
+
+    private String langues;
+
     private String population;
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(length = 500)
+    private String imageUrl;
 
     private Long idUsers;
 

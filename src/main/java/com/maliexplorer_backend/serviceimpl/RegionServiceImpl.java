@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class RegionServiceImpl implements RegionService {
 
         private final RegionRepository regionRepository;
+        private final jakarta.persistence.EntityManager entityManager;
 
         @Override
         @Transactional(readOnly = true)
@@ -47,6 +48,10 @@ public class RegionServiceImpl implements RegionService {
                 RegionModel region = RegionModel.builder()
                                 .nomRegion(requestDTO.getNom())
                                 .nbreHbt(requestDTO.getNbreHbt())
+                                .description(requestDTO.getDescription())
+                                .chefLieu(requestDTO.getChefLieu())
+                                .superficie(requestDTO.getSuperficie())
+                                .imageUrl(requestDTO.getImageUrl())
                                 .build();
 
                 RegionModel saved = regionRepository.save(region);
@@ -65,6 +70,10 @@ public class RegionServiceImpl implements RegionService {
 
                 region.setNomRegion(requestDTO.getNom());
                 region.setNbreHbt(requestDTO.getNbreHbt());
+                if (requestDTO.getDescription() != null) region.setDescription(requestDTO.getDescription());
+                if (requestDTO.getChefLieu() != null) region.setChefLieu(requestDTO.getChefLieu());
+                if (requestDTO.getSuperficie() != null) region.setSuperficie(requestDTO.getSuperficie());
+                if (requestDTO.getImageUrl() != null) region.setImageUrl(requestDTO.getImageUrl());
 
                 RegionModel updated = regionRepository.save(region);
                 return mapToResponseDTO(updated);
@@ -73,6 +82,25 @@ public class RegionServiceImpl implements RegionService {
         @Override
         public void deleteRegion(Long id) {
                 RegionModel region = findRegionOrThrow(id);
+
+                try {
+                        entityManager.createNativeQuery("DELETE FROM region_ethnie WHERE region_id = :id")
+                                        .setParameter("id", id)
+                                        .executeUpdate();
+                } catch (Exception e) {}
+
+                try {
+                        entityManager.createNativeQuery("DELETE FROM region_plat WHERE region_id = :id")
+                                        .setParameter("id", id)
+                                        .executeUpdate();
+                } catch (Exception e) {}
+
+                try {
+                        entityManager.createNativeQuery("DELETE f FROM favoris f INNER JOIN lieux_historiques l ON f.id_lieu = l.id_lieu INNER JOIN villes v ON l.id_ville = v.id_ville WHERE v.id_region = :id")
+                                        .setParameter("id", id)
+                                        .executeUpdate();
+                } catch (Exception e) {}
+
                 regionRepository.delete(region);
         }
 
@@ -97,7 +125,6 @@ public class RegionServiceImpl implements RegionService {
                                                 .map(v -> VilleSummaryDTO.builder()
                                                                 .id(v.getIdVille())
                                                                 .nom(v.getNomVille())
-
                                                                 .build())
                                                 .collect(Collectors.toList());
 
@@ -106,7 +133,6 @@ public class RegionServiceImpl implements RegionService {
                                                 .map(e -> EthnieSummaryDTO.builder()
                                                                 .id(e.getIdEthnie())
                                                                 .nom(e.getNomEthnie())
-
                                                                 .build())
                                                 .collect(Collectors.toList());
 
@@ -115,16 +141,17 @@ public class RegionServiceImpl implements RegionService {
                                                 .map(p -> PlatSummaryDTO.builder()
                                                                 .id(p.getIdPlat())
                                                                 .nom(p.getNomPlat())
-
                                                                 .build())
                                                 .collect(Collectors.toList());
 
                 return RegionResponseDTO.builder()
                                 .id(region.getIdRegion())
                                 .nom(region.getNomRegion())
-
+                                .description(region.getDescription())
+                                .chefLieu(region.getChefLieu())
+                                .superficie(region.getSuperficie())
+                                .imageUrl(region.getImageUrl())
                                 .nbreHbt(region.getNbreHbt())
-
                                 .villes(villes)
                                 .ethnies(ethnies)
                                 .plats(plats)

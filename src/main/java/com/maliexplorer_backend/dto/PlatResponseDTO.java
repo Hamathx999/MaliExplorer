@@ -21,6 +21,9 @@ public class PlatResponseDTO {
     private Integer nbrePersonnes;
     private Integer tempsPreparation;
     private String imageUrl;
+    private String ingredientPrincipal;
+    private String region;
+    private String difficulte;
     private Set<IngredientModel> ingredientModelList;
     private List<RegionSummaryDTO> regions;
     private List<EthnieSummaryDTO> ethnies;

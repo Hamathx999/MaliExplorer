@@ -23,4 +23,7 @@ public interface FavoriService {
     boolean estLieuFavori(Long lieuId);
 
     boolean estArticleFavori(Long articleId);
+
+    List<FavoriResponseDTO> getRecommandations();
 }
+

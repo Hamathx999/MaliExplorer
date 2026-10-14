@@ -61,6 +61,9 @@ public class SupabaseStorageServiceImpl implements StorageService {
         }
 
         String contentType = file.getContentType();
+        if (!StringUtils.hasText(contentType) || "application/octet-stream".equalsIgnoreCase(contentType)) {
+            contentType = resolveMimeTypeFromExtension(extension);
+        }
         if (!StringUtils.hasText(contentType) || !ALLOWED_MIME_TYPES.contains(contentType.toLowerCase())) {
             throw new BadRequestException("Type MIME non autorisé ou invalide (" + contentType + "). Types acceptés : " + ALLOWED_MIME_TYPES);
         }
@@ -237,6 +240,20 @@ public class SupabaseStorageServiceImpl implements StorageService {
             log.warn("Rejet de fichier : la signature binaire (magic bytes) ne correspond pas à l'extension .{}", ext);
             throw new BadRequestException("La signature binaire du fichier ne correspond pas au format ." + ext + " autorisé.");
         }
+    }
+
+    private String resolveMimeTypeFromExtension(String extension) {
+        if (extension == null) return "application/octet-stream";
+        return switch (extension.toLowerCase()) {
+            case "jpg", "jpeg" -> "image/jpeg";
+            case "png" -> "image/png";
+            case "webp" -> "image/webp";
+            case "gif" -> "image/gif";
+            case "svg" -> "image/svg+xml";
+            case "pdf" -> "application/pdf";
+            case "mp4" -> "video/mp4";
+            default -> "application/octet-stream";
+        };
     }
 }
 

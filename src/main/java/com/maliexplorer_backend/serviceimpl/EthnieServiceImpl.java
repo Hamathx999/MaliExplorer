@@ -27,6 +27,7 @@ public class EthnieServiceImpl implements EthnieService {
 
     private final EthnieRepository ethnieRepository;
     private final RegionRepository regionRepository;
+    private final jakarta.persistence.EntityManager entityManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -53,8 +54,11 @@ public class EthnieServiceImpl implements EthnieService {
         EthnieModel ethnie = EthnieModel.builder()
                 .nomEthnie(requestDTO.getNom())
                 .region(requestDTO.getRegion())
+                .ville(requestDTO.getVille())
+                .langues(requestDTO.getLangues())
                 .population(requestDTO.getPopulation())
                 .description(requestDTO.getDescription())
+                .imageUrl(requestDTO.getImageUrl())
                 .regions(new ArrayList<>())
                 .plats(new ArrayList<>())
                 .build();
@@ -86,10 +90,11 @@ public class EthnieServiceImpl implements EthnieService {
 
         ethnie.setNomEthnie(requestDTO.getNom());
         ethnie.setRegion(requestDTO.getRegion());
+        if (requestDTO.getVille() != null) ethnie.setVille(requestDTO.getVille());
+        if (requestDTO.getLangues() != null) ethnie.setLangues(requestDTO.getLangues());
         ethnie.setPopulation(requestDTO.getPopulation());
         ethnie.setDescription(requestDTO.getDescription());
-        
-        
+        if (requestDTO.getImageUrl() != null) ethnie.setImageUrl(requestDTO.getImageUrl());
 
         EthnieModel updated = ethnieRepository.save(ethnie);
         return mapToResponseDTO(updated);
@@ -98,6 +103,19 @@ public class EthnieServiceImpl implements EthnieService {
     @Override
     public void deleteEthnie(Long id) {
         EthnieModel ethnie = findEthnieOrThrow(id);
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM region_ethnie WHERE ethnie_id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {}
+
+        try {
+            entityManager.createNativeQuery("DELETE FROM plat_ethnie WHERE ethnie_id = :id")
+                    .setParameter("id", id)
+                    .executeUpdate();
+        } catch (Exception e) {}
+
         ethnieRepository.delete(ethnie);
     }
 
@@ -134,8 +152,11 @@ public class EthnieServiceImpl implements EthnieService {
                 .id(ethnie.getIdEthnie())
                 .nom(ethnie.getNomEthnie())
                 .region(ethnie.getRegion())
+                .ville(ethnie.getVille())
+                .langues(ethnie.getLangues())
                 .population(ethnie.getPopulation())
                 .description(ethnie.getDescription())
+                .imageUrl(ethnie.getImageUrl())
                 .regions(regions)
                 .plats(plats)
                 .build();

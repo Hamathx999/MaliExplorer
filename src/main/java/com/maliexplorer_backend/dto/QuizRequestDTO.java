@@ -17,6 +17,7 @@ public class QuizRequestDTO {
     private String nomQuiz;
 
     private String description;
+    @com.fasterxml.jackson.annotation.JsonAlias({"imageQuiz", "imageUrl", "logoUrl"})
     private String imageQuiz;
     private String categorie;
 

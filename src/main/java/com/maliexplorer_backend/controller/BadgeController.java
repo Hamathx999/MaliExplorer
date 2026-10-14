@@ -37,6 +37,22 @@ public class BadgeController {
         return ResponseEntity.ok(historique);
     }
 
+    @Operation(summary = "Supprimer une entrée d'historique", description = "Supprime une entrée spécifique de l'historique de l'utilisateur connecté.")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @DeleteMapping("/me/history/{id}")
+    public ResponseEntity<Void> supprimerHistoriquePoint(@PathVariable Long id) {
+        badgeProgressionService.supprimerHistoriquePoint(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Vider tout mon historique", description = "Supprime toutes les entrées de l'historique de l'utilisateur connecté.")
+    @SecurityRequirement(name = "Bearer Authentication")
+    @DeleteMapping("/me/history")
+    public ResponseEntity<Void> viderMonHistorique() {
+        badgeProgressionService.viderMonHistorique();
+        return ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "Obtenir la progression d'un utilisateur (Admin)", description = "Permet aux administrateurs de consulter les points et badges de n'importe quel utilisateur.")
     @SecurityRequirement(name = "Bearer Authentication")
     @PreAuthorize("hasRole('ADMIN')")
