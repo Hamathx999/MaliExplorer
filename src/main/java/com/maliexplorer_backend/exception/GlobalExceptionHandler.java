@@ -30,9 +30,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(BadRequestException.class)
+    @ExceptionHandler({BadRequestException.class, IllegalArgumentException.class, org.springframework.http.converter.HttpMessageNotReadableException.class})
     public ResponseEntity<ErrorResponse> handleBadRequestException(
-            BadRequestException ex, HttpServletRequest request) {
+            Exception ex, HttpServletRequest request) {
 
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())

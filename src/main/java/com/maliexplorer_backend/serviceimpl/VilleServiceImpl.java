@@ -62,16 +62,25 @@ public class VilleServiceImpl implements VilleService {
             regionParent = regionRepository.findByNomRegionIgnoreCase(requestDTO.getRegion().trim()).orElse(null);
         }
 
+        String resolvedImageUrl = requestDTO.getImageUrl();
+        if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
+            resolvedImageUrl = String.join(",", requestDTO.getImages());
+        }
+
         VilleModel ville = VilleModel.builder()
                 .nomVille(requestDTO.getNom())
                 .region(requestDTO.getRegion() != null ? requestDTO.getRegion() : (regionParent != null ? regionParent.getNomRegion() : "Mali"))
                 .nbreHbt(requestDTO.getNbreHbt())
                 .description(requestDTO.getDescription())
                 .cordonnees(requestDTO.getCordonnees())
+<<<<<<< HEAD
                 .imageUrl(requestDTO.getImageUrl())
                 .superficie(requestDTO.getSuperficie())
                 .misEnAvantHome(requestDTO.getMisEnAvantHome() != null ? requestDTO.getMisEnAvantHome() : false)
                 .ordreHome(requestDTO.getOrdreHome() != null ? requestDTO.getOrdreHome() : 0)
+=======
+                .imageUrl(resolvedImageUrl)
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .regionParent(regionParent)
                 .build();
 
@@ -99,10 +108,18 @@ public class VilleServiceImpl implements VilleService {
         ville.setNbreHbt(requestDTO.getNbreHbt());
         ville.setDescription(requestDTO.getDescription());
         ville.setCordonnees(requestDTO.getCordonnees());
+<<<<<<< HEAD
         if (requestDTO.getImageUrl() != null) ville.setImageUrl(requestDTO.getImageUrl());
         if (requestDTO.getSuperficie() != null) ville.setSuperficie(requestDTO.getSuperficie());
         if (requestDTO.getMisEnAvantHome() != null) ville.setMisEnAvantHome(requestDTO.getMisEnAvantHome());
         if (requestDTO.getOrdreHome() != null) ville.setOrdreHome(requestDTO.getOrdreHome());
+=======
+        if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
+            ville.setImageUrl(String.join(",", requestDTO.getImages()));
+        } else if (requestDTO.getImageUrl() != null) {
+            ville.setImageUrl(requestDTO.getImageUrl());
+        }
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
 
         VilleModel updated = villeRepository.save(ville);
         return mapToResponseDTO(updated);
@@ -171,6 +188,14 @@ public class VilleServiceImpl implements VilleService {
                                 .build())
                         .collect(Collectors.toList());
 
+        List<String> imagesList = (ville.getImageUrl() != null && !ville.getImageUrl().isBlank())
+                ? java.util.Arrays.stream(ville.getImageUrl().split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList())
+                : java.util.Collections.emptyList();
+        String mainImageUrl = imagesList.isEmpty() ? null : imagesList.get(0);
+
         return VilleResponseDTO.builder()
                 .id(ville.getIdVille())
                 .nom(ville.getNomVille())
@@ -178,10 +203,15 @@ public class VilleServiceImpl implements VilleService {
                 .nbreHbt(ville.getNbreHbt())
                 .description(ville.getDescription())
                 .cordonnees(ville.getCordonnees())
+<<<<<<< HEAD
                 .imageUrl(ville.getImageUrl())
                 .superficie(ville.getSuperficie())
                 .misEnAvantHome(ville.getMisEnAvantHome())
                 .ordreHome(ville.getOrdreHome())
+=======
+                .imageUrl(mainImageUrl)
+                .images(imagesList)
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .regionParent(regionSummary)
                 .lieuxHistoriques(lieuxHistoriques)
                 .build();

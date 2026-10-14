@@ -30,8 +30,14 @@ public class PlatRequestDTO {
     @Positive(message = "Le temps de préparation doit être un nombre positif")
     private Integer tempsPreparation;
 
-    @Size(max = 500, message = "L'URL de l'image ne peut pas dépasser 500 caractères")
+    @Size(max = 5000, message = "L'URL de l'image ne peut pas dépasser 5000 caractères")
+    @com.fasterxml.jackson.annotation.JsonProperty("imageUrl")
+    @com.fasterxml.jackson.annotation.JsonAlias({"image", "photoUrl", "image_url"})
     private String imageUrl;
+
+    @com.fasterxml.jackson.annotation.JsonProperty("images")
+    @com.fasterxml.jackson.annotation.JsonAlias({"images", "imageUrls"})
+    private List<String> images;
 
     @com.fasterxml.jackson.annotation.JsonAlias({"ingredientIds", "ingredientsIds", "idIngredients"})
     private List<Long> ingredientIds;

@@ -28,7 +28,7 @@ public class QuizModel {
     @Builder.Default
     private Integer point = 100;
 
-    @Column(length = 500)
+    @Column(name = "image_quiz", columnDefinition = "TEXT")
     private String imageQuiz;
 
     @Column(length = 100)

@@ -30,10 +30,16 @@ public class EthnieModel {
 
     private String population;
 
+    private String langue;
+
     @Column(columnDefinition = "TEXT")
     private String description;
 
+<<<<<<< HEAD
     @Column(length = 500)
+=======
+    @Column(columnDefinition = "TEXT")
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
     private String imageUrl;
 
     private Long idUsers;

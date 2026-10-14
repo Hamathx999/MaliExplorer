@@ -43,6 +43,7 @@ public class utilisateurModel {
     @Builder.Default
     private String adresse = "";
 
+<<<<<<< HEAD
     @Builder.Default
     private String telephone = "";
 
@@ -54,6 +55,13 @@ public class utilisateurModel {
 
     @Builder.Default
     private String photoUrl = "";
+=======
+    private String telephone;
+
+    private String photoUrl;
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
+
+    private String pieceIdentite;
 
     private Date dateCreation;
 

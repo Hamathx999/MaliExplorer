@@ -71,6 +71,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             throw new IllegalArgumentException("Cet email est déjà utilisé par un autre compte !");
         }
 
+<<<<<<< HEAD
         if (utilisateurModifie.getPrenom() != null) existant.setPrenom(utilisateurModifie.getPrenom());
         if (utilisateurModifie.getNom() != null) existant.setNom(utilisateurModifie.getNom());
         if (utilisateurModifie.getEmail() != null) existant.setEmail(utilisateurModifie.getEmail());
@@ -81,6 +82,17 @@ public class UtilisateurServiceImpl implements UtilisateurService {
             existant.setStatut(utilisateurModifie.getStatut());
         }
         existant.setPoints(utilisateurModifie.getPoints());
+=======
+        existant.setPrenom(utilisateurModifie.getPrenom());
+        existant.setNom(utilisateurModifie.getNom());
+        existant.setEmail(utilisateurModifie.getEmail());
+        existant.setAdresse(utilisateurModifie.getAdresse());
+        existant.setTelephone(utilisateurModifie.getTelephone());
+        existant.setPhotoUrl(utilisateurModifie.getPhotoUrl());
+        existant.setPieceIdentite(utilisateurModifie.getPieceIdentite());
+        existant.setRole(utilisateurModifie.getRole());
+
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
 
         return repository.save(existant);
     }

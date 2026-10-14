@@ -51,14 +51,24 @@ public class EthnieServiceImpl implements EthnieService {
             throw new BadRequestException("Une ethnie avec le nom '" + requestDTO.getNom() + "' existe déjà");
         }
 
+        String resolvedImageUrl = requestDTO.getImageUrl();
+        if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
+            resolvedImageUrl = String.join(",", requestDTO.getImages());
+        }
+
         EthnieModel ethnie = EthnieModel.builder()
                 .nomEthnie(requestDTO.getNom())
                 .region(requestDTO.getRegion())
                 .ville(requestDTO.getVille())
                 .langues(requestDTO.getLangues())
                 .population(requestDTO.getPopulation())
+                .langue(requestDTO.getLangue())
                 .description(requestDTO.getDescription())
+<<<<<<< HEAD
                 .imageUrl(requestDTO.getImageUrl())
+=======
+                .imageUrl(resolvedImageUrl)
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .regions(new ArrayList<>())
                 .plats(new ArrayList<>())
                 .build();
@@ -93,8 +103,19 @@ public class EthnieServiceImpl implements EthnieService {
         if (requestDTO.getVille() != null) ethnie.setVille(requestDTO.getVille());
         if (requestDTO.getLangues() != null) ethnie.setLangues(requestDTO.getLangues());
         ethnie.setPopulation(requestDTO.getPopulation());
+        if (requestDTO.getLangue() != null) {
+            ethnie.setLangue(requestDTO.getLangue());
+        }
         ethnie.setDescription(requestDTO.getDescription());
+<<<<<<< HEAD
         if (requestDTO.getImageUrl() != null) ethnie.setImageUrl(requestDTO.getImageUrl());
+=======
+        if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
+            ethnie.setImageUrl(String.join(",", requestDTO.getImages()));
+        } else if (requestDTO.getImageUrl() != null) {
+            ethnie.setImageUrl(requestDTO.getImageUrl());
+        }
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
 
         EthnieModel updated = ethnieRepository.save(ethnie);
         return mapToResponseDTO(updated);
@@ -148,6 +169,14 @@ public class EthnieServiceImpl implements EthnieService {
 
         List<PlatSummaryDTO> plats = new java.util.ArrayList<>();
 
+        List<String> imagesList = (ethnie.getImageUrl() != null && !ethnie.getImageUrl().isBlank())
+                ? java.util.Arrays.stream(ethnie.getImageUrl().split(","))
+                        .map(String::trim)
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList())
+                : java.util.Collections.emptyList();
+        String mainImageUrl = imagesList.isEmpty() ? null : imagesList.get(0);
+
         return EthnieResponseDTO.builder()
                 .id(ethnie.getIdEthnie())
                 .nom(ethnie.getNomEthnie())
@@ -155,8 +184,14 @@ public class EthnieServiceImpl implements EthnieService {
                 .ville(ethnie.getVille())
                 .langues(ethnie.getLangues())
                 .population(ethnie.getPopulation())
+                .langue(ethnie.getLangue())
                 .description(ethnie.getDescription())
+<<<<<<< HEAD
                 .imageUrl(ethnie.getImageUrl())
+=======
+                .imageUrl(mainImageUrl)
+                .images(imagesList)
+>>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .regions(regions)
                 .plats(plats)
                 .build();

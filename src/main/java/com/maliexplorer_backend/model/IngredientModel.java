@@ -3,17 +3,17 @@ package com.maliexplorer_backend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "ingredients")
-@Data
+@Getter
+@Setter
+@ToString(exclude = "plats")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +21,7 @@ public class IngredientModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     private Long idIngredient;
 
     private String nom;
