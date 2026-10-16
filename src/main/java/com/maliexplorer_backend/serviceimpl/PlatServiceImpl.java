@@ -73,14 +73,10 @@ public class PlatServiceImpl implements PlatService {
                 .description(requestDTO.getDescription())
                 .nbrePersonnes(requestDTO.getNbrePersonnes())
                 .tempsPreparation(requestDTO.getTempsPreparation())
-<<<<<<< HEAD
-                .imageUrl(requestDTO.getImageUrl())
+                .imageUrl(resolvedImageUrl)
                 .ingredientPrincipal(requestDTO.getIngredientPrincipal())
                 .region(requestDTO.getRegion())
                 .difficulte(requestDTO.getDifficulte())
-=======
-                .imageUrl(resolvedImageUrl)
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .ingredients(new HashSet<>())
                 .ethnies(new ArrayList<>())
                 .regions(new ArrayList<>())
@@ -269,15 +265,11 @@ public class PlatServiceImpl implements PlatService {
                 .description(plat.getDescription())
                 .nbrePersonnes(plat.getNbrePersonnes())
                 .tempsPreparation(plat.getTempsPreparation())
-<<<<<<< HEAD
-                .imageUrl(plat.getImageUrl())
+                .imageUrl(mainImageUrl != null ? mainImageUrl : plat.getImageUrl())
                 .ingredientPrincipal(plat.getIngredientPrincipal())
                 .region(plat.getRegion())
                 .difficulte(plat.getDifficulte())
-=======
-                .imageUrl(mainImageUrl)
                 .images(imagesList)
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .ingredientModelList(plat.getIngredients())
                 .regions(regions)
                 .ethnies(ethnies)

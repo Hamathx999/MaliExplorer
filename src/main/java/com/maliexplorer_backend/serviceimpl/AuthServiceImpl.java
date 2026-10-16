@@ -135,11 +135,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         utilisateurModel user;
-        if (roleDemande == RoleModel.artisan) {
-            ArtisanModel a = new ArtisanModel();
-            a.setTypeArtisanat("Artisan");
-            user = a;
-        } else if (roleDemande == RoleModel.promoteur || roleDemande == RoleModel.partenaire) {
+        if (roleDemande == RoleModel.promoteur || roleDemande == RoleModel.partenaire) {
             PromoteurModel p = new PromoteurModel();
             p.setNomOrganisation("Organisation Partenaire");
             user = p;

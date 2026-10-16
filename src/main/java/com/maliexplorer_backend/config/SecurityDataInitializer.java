@@ -22,14 +22,14 @@ public class SecurityDataInitializer implements CommandLineRunner {
     public void run(String... args) {
         log.info("Vérification et initialisation des comptes administrateurs MaliExplorer...");
 
-        // 1. Initialisation / élévation du compte administrateur principal : famoryjosuesissoko@gmail.com
-        initOrPromoteAdmin("famoryjosuesissoko@gmail.com", "Famory Josue", "Sissoko");
+        // 1. Initialisation / élévation du Super Administrateur principal : famoryjosuesissoko@gmail.com
+        initOrPromoteAdmin("famoryjosuesissoko@gmail.com", "Famory Josue", "Sissoko", RoleModel.superAdmin);
 
-        // 2. Initialisation / élévation du compte administrateur technique : hamath.o.diallo18@gmail.com
-        initOrPromoteAdmin("hamath.o.diallo18@gmail.com", "Hamath", "Diallo");
+        // 2. Initialisation / élévation du Super Administrateur technique : hamath.o.diallo18@gmail.com
+        initOrPromoteAdmin("hamath.o.diallo18@gmail.com", "Hamath", "Diallo", RoleModel.superAdmin);
     }
 
-    private void initOrPromoteAdmin(String email, String prenom, String nom) {
+    private void initOrPromoteAdmin(String email, String prenom, String nom, RoleModel targetRole) {
         Optional<utilisateurModel> userOpt = userRepository.findByEmail(email);
 
         try {
@@ -37,9 +37,9 @@ public class SecurityDataInitializer implements CommandLineRunner {
                 utilisateurModel user = userOpt.get();
                 boolean needsSave = false;
 
-                if (user.getRole() != RoleModel.admin && user.getRole() != RoleModel.superAdmin) {
-                    log.info("Élévation du compte {} au rôle ADMIN (ancien rôle : {})", email, user.getRole());
-                    user.setRole(RoleModel.admin);
+                if (user.getRole() != targetRole) {
+                    log.info("Élévation du compte {} au rôle {} (ancien rôle : {})", email, targetRole, user.getRole());
+                    user.setRole(targetRole);
                     needsSave = true;
                 }
 
@@ -53,15 +53,15 @@ public class SecurityDataInitializer implements CommandLineRunner {
                     userRepository.save(user);
                     log.info("Compte administrateur {} mis à jour avec succès en base de données.", email);
                 } else {
-                    log.info("Compte administrateur {} déjà configuré avec le rôle ADMIN.", email);
+                    log.info("Compte administrateur {} déjà configuré avec le rôle {}.", email, targetRole);
                 }
             } else {
-                log.info("Création du compte administrateur par défaut : {}", email);
+                log.info("Création du compte {} par défaut : {}", targetRole, email);
                 utilisateurModel newAdmin = utilisateurModel.builder()
                         .email(email)
                         .prenom(prenom)
                         .nom(nom)
-                        .role(RoleModel.admin)
+                        .role(targetRole)
                         .statut("ACTIF")
                         .points(100)
                         .nomOrganisation("")
@@ -73,11 +73,10 @@ public class SecurityDataInitializer implements CommandLineRunner {
                         .build();
 
                 userRepository.save(newAdmin);
-                log.info("Compte administrateur {} créé avec succès avec le rôle ADMIN.", email);
+                log.info("Compte {} {} créé avec succès en BDD.", targetRole, email);
             }
         } catch (Exception e) {
             log.warn("Avertissement lors de l'initialisation du compte administrateur {} : {}", email, e.getMessage());
         }
     }
 }
-

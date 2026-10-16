@@ -3,7 +3,6 @@ package com.maliexplorer_backend.serviceimpl;
 import com.maliexplorer_backend.dto.OpportuniteResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
 import com.maliexplorer_backend.model.*;
-import com.maliexplorer_backend.repository.ArtisanRepository;
 import com.maliexplorer_backend.repository.GuideRepository;
 import com.maliexplorer_backend.repository.PromoteurRepository;
 import com.maliexplorer_backend.service.OpportuniteService;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class OpportuniteServiceImpl implements OpportuniteService {
 
-    private final ArtisanRepository artisanRepository;
     private final PromoteurRepository promoteurRepository;
     private final GuideRepository guideRepository;
 
@@ -32,14 +30,8 @@ public class OpportuniteServiceImpl implements OpportuniteService {
     public List<OpportuniteResponseDTO> getOpportunitesValidees(String type, String keyword) {
         List<OpportuniteResponseDTO> result = new ArrayList<>();
 
-        boolean includeArtisans = (type == null || type.isBlank() || type.equalsIgnoreCase("ARTISAN"));
         boolean includePromoteurs = (type == null || type.isBlank() || type.equalsIgnoreCase("PROMOTEUR"));
         boolean includeGuides = (type == null || type.isBlank() || type.equalsIgnoreCase("GUIDE"));
-
-        if (includeArtisans) {
-            artisanRepository.findByRecherchePartenariatTrueAndStatutModeration(StatutModeration.VALIDE)
-                    .forEach(a -> result.add(mapArtisanToDTO(a)));
-        }
 
         if (includePromoteurs) {
             promoteurRepository.findByRecherchePartenariatTrueAndStatutModeration(StatutModeration.VALIDE)
@@ -70,9 +62,6 @@ public class OpportuniteServiceImpl implements OpportuniteService {
     public List<OpportuniteResponseDTO> getOpportunitesEnAttente() {
         List<OpportuniteResponseDTO> result = new ArrayList<>();
 
-        artisanRepository.findByStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION)
-                .forEach(a -> result.add(mapArtisanToDTO(a)));
-
         promoteurRepository.findByStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION)
                 .forEach(p -> result.add(mapPromoteurToDTO(p)));
 
@@ -84,16 +73,6 @@ public class OpportuniteServiceImpl implements OpportuniteService {
 
     @Override
     public OpportuniteResponseDTO validerOpportunite(int idUsers) {
-        Optional<ArtisanModel> artisanOpt = artisanRepository.findById(idUsers);
-        if (artisanOpt.isPresent()) {
-            ArtisanModel artisan = artisanOpt.get();
-            artisan.setStatutModeration(StatutModeration.VALIDE);
-            artisan.setMotifRejet(null);
-            artisanRepository.save(artisan);
-            log.info("Opportunité artisan validée : ID={}", idUsers);
-            return mapArtisanToDTO(artisan);
-        }
-
         Optional<PromoteurModel> promoteurOpt = promoteurRepository.findById(idUsers);
         if (promoteurOpt.isPresent()) {
             PromoteurModel promoteur = promoteurOpt.get();
@@ -119,16 +98,6 @@ public class OpportuniteServiceImpl implements OpportuniteService {
 
     @Override
     public OpportuniteResponseDTO rejeterOpportunite(int idUsers, String motifRejet) {
-        Optional<ArtisanModel> artisanOpt = artisanRepository.findById(idUsers);
-        if (artisanOpt.isPresent()) {
-            ArtisanModel artisan = artisanOpt.get();
-            artisan.setStatutModeration(StatutModeration.REJETE);
-            artisan.setMotifRejet(motifRejet);
-            artisanRepository.save(artisan);
-            log.info("Opportunité artisan rejetée : ID={}, motif={}", idUsers, motifRejet);
-            return mapArtisanToDTO(artisan);
-        }
-
         Optional<PromoteurModel> promoteurOpt = promoteurRepository.findById(idUsers);
         if (promoteurOpt.isPresent()) {
             PromoteurModel promoteur = promoteurOpt.get();
@@ -154,18 +123,6 @@ public class OpportuniteServiceImpl implements OpportuniteService {
 
     @Override
     public OpportuniteResponseDTO soumettreProjetPartenaire(int idUsers, String titreProjet, String besoinPartenariat, boolean recherchePartenariat) {
-        Optional<ArtisanModel> artisanOpt = artisanRepository.findById(idUsers);
-        if (artisanOpt.isPresent()) {
-            ArtisanModel artisan = artisanOpt.get();
-            artisan.setRecherchePartenariat(recherchePartenariat);
-            artisan.setTitreProjet(titreProjet);
-            artisan.setBesoinPartenariat(besoinPartenariat);
-            artisan.setStatutModeration(recherchePartenariat ? StatutModeration.EN_ATTENTE_VALIDATION : StatutModeration.VALIDE);
-            artisan.setMotifRejet(null);
-            artisanRepository.save(artisan);
-            return mapArtisanToDTO(artisan);
-        }
-
         Optional<PromoteurModel> promoteurOpt = promoteurRepository.findById(idUsers);
         if (promoteurOpt.isPresent()) {
             PromoteurModel promoteur = promoteurOpt.get();
@@ -196,11 +153,6 @@ public class OpportuniteServiceImpl implements OpportuniteService {
     @Override
     @Transactional(readOnly = true)
     public OpportuniteResponseDTO getMonStatutPartenaire(int idUsers) {
-        Optional<ArtisanModel> artisanOpt = artisanRepository.findById(idUsers);
-        if (artisanOpt.isPresent()) {
-            return mapArtisanToDTO(artisanOpt.get());
-        }
-
         Optional<PromoteurModel> promoteurOpt = promoteurRepository.findById(idUsers);
         if (promoteurOpt.isPresent()) {
             return mapPromoteurToDTO(promoteurOpt.get());
@@ -215,25 +167,6 @@ public class OpportuniteServiceImpl implements OpportuniteService {
     }
 
     // ==================== MAPPERS PRIVÉS ====================
-
-    private OpportuniteResponseDTO mapArtisanToDTO(ArtisanModel a) {
-        return OpportuniteResponseDTO.builder()
-                .idUsers(a.getIdUsers())
-                .nomComplet(a.getPrenom() + " " + a.getNom())
-                .email(a.getEmail())
-                .adresse(a.getAdresse())
-                .photoUrl(a.getPhotoUrl())
-                .role(a.getRole())
-                .typePartenaire("ARTISAN")
-                .specialiteOuOrganisation(a.getTypeArtisanat())
-                .recherchePartenariat(a.isRecherchePartenariat())
-                .titreProjet(a.getTitreProjet())
-                .besoinPartenariat(a.getBesoinPartenariat())
-                .statutModeration(a.getStatutModeration())
-                .motifRejet(a.getMotifRejet())
-                .dateCreation(a.getDateCreation())
-                .build();
-    }
 
     private OpportuniteResponseDTO mapPromoteurToDTO(PromoteurModel p) {
         return OpportuniteResponseDTO.builder()

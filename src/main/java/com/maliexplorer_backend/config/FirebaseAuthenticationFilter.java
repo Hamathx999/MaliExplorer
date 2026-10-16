@@ -133,16 +133,22 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
                 authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
                 authorities.add(new SimpleGrantedAuthority("ROLE_admin"));
             }
-            if (role == RoleModel.artisan || role == RoleModel.guide || role == RoleModel.promoteur || role == RoleModel.partenaire) {
+            if (role == RoleModel.superAdmin) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
+                authorities.add(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"));
+            }
+            if (role == RoleModel.guide || role == RoleModel.promoteur || role == RoleModel.partenaire) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_PARTENAIRE"));
             }
             if (role == RoleModel.investisseur) {
                 authorities.add(new SimpleGrantedAuthority("ROLE_INVESTISSEUR"));
             }
         }
-        if (user.getEmail() != null && user.getEmail().equalsIgnoreCase("famoryjosuesissoko@gmail.com")) {
+        if (user.getEmail() != null && (user.getEmail().equalsIgnoreCase("famoryjosuesissoko@gmail.com") || user.getEmail().equalsIgnoreCase("hamath.o.diallo18@gmail.com"))) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
             authorities.add(new SimpleGrantedAuthority("ROLE_admin"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"));
         }
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         return authorities;

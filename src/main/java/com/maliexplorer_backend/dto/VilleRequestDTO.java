@@ -25,8 +25,6 @@ public class VilleRequestDTO {
 
     private String description;
 
-    @com.fasterxml.jackson.annotation.JsonAlias({"imageUrl", "photoUrl", "image"})
-    private String imageUrl;
 
     private String superficie;
 

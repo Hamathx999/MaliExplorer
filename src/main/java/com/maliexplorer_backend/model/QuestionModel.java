@@ -30,6 +30,29 @@ public class QuestionModel {
     @Builder.Default
     private List<PropositionModel> propositions = new ArrayList<>();
 
+    // Colonne pour assurer la rétrocompatibilité avec la colonne propositions de la table MySQL
+    @Column(name = "propositions", columnDefinition = "TEXT")
+    @Builder.Default
+    private String propositionsJson = "[]";
+
+    @PrePersist
+    @PreUpdate
+    public void syncPropositionsJson() {
+        if (propositions != null && !propositions.isEmpty()) {
+            List<String> list = propositions.stream()
+                .map(PropositionModel::getNomProposition)
+                .filter(s -> s != null && !s.isBlank())
+                .toList();
+            if (!list.isEmpty()) {
+                this.propositionsJson = "[\"" + String.join("\", \"", list) + "\"]";
+                return;
+            }
+        }
+        if (this.propositionsJson == null || this.propositionsJson.isBlank()) {
+            this.propositionsJson = "[]";
+        }
+    }
+
     @Builder.Default
     private Integer points = 0;
 

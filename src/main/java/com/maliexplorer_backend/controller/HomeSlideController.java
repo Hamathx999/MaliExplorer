@@ -22,7 +22,7 @@ public class HomeSlideController {
 
     private final HomeSlideService homeSlideService;
 
-    @GetMapping
+    @GetMapping({"", "/actives"})
     @Operation(summary = "Lister les diapositives actives (Public)")
     public ResponseEntity<List<HomeSlideResponseDTO>> getActiveSlides() {
         return ResponseEntity.ok(homeSlideService.getActiveSlides());
@@ -65,12 +65,48 @@ public class HomeSlideController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/reorder")
+    @PatchMapping("/{id}/toggle-actif")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Activer ou désactiver une diapositive (Admin)")
+    public ResponseEntity<HomeSlideResponseDTO> toggleActif(@PathVariable Long id) {
+        HomeSlideResponseDTO slide = homeSlideService.getSlideById(id);
+        HomeSlideRequestDTO req = HomeSlideRequestDTO.builder()
+                .titre(slide.getTitre())
+                .sousTitre(slide.getSousTitre())
+                .legende(slide.getLegende())
+                .imageUrl(slide.getImageUrl())
+                .lienAction(slide.getLienAction())
+                .ordre(slide.getOrdre())
+                .actif(slide.getActif() == null || !slide.getActif())
+                .prioritaire(slide.getPrioritaire())
+                .build();
+        return ResponseEntity.ok(homeSlideService.updateSlide(id, req));
+    }
+
+    @PatchMapping("/{id}/set-principal")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Définir une diapositive comme prioritaire (Admin)")
+    public ResponseEntity<HomeSlideResponseDTO> setPrincipal(@PathVariable Long id) {
+        HomeSlideResponseDTO slide = homeSlideService.getSlideById(id);
+        HomeSlideRequestDTO req = HomeSlideRequestDTO.builder()
+                .titre(slide.getTitre())
+                .sousTitre(slide.getSousTitre())
+                .legende(slide.getLegende())
+                .imageUrl(slide.getImageUrl())
+                .lienAction(slide.getLienAction())
+                .ordre(slide.getOrdre())
+                .actif(slide.getActif())
+                .prioritaire(true)
+                .build();
+        return ResponseEntity.ok(homeSlideService.updateSlide(id, req));
+    }
+
+    @RequestMapping(value = {"/reorder", "/reordonner"}, method = {RequestMethod.POST, RequestMethod.PUT})
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Réordonner les diapositives (Admin)")
-    public ResponseEntity<Void> reorderSlides(@RequestBody List<Long> slideIds) {
+    public ResponseEntity<List<HomeSlideResponseDTO>> reorderSlides(@RequestBody List<Long> slideIds) {
         homeSlideService.reorderSlides(slideIds);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(homeSlideService.getAllSlides());
     }
 }
 

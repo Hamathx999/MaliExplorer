@@ -43,7 +43,6 @@ public class utilisateurModel {
     @Builder.Default
     private String adresse = "";
 
-<<<<<<< HEAD
     @Builder.Default
     private String telephone = "";
 
@@ -55,13 +54,6 @@ public class utilisateurModel {
 
     @Builder.Default
     private String photoUrl = "";
-=======
-    private String telephone;
-
-    private String photoUrl;
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
-
-    private String pieceIdentite;
 
     private Date dateCreation;
 
@@ -81,5 +73,29 @@ public class utilisateurModel {
 
     public void setId(int id) {
         this.idUsers = id;
+    }
+
+    public int getIdUsers() {
+        return this.idUsers;
+    }
+
+    public void setIdUsers(int idUsers) {
+        this.idUsers = idUsers;
+    }
+
+    public RoleModel getRole() {
+        return this.role;
+    }
+
+    public void setRole(RoleModel role) {
+        this.role = role;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

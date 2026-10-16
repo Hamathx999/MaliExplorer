@@ -1,9 +1,11 @@
 package com.maliexplorer_backend.repository;
 
+import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.model.utilisateurModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,4 +18,8 @@ public interface utilisateurRepository extends JpaRepository<utilisateurModel, I
     Optional<utilisateurModel> findByFirebaseUid(String firebaseUid);
 
     boolean existsByFirebaseUid(String firebaseUid);
+
+    List<utilisateurModel> findByRoleIn(List<RoleModel> roles);
+
+    List<utilisateurModel> findByRole(RoleModel role);
 }

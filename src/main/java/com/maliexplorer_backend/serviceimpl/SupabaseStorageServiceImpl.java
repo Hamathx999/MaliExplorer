@@ -15,10 +15,15 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Slf4j
 @Service
@@ -118,11 +123,45 @@ public class SupabaseStorageServiceImpl implements StorageService {
                     .message("Fichier téléversé avec succès sur Supabase Storage")
                     .build();
 
-        } catch (BadRequestException e) {
-            throw e;
         } catch (Exception e) {
-            log.error("Exception lors du téléversement vers Supabase : {}", e.getMessage(), e);
-            throw new BadRequestException("Erreur de communication avec Supabase Storage : " + e.getMessage());
+            log.warn("Échec du téléversement vers Supabase Storage ({}), basculement automatique sur le stockage local...", e.getMessage());
+            return saveLocally(fileBytes, sanitizedFolder, uniqueFileName, originalFilename, contentType, file.getSize());
+        }
+    }
+
+    private FileUploadResponseDTO saveLocally(byte[] fileBytes, String folder, String fileName, String originalFilename, String contentType, long size) {
+        try {
+            Path targetDir = Paths.get("uploads", folder).toAbsolutePath().normalize();
+            if (!Files.exists(targetDir)) {
+                Files.createDirectories(targetDir);
+            }
+            Path targetPath = targetDir.resolve(fileName);
+            Files.write(targetPath, fileBytes, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+            String baseUrl;
+            try {
+                baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+            } catch (Exception ignored) {
+                baseUrl = "http://localhost:8080";
+            }
+            String localUrl = baseUrl + "/api/uploads/" + folder + "/" + fileName;
+
+            log.info("Fichier sauvegardé avec succès en local (secours) : {}", localUrl);
+
+            return FileUploadResponseDTO.builder()
+                    .originalFileName(originalFilename)
+                    .storedFileName(fileName)
+                    .filePath(folder + "/" + fileName)
+                    .fileUrl(localUrl)
+                    .bucket("local-storage")
+                    .contentType(contentType)
+                    .size(size)
+                    .uploadedAt(LocalDateTime.now())
+                    .message("Fichier enregistré avec succès (stockage local de secours)")
+                    .build();
+        } catch (IOException ioException) {
+            log.error("Échec critique du stockage local de secours : {}", ioException.getMessage(), ioException);
+            throw new BadRequestException("Impossible d'enregistrer le fichier (échec Supabase et stockage local) : " + ioException.getMessage());
         }
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
 public interface OpportuniteService {
 
     /**
-     * Récupère la liste de toutes les fiches d'artisans, guides et promoteurs
+     * Récupère la liste de toutes les fiches de guides et promoteurs
      * avec "Recherche de partenariat" validées pour l'espace B2B et touristes.
      * Permet le filtrage optionnel par type et recherche par mot-clé.
      */

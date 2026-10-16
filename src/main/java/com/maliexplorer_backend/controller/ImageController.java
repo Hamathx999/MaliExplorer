@@ -1,15 +1,5 @@
 package com.maliexplorer_backend.controller;
 
-<<<<<<< HEAD
-import com.maliexplorer_backend.dto.FileUploadResponseDTO;
-import com.maliexplorer_backend.service.StorageService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-=======
 import com.maliexplorer_backend.model.ImageModel;
 import com.maliexplorer_backend.repository.ImageRepository;
 import com.maliexplorer_backend.service.SupabaseStorageService;
@@ -20,130 +10,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-<<<<<<< HEAD
-
-import java.io.File;
-import java.io.IOException;
-=======
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-<<<<<<< HEAD
-=======
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
 import java.util.UUID;
 
 @Slf4j
 @RestController
-<<<<<<< HEAD
-@RequestMapping("/api/images")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*")
-@Tag(name = "Images & Médias", description = "Téléversement et gestion unifiée des images pour l'administration et l'application")
-public class ImageController {
-
-    private final StorageService storageService;
-
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Téléversement d'image", description = "Téléverse une image vers Supabase Storage ou le stockage local en fallback")
-    public ResponseEntity<FileUploadResponseDTO> uploadImage(
-            @Parameter(description = "Fichier image à téléverser", required = true)
-            @RequestParam("file") MultipartFile file,
-            @Parameter(description = "Dossier de destination")
-            @RequestParam(value = "folder", defaultValue = "general") String folder,
-            @Parameter(description = "Type d'entité associée (optionnel)")
-            @RequestParam(value = "entiteType", required = false) String entiteType,
-            @Parameter(description = "Identifiant de l'entité (optionnel)")
-            @RequestParam(value = "entiteId", required = false) String entiteId,
-            HttpServletRequest request) {
-
-        if (file == null || file.isEmpty()) {
-            return ResponseEntity.badRequest().body(
-                    FileUploadResponseDTO.builder()
-                            .message("Le fichier envoyé est vide ou manquant.")
-                            .build()
-            );
-        }
-
-        // 1. Tenter l'envoi vers Supabase Storage
-        try {
-            FileUploadResponseDTO response = storageService.uploadFile(file, folder);
-            if (response != null && StringUtils.hasText(response.getFileUrl())) {
-                log.info("Image uploadée avec succès sur Supabase : {}", response.getFileUrl());
-                return new ResponseEntity<>(response, HttpStatus.CREATED);
-            }
-        } catch (Exception e) {
-            log.warn("Échec du téléversement vers Supabase ({}), basculement automatique sur le stockage local : {}",
-                    e.getMessage(), file.getOriginalFilename());
-        }
-
-        // 2. Fallback résilient local si Supabase Storage est inaccessible / hors ligne
-        try {
-            String originalFilename = StringUtils.cleanPath(file.getOriginalFilename() != null ? file.getOriginalFilename() : "image.jpg");
-            String extension = "jpg";
-            int dotIndex = originalFilename.lastIndexOf('.');
-            if (dotIndex >= 0) {
-                extension = originalFilename.substring(dotIndex + 1);
-            }
-
-            String storedFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + "." + extension;
-            String cleanFolder = StringUtils.hasText(folder) ? folder.replaceAll("^/+|/+$", "") : "general";
-
-            Path targetDir = Paths.get("uploads", cleanFolder);
-            if (!Files.exists(targetDir)) {
-                Files.createDirectories(targetDir);
-            }
-
-            Path targetPath = targetDir.resolve(storedFileName);
-            Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-
-            String baseUrl = request.getScheme() + "://" + request.getServerName() + (request.getServerPort() == 80 || request.getServerPort() == 443 ? "" : ":" + request.getServerPort());
-            String publicUrl = baseUrl + "/api/uploads/" + cleanFolder + "/" + storedFileName;
-
-            log.info("Image sauvegardée en local avec succès : {}", publicUrl);
-
-            FileUploadResponseDTO localResponse = FileUploadResponseDTO.builder()
-                    .originalFileName(originalFilename)
-                    .storedFileName(storedFileName)
-                    .filePath(cleanFolder + "/" + storedFileName)
-                    .fileUrl(publicUrl)
-                    .bucket("local")
-                    .contentType(file.getContentType())
-                    .size(file.getSize())
-                    .uploadedAt(LocalDateTime.now())
-                    .message("Fichier téléversé avec succès (stockage local)")
-                    .build();
-
-            return new ResponseEntity<>(localResponse, HttpStatus.CREATED);
-        } catch (IOException ioException) {
-            log.error("Erreur critique lors de la sauvegarde locale de l'image : {}", ioException.getMessage(), ioException);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                    FileUploadResponseDTO.builder()
-                            .message("Erreur interne lors de la sauvegarde du fichier : " + ioException.getMessage())
-                            .build()
-            );
-        }
-    }
-}
-
-=======
 @RequestMapping("/api")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
@@ -162,7 +50,7 @@ public class ImageController {
             @RequestParam(value = "entiteType", required = false) String entiteType,
             @RequestParam(value = "entiteId", required = false) Long entiteId) {
 
-        if (file.isEmpty()) {
+        if (file == null || file.isEmpty()) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Fichier vide");
             error.put("message", "Veuillez sélectionner un fichier valide.");
@@ -175,18 +63,42 @@ public class ImageController {
         String fileUrl = null;
         boolean uploadedToSupabase = false;
 
-        // 1. Téléversement vers Supabase Storage
+        // 1. Tentative de téléversement vers Supabase Storage
         try {
             fileUrl = supabaseStorageService.uploadFile(file, folder);
-            uploadedToSupabase = true;
-            log.info("Téléversement Supabase réussi pour '{}' -> {}", originalFileName, fileUrl);
+            if (StringUtils.hasText(fileUrl)) {
+                uploadedToSupabase = true;
+                log.info("Téléversement Supabase réussi pour '{}' -> {}", originalFileName, fileUrl);
+            }
         } catch (Exception e) {
-            log.error("Échec du téléversement vers Supabase Storage : {}", e.getMessage(), e);
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Échec Supabase Storage");
-            error.put("message", e.getMessage());
-            error.put("hint", "Vérifiez que la clé Supabase service_role est utilisée ou que les RLS Policies de Supabase autorisent INSERT pour 'anon'.");
-            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(error);
+            log.warn("Échec téléversement Supabase Storage ({}), basculement en local...", e.getMessage());
+        }
+
+        // 2. Repli local en cas d'échec ou d'absence de configuration Supabase
+        if (!uploadedToSupabase) {
+            try {
+                if (!Files.exists(localStorageLocation)) {
+                    Files.createDirectories(localStorageLocation);
+                }
+                String extension = "jpg";
+                int dotIndex = originalFileName.lastIndexOf('.');
+                if (dotIndex >= 0) {
+                    extension = originalFileName.substring(dotIndex + 1);
+                }
+                String storedFileName = System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8) + "." + extension;
+                Path targetPath = localStorageLocation.resolve(storedFileName);
+                Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+
+                String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
+                fileUrl = baseUrl + "/api/images/" + storedFileName;
+                log.info("Téléversement local réussi pour '{}' -> {}", originalFileName, fileUrl);
+            } catch (IOException ioException) {
+                log.error("Échec stockage local de l'image : {}", ioException.getMessage(), ioException);
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Échec stockage de l'image");
+                error.put("message", ioException.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+            }
         }
 
         // 3. Enregistrement systématique de la ligne dans la table 'images' côté back
@@ -259,4 +171,3 @@ public class ImageController {
         }
     }
 }
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919

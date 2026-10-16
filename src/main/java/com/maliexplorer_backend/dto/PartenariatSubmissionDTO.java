@@ -17,4 +17,28 @@ public class PartenariatSubmissionDTO {
 
     private String titreProjet;
     private String besoinPartenariat;
+
+    public Boolean getRecherchePartenariat() {
+        return recherchePartenariat;
+    }
+
+    public void setRecherchePartenariat(Boolean recherchePartenariat) {
+        this.recherchePartenariat = recherchePartenariat;
+    }
+
+    public String getTitreProjet() {
+        return titreProjet;
+    }
+
+    public void setTitreProjet(String titreProjet) {
+        this.titreProjet = titreProjet;
+    }
+
+    public String getBesoinPartenariat() {
+        return besoinPartenariat;
+    }
+
+    public void setBesoinPartenariat(String besoinPartenariat) {
+        this.besoinPartenariat = besoinPartenariat;
+    }
 }

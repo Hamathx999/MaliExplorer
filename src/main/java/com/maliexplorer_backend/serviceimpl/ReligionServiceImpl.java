@@ -48,11 +48,20 @@ public class ReligionServiceImpl implements ReligionService {
     @Override
     @Transactional
     public ReligionResponseDTO createReligion(ReligionRequestDTO requestDTO) {
+        String description = requestDTO.getDescription();
+        String histoire = requestDTO.getHistoire();
+        if ((histoire == null || histoire.isBlank()) && description != null) {
+            histoire = description;
+        }
+        if ((description == null || description.isBlank()) && histoire != null) {
+            description = histoire;
+        }
+
         ReligionModel r = ReligionModel.builder()
                 .nom(requestDTO.getNom())
-                .categorie(requestDTO.getCategorie())
-                .description(requestDTO.getDescription())
-                .histoire(requestDTO.getHistoire())
+                .categorie(requestDTO.getCategorie() != null ? requestDTO.getCategorie() : "Religion")
+                .description(description)
+                .histoire(histoire)
                 .pratiques(requestDTO.getPratiques())
                 .fetes(requestDTO.getFetes())
                 .lieuxDeCulte(requestDTO.getLieuxDeCulte())
@@ -77,24 +86,73 @@ public class ReligionServiceImpl implements ReligionService {
         ReligionModel r = religionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Fiche de religion introuvable avec l'id : " + id));
 
-        r.setNom(requestDTO.getNom());
-        r.setCategorie(requestDTO.getCategorie());
-        r.setDescription(requestDTO.getDescription());
-        r.setHistoire(requestDTO.getHistoire());
-        r.setPratiques(requestDTO.getPratiques());
-        r.setFetes(requestDTO.getFetes());
-        r.setLieuxDeCulte(requestDTO.getLieuxDeCulte());
-        r.setRegionsConcernees(requestDTO.getRegionsConcernees());
-        r.setBranches(requestDTO.getBranches());
-        r.setProportionPopulation(requestDTO.getProportionPopulation());
-        r.setNombrePratiquantsEstime(requestDTO.getNombrePratiquantsEstime());
-        r.setSourceStatistiques(requestDTO.getSourceStatistiques());
-        r.setAnneeStatistiques(requestDTO.getAnneeStatistiques());
-        r.setMethodologieStatistiques(requestDTO.getMethodologieStatistiques());
-        r.setImageUrl(requestDTO.getImageUrl());
-        if (requestDTO.getOrdre() != null) r.setOrdre(requestDTO.getOrdre());
-        if (requestDTO.getPublie() != null) r.setPublie(requestDTO.getPublie());
+        if (requestDTO.getNom() != null && !requestDTO.getNom().isBlank()) {
+            r.setNom(requestDTO.getNom().trim());
+        }
+        if (requestDTO.getCategorie() != null && !requestDTO.getCategorie().isBlank()) {
+            r.setCategorie(requestDTO.getCategorie());
+        }
+        if (requestDTO.getDescription() != null && !requestDTO.getDescription().isBlank()) {
+            r.setDescription(requestDTO.getDescription());
+        }
+        if (requestDTO.getHistoire() != null && !requestDTO.getHistoire().isBlank()) {
+            r.setHistoire(requestDTO.getHistoire());
+        } else if (requestDTO.getDescription() != null && !requestDTO.getDescription().isBlank() && (r.getHistoire() == null || r.getHistoire().isBlank())) {
+            r.setHistoire(requestDTO.getDescription());
+        }
+        if (r.getDescription() == null || r.getDescription().isBlank()) {
+            if (r.getHistoire() != null && !r.getHistoire().isBlank()) {
+                r.setDescription(r.getHistoire());
+            }
+        }
+        if (requestDTO.getPratiques() != null && !requestDTO.getPratiques().isBlank()) {
+            r.setPratiques(requestDTO.getPratiques());
+        }
+        if (requestDTO.getFetes() != null && !requestDTO.getFetes().isBlank()) {
+            r.setFetes(requestDTO.getFetes());
+        }
+        if (requestDTO.getLieuxDeCulte() != null && !requestDTO.getLieuxDeCulte().isBlank()) {
+            r.setLieuxDeCulte(requestDTO.getLieuxDeCulte());
+        }
+        if (requestDTO.getRegionsConcernees() != null && !requestDTO.getRegionsConcernees().isBlank()) {
+            r.setRegionsConcernees(requestDTO.getRegionsConcernees());
+        }
+        if (requestDTO.getBranches() != null && !requestDTO.getBranches().isBlank()) {
+            r.setBranches(requestDTO.getBranches());
+        }
+        if (requestDTO.getProportionPopulation() != null && !requestDTO.getProportionPopulation().isBlank()) {
+            r.setProportionPopulation(requestDTO.getProportionPopulation());
+        }
+        if (requestDTO.getNombrePratiquantsEstime() != null && !requestDTO.getNombrePratiquantsEstime().isBlank()) {
+            r.setNombrePratiquantsEstime(requestDTO.getNombrePratiquantsEstime());
+        }
+        if (requestDTO.getSourceStatistiques() != null && !requestDTO.getSourceStatistiques().isBlank()) {
+            r.setSourceStatistiques(requestDTO.getSourceStatistiques());
+        }
+        if (requestDTO.getAnneeStatistiques() != null && !requestDTO.getAnneeStatistiques().isBlank()) {
+            r.setAnneeStatistiques(requestDTO.getAnneeStatistiques());
+        }
+        if (requestDTO.getMethodologieStatistiques() != null && !requestDTO.getMethodologieStatistiques().isBlank()) {
+            r.setMethodologieStatistiques(requestDTO.getMethodologieStatistiques());
+        }
+        if (requestDTO.getImageUrl() != null && !requestDTO.getImageUrl().isBlank()) {
+            r.setImageUrl(requestDTO.getImageUrl());
+        }
+        if (requestDTO.getOrdre() != null) {
+            r.setOrdre(requestDTO.getOrdre());
+        }
+        if (requestDTO.getPublie() != null) {
+            r.setPublie(requestDTO.getPublie());
+        }
 
+        return mapToDTO(religionRepository.save(r));
+    }
+
+    @Transactional
+    public ReligionResponseDTO togglePublication(Long id) {
+        ReligionModel r = religionRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Fiche de religion introuvable avec l'id : " + id));
+        r.setPublie(r.getPublie() == null || !r.getPublie());
         return mapToDTO(religionRepository.save(r));
     }
 

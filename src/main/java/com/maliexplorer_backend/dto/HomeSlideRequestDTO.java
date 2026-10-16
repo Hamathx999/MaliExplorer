@@ -23,7 +23,10 @@ public class HomeSlideRequestDTO {
 
     private String lienAction;
     private Integer ordre;
+    @com.fasterxml.jackson.annotation.JsonAlias({"actif", "estActif"})
     private Boolean actif;
+
+    @com.fasterxml.jackson.annotation.JsonAlias({"prioritaire", "estPrincipal"})
     private Boolean prioritaire;
 }
 

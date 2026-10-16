@@ -1,5 +1,6 @@
 package com.maliexplorer_backend.dto;
 
+import com.maliexplorer_backend.model.RoleModel;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -27,6 +28,9 @@ public class AdministrateurRequestDTO {
     private String email;
 
     private String motDePasse;
+    private String telephone;
     private String adresse;
     private String photoUrl;
+    private RoleModel role;
+    private String statut;
 }

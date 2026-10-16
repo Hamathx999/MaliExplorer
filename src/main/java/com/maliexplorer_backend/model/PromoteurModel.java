@@ -2,18 +2,22 @@ package com.maliexplorer_backend.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "promoteurs")
-@Data
+@Getter
+@Setter
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
 public class PromoteurModel extends utilisateurModel {
+
+    public PromoteurModel() {
+        super();
+    }
 
     private Long idPromoteur;
 

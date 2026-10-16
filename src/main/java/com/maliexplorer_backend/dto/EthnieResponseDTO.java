@@ -22,10 +22,7 @@ public class EthnieResponseDTO {
     private String langue;
     private String description;
     private String imageUrl;
-<<<<<<< HEAD
-=======
     private List<String> images;
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
     private List<RegionSummaryDTO> regions;
     private List<PlatSummaryDTO> plats;
 

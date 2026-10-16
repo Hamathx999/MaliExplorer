@@ -14,7 +14,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.UUID;
 
-@Slf4j
 @Service
 public class SupabaseStorageService {
 
@@ -28,6 +27,7 @@ public class SupabaseStorageService {
     private String bucket;
 
     private final HttpClient httpClient;
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SupabaseStorageService.class);
 
     public SupabaseStorageService() {
         this.httpClient = HttpClient.newBuilder()
@@ -55,6 +55,10 @@ public class SupabaseStorageService {
                 : "";
 
         String uniqueFileName = targetFolder + UUID.randomUUID() + "_" + cleanName;
+
+        if (!StringUtils.hasText(this.supabaseKey)) {
+            throw new IllegalStateException("Clé Supabase Storage non configurée (variable SUPABASE_KEY absente).");
+        }
 
         String baseUrl = this.supabaseUrl.replaceAll("/+$", "");
         String uploadEndpoint = baseUrl + "/storage/v1/object/" + this.bucket + "/" + uniqueFileName;

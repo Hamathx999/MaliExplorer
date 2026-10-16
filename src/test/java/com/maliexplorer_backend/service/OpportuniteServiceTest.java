@@ -2,7 +2,6 @@ package com.maliexplorer_backend.service;
 
 import com.maliexplorer_backend.dto.OpportuniteResponseDTO;
 import com.maliexplorer_backend.model.*;
-import com.maliexplorer_backend.repository.ArtisanRepository;
 import com.maliexplorer_backend.repository.GuideRepository;
 import com.maliexplorer_backend.repository.PromoteurRepository;
 import com.maliexplorer_backend.serviceimpl.OpportuniteServiceImpl;
@@ -26,9 +25,6 @@ import static org.mockito.Mockito.*;
 class OpportuniteServiceTest {
 
     @Mock
-    private ArtisanRepository artisanRepository;
-
-    @Mock
     private PromoteurRepository promoteurRepository;
 
     @Mock
@@ -37,20 +33,11 @@ class OpportuniteServiceTest {
     @InjectMocks
     private OpportuniteServiceImpl opportuniteService;
 
-    private ArtisanModel artisan;
     private PromoteurModel promoteur;
     private GuideModel guide;
 
     @BeforeEach
     void setUp() {
-        artisan = new ArtisanModel();
-        artisan.setIdUsers(1);
-        artisan.setPrenom("Mamadou");
-        artisan.setNom("Coulibaly");
-        artisan.setEmail("mamadou@artisanat.ml");
-        artisan.setRole(RoleModel.artisan);
-        artisan.setTypeArtisanat("Maroquinerie Touareg");
-
         promoteur = new PromoteurModel();
         promoteur.setIdUsers(2);
         promoteur.setPrenom("Fatoumata");
@@ -71,16 +58,16 @@ class OpportuniteServiceTest {
     @Test
     @DisplayName("Soumettre un projet de partenariat bascule en EN_ATTENTE_VALIDATION")
     void testSoumettreProjetPartenaire() {
-        when(artisanRepository.findById(1)).thenReturn(Optional.of(artisan));
-        when(artisanRepository.save(any(ArtisanModel.class))).thenAnswer(i -> i.getArgument(0));
+        when(promoteurRepository.findById(2)).thenReturn(Optional.of(promoteur));
+        when(promoteurRepository.save(any(PromoteurModel.class))).thenAnswer(i -> i.getArgument(0));
 
         OpportuniteResponseDTO res = opportuniteService.soumettreProjetPartenaire(
-                1, "Atelier Cuir Authentique", "Recherche financement de 2.000.000 FCFA pour outillage", true);
+                2, "Festival du Désert 2027", "Recherche sponsors et mécènes culturels", true);
 
         assertNotNull(res);
         assertTrue(res.isRecherchePartenariat());
-        assertEquals("Atelier Cuir Authentique", res.getTitreProjet());
-        assertEquals("Recherche financement de 2.000.000 FCFA pour outillage", res.getBesoinPartenariat());
+        assertEquals("Festival du Désert 2027", res.getTitreProjet());
+        assertEquals("Recherche sponsors et mécènes culturels", res.getBesoinPartenariat());
         assertEquals(StatutModeration.EN_ATTENTE_VALIDATION, res.getStatutModeration());
         assertNull(res.getMotifRejet());
     }
@@ -88,11 +75,11 @@ class OpportuniteServiceTest {
     @Test
     @DisplayName("Validation admin valide le statut en VALIDE")
     void testValiderOpportunite() {
-        artisan.setStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION);
-        when(artisanRepository.findById(1)).thenReturn(Optional.of(artisan));
-        when(artisanRepository.save(any(ArtisanModel.class))).thenAnswer(i -> i.getArgument(0));
+        promoteur.setStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION);
+        when(promoteurRepository.findById(2)).thenReturn(Optional.of(promoteur));
+        when(promoteurRepository.save(any(PromoteurModel.class))).thenAnswer(i -> i.getArgument(0));
 
-        OpportuniteResponseDTO res = opportuniteService.validerOpportunite(1);
+        OpportuniteResponseDTO res = opportuniteService.validerOpportunite(2);
 
         assertNotNull(res);
         assertEquals(StatutModeration.VALIDE, res.getStatutModeration());
@@ -101,11 +88,11 @@ class OpportuniteServiceTest {
     @Test
     @DisplayName("Rejet admin passe le statut en REJETE avec un motif explicite")
     void testRejeterOpportunite() {
-        artisan.setStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION);
-        when(artisanRepository.findById(1)).thenReturn(Optional.of(artisan));
-        when(artisanRepository.save(any(ArtisanModel.class))).thenAnswer(i -> i.getArgument(0));
+        promoteur.setStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION);
+        when(promoteurRepository.findById(2)).thenReturn(Optional.of(promoteur));
+        when(promoteurRepository.save(any(PromoteurModel.class))).thenAnswer(i -> i.getArgument(0));
 
-        OpportuniteResponseDTO res = opportuniteService.rejeterOpportunite(1, "Dossier incomplet, précisions budgétaires requises");
+        OpportuniteResponseDTO res = opportuniteService.rejeterOpportunite(2, "Dossier incomplet, précisions budgétaires requises");
 
         assertNotNull(res);
         assertEquals(StatutModeration.REJETE, res.getStatutModeration());
@@ -115,45 +102,41 @@ class OpportuniteServiceTest {
     @Test
     @DisplayName("Catalogue public B2B filtre par type et mot-clé")
     void testGetOpportunitesValideesAvecFiltres() {
-        artisan.setRecherchePartenariat(true);
-        artisan.setTitreProjet("Cuir de Tombouctou");
-        artisan.setStatutModeration(StatutModeration.VALIDE);
-
         promoteur.setRecherchePartenariat(true);
         promoteur.setTitreProjet("Festival International de Musique");
         promoteur.setStatutModeration(StatutModeration.VALIDE);
 
-        when(artisanRepository.findByRecherchePartenariatTrueAndStatutModeration(StatutModeration.VALIDE))
-                .thenReturn(List.of(artisan));
+        guide.setRecherchePartenariat(true);
+        guide.setTitreProjet("Circuits Dogon et Tombouctou");
+        guide.setStatutModeration(StatutModeration.VALIDE);
+
         when(promoteurRepository.findByRecherchePartenariatTrueAndStatutModeration(StatutModeration.VALIDE))
                 .thenReturn(List.of(promoteur));
         when(guideRepository.findByRecherchePartenariatTrueAndStatutModeration(StatutModeration.VALIDE))
-                .thenReturn(Collections.emptyList());
+                .thenReturn(List.of(guide));
 
-        // Recherche tous types avec mot-clé "cuir"
-        List<OpportuniteResponseDTO> filtrerCuir = opportuniteService.getOpportunitesValidees(null, "cuir");
-        assertEquals(1, filtrerCuir.size());
-        assertEquals("ARTISAN", filtrerCuir.get(0).getTypePartenaire());
+        // Recherche tous types avec mot-clé "festival"
+        List<OpportuniteResponseDTO> filtrerFestival = opportuniteService.getOpportunitesValidees(null, "festival");
+        assertEquals(1, filtrerFestival.size());
+        assertEquals("PROMOTEUR", filtrerFestival.get(0).getTypePartenaire());
 
-        // Filtrage spécifique par type PROMOTEUR
-        List<OpportuniteResponseDTO> promoteurs = opportuniteService.getOpportunitesValidees("PROMOTEUR", null);
-        assertEquals(1, promoteurs.size());
-        assertEquals("PROMOTEUR", promoteurs.get(0).getTypePartenaire());
+        // Filtrage spécifique par type GUIDE
+        List<OpportuniteResponseDTO> guides = opportuniteService.getOpportunitesValidees("GUIDE", null);
+        assertEquals(1, guides.size());
+        assertEquals("GUIDE", guides.get(0).getTypePartenaire());
     }
 
     @Test
     @DisplayName("Admin peut lister les opportunités en attente de modération")
     void testGetOpportunitesEnAttente() {
-        artisan.setStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION);
-        when(artisanRepository.findByStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION))
-                .thenReturn(List.of(artisan));
+        promoteur.setStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION);
         when(promoteurRepository.findByStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION))
-                .thenReturn(Collections.emptyList());
+                .thenReturn(List.of(promoteur));
         when(guideRepository.findByStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION))
                 .thenReturn(Collections.emptyList());
 
         List<OpportuniteResponseDTO> enAttente = opportuniteService.getOpportunitesEnAttente();
         assertEquals(1, enAttente.size());
-        assertEquals("Mamadou Coulibaly", enAttente.get(0).getNomComplet());
+        assertEquals("Fatoumata Traoré", enAttente.get(0).getNomComplet());
     }
 }

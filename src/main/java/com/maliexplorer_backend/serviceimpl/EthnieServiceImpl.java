@@ -64,11 +64,7 @@ public class EthnieServiceImpl implements EthnieService {
                 .population(requestDTO.getPopulation())
                 .langue(requestDTO.getLangue())
                 .description(requestDTO.getDescription())
-<<<<<<< HEAD
-                .imageUrl(requestDTO.getImageUrl())
-=======
-                .imageUrl(resolvedImageUrl)
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
+                .imageUrl(resolvedImageUrl != null && !resolvedImageUrl.isBlank() ? resolvedImageUrl : requestDTO.getImageUrl())
                 .regions(new ArrayList<>())
                 .plats(new ArrayList<>())
                 .build();
@@ -107,15 +103,11 @@ public class EthnieServiceImpl implements EthnieService {
             ethnie.setLangue(requestDTO.getLangue());
         }
         ethnie.setDescription(requestDTO.getDescription());
-<<<<<<< HEAD
-        if (requestDTO.getImageUrl() != null) ethnie.setImageUrl(requestDTO.getImageUrl());
-=======
         if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
             ethnie.setImageUrl(String.join(",", requestDTO.getImages()));
         } else if (requestDTO.getImageUrl() != null) {
             ethnie.setImageUrl(requestDTO.getImageUrl());
         }
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
 
         EthnieModel updated = ethnieRepository.save(ethnie);
         return mapToResponseDTO(updated);
@@ -186,12 +178,8 @@ public class EthnieServiceImpl implements EthnieService {
                 .population(ethnie.getPopulation())
                 .langue(ethnie.getLangue())
                 .description(ethnie.getDescription())
-<<<<<<< HEAD
-                .imageUrl(ethnie.getImageUrl())
-=======
-                .imageUrl(mainImageUrl)
+                .imageUrl(mainImageUrl != null ? mainImageUrl : ethnie.getImageUrl())
                 .images(imagesList)
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
                 .regions(regions)
                 .plats(plats)
                 .build();
