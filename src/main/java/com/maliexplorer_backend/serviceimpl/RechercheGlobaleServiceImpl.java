@@ -23,7 +23,6 @@ public class RechercheGlobaleServiceImpl implements RechercheGlobaleService {
     private final EthnieRepository ethnieRepository;
     private final PresidentRepository presidentRepository;
     private final ReligionRepository religionRepository;
-    private final ArtisanRepository artisanRepository;
     private final GuideRepository guideRepository;
     private final EvenementRepository evenementRepository;
 
@@ -165,24 +164,23 @@ public class RechercheGlobaleServiceImpl implements RechercheGlobaleService {
             }
         } catch (Exception ignored) {}
 
-        // 8. Artisans
+        // 8. Guides
         try {
-            List<ArtisanModel> artisans = artisanRepository.findAll();
-            for (ArtisanModel a : artisans) {
-                String nomArtisan = (a.getPrenom() != null ? a.getPrenom() + " " : "") + (a.getNom() != null ? a.getNom() : "");
-                if (nomArtisan.trim().isEmpty()) {
-                    nomArtisan = a.getTitreProjet();
-                }
-                if (nomArtisan != null && normalize(nomArtisan).contains(normalizedQuery)) {
+            List<GuideModel> guides = guideRepository.findByStatutModeration(StatutModeration.VALIDE);
+            for (GuideModel g : guides) {
+                String nomGuide = (g.getPrenom() != null ? g.getPrenom() + " " : "") + (g.getNom() != null ? g.getNom() : "");
+                String langue = g.getLangue() != null ? g.getLangue() : "Français";
+                String desc = g.getDescription() != null ? g.getDescription() : "";
+                if (normalize(nomGuide).contains(normalizedQuery) || normalize(langue).contains(normalizedQuery) || normalize(desc).contains(normalizedQuery)) {
                     results.add(SearchResultItemDTO.builder()
-                            .id("artisan-" + a.getIdUsers())
-                            .titre(nomArtisan.trim())
-                            .sousTitre(a.getTypeArtisanat() != null ? a.getTypeArtisanat() : "Artisan d'art malien")
-                            .categorie("Artisans")
-                            .description(a.getBesoinPartenariat())
-                            .imageUrl(a.getPhotoUrl())
-                            .route("/artisans")
-                            .payload(a.getIdUsers())
+                            .id("guide-" + g.getIdUsers())
+                            .titre(nomGuide.trim().isEmpty() ? "Guide Touristique" : nomGuide.trim())
+                            .sousTitre("Guide touristique • Langues : " + langue)
+                            .categorie("Guides")
+                            .description(desc)
+                            .imageUrl(g.getPhotoUrl())
+                            .route("/guides")
+                            .payload(g.getIdUsers())
                             .build());
                 }
             }

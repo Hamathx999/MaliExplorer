@@ -24,5 +24,15 @@ public class HomeSlideResponseDTO {
     private Boolean prioritaire;
     private LocalDateTime dateCreation;
     private LocalDateTime dateModification;
+
+    @com.fasterxml.jackson.annotation.JsonProperty("estActif")
+    public Boolean getEstActif() {
+        return this.actif;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("estPrincipal")
+    public Boolean getEstPrincipal() {
+        return this.prioritaire;
+    }
 }
 

@@ -1,68 +1,12 @@
 -- =============================================================================
 -- JEU DE DONNÉES DE DÉMONSTRATION - MALIEXPLORER
--- Opportunités B2B & Partenariats (Artisans, Promoteurs, Guides)
+-- Opportunités B2B & Partenariats (Promoteurs, Guides)
 -- =============================================================================
 
 USE maliexplorer_db;
 
 -- -----------------------------------------------------------------------------
--- 1. ARTISAN 1 : Mamadou Coulibaly (Cuir de Tombouctou - VALIDÉ)
--- -----------------------------------------------------------------------------
-INSERT INTO utilisateurs (prenom, nom, email, adresse, photo_url, role, points, date_creation)
-VALUES (
-    'Mamadou',
-    'Coulibaly',
-    'mamadou.coulibaly@artisanat-mali.ml',
-    'Quartier Artisanat, Tombouctou',
-    'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80',
-    'artisan',
-    150,
-    CURDATE()
-);
-
-SET @id_artisan_1 = LAST_INSERT_ID();
-
-INSERT INTO artisans (id_users, type_artisanat, recherche_partenariat, titre_projet, besoin_partenariat, statut_moderation, motif_rejet)
-VALUES (
-    @id_artisan_1,
-    'Maroquinerie & Cuir traditionnel de Tombouctou',
-    TRUE,
-    'Modernisation de l''Atelier de Cuir et Tannage Naturel',
-    'Recherche d''un investisseur B2B ou partenaire commercial pour un financement d''amorçage de 3 500 000 FCFA dédié à l''achat de machines à coudre industrielles et au développement d''un canal d''exportation vers l''Europe.',
-    'VALIDE',
-    NULL
-);
-
--- -----------------------------------------------------------------------------
--- 2. ARTISAN 2 : Aïssata Traoré (Bogolan de Ségou - VALIDÉ)
--- -----------------------------------------------------------------------------
-INSERT INTO utilisateurs (prenom, nom, email, adresse, photo_url, role, points, date_creation)
-VALUES (
-    'Aïssata',
-    'Traoré',
-    'aissata.traore@bogolan-segou.ml',
-    'Atelier Ndomo, Ségou',
-    'https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80',
-    'artisan',
-    200,
-    CURDATE()
-);
-
-SET @id_artisan_2 = LAST_INSERT_ID();
-
-INSERT INTO artisans (id_users, type_artisanat, recherche_partenariat, titre_projet, besoin_partenariat, statut_moderation, motif_rejet)
-VALUES (
-    @id_artisan_2,
-    'Teinture Bogolan & Tissage de coton bio malien',
-    TRUE,
-    'Coopérative Féminine de Bogolan Éco-responsable',
-    'Recherche de partenaires pour le co-financement d''un séchoir solaire (2 000 000 FCFA) et l''intégration de nos tissus traditionnels dans des collections de mode éthique internationale.',
-    'VALIDE',
-    NULL
-);
-
--- -----------------------------------------------------------------------------
--- 3. PROMOTEUR : Moussa Diakité (Festival Culturel - VALIDÉ)
+-- 1. PROMOTEUR : Moussa Diakité (Festival Culturel - VALIDÉ)
 -- -----------------------------------------------------------------------------
 INSERT INTO utilisateurs (prenom, nom, email, adresse, photo_url, role, points, date_creation)
 VALUES (
@@ -91,7 +35,7 @@ VALUES (
 );
 
 -- -----------------------------------------------------------------------------
--- 4. GUIDE TOURISTIQUE : Boubacar Cissé (Djenné - VALIDÉ)
+-- 2. GUIDE TOURISTIQUE : Boubacar Cissé (Djenné - VALIDÉ)
 -- -----------------------------------------------------------------------------
 INSERT INTO utilisateurs (prenom, nom, email, adresse, photo_url, role, points, date_creation)
 VALUES (
@@ -122,29 +66,32 @@ VALUES (
 );
 
 -- -----------------------------------------------------------------------------
--- 5. CAS DE TEST MODÉRATION ADMIN : Oumar Sangaré (EN ATTENTE DE VALIDATION)
+-- 3. CAS DE TEST MODÉRATION ADMIN : Aminata Diallo (EN ATTENTE DE VALIDATION)
 -- -----------------------------------------------------------------------------
 INSERT INTO utilisateurs (prenom, nom, email, adresse, photo_url, role, points, date_creation)
 VALUES (
-    'Oumar',
-    'Sangaré',
-    'oumar.sangare@poterie-kalaban.ml',
-    'Kalaban-Coro, Bamako',
-    'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80',
-    'artisan',
-    50,
+    'Aminata',
+    'Diallo',
+    'aminata.diallo@guide-segou.ml',
+    'Ségou Coura, Ségou',
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+    'guide',
+    100,
     CURDATE()
 );
 
-SET @id_artisan_pending = LAST_INSERT_ID();
+SET @id_guide_pending = LAST_INSERT_ID();
 
-INSERT INTO artisans (id_users, type_artisanat, recherche_partenariat, titre_projet, besoin_partenariat, statut_moderation, motif_rejet)
+INSERT INTO guides (id_users, langue, description, experience, piece_identite, recherche_partenariat, titre_projet, besoin_partenariat, statut_moderation, motif_rejet)
 VALUES (
-    @id_artisan_pending,
-    'Poterie traditionnelle et Céramique artisanale',
+    @id_guide_pending,
+    'Français, Bambara, Peul',
+    'Guide culturelle et patrimoniale spécialisée dans l''histoire des royaumes Bambara et les rives du fleuve Niger.',
+    6,
+    'ID_GUIDE_PRO_456',
     TRUE,
-    'Construction d''un Four Écologique Haute Température',
-    'Recherche d''un soutien financier de 1 500 000 FCFA pour réduire l''empreinte carbone de notre atelier de poterie.',
+    'Circuit Pédestre Historique des Palais Royaux de Ségou',
+    'Recherche d''un partenaire pour la digitalisation du parcours en audioguides multilingues (2 000 000 FCFA).',
     'EN_ATTENTE_VALIDATION',
     NULL
 );
@@ -157,11 +104,10 @@ SELECT
     CONCAT(u.prenom, ' ', u.nom) AS nom_complet, 
     u.role,
     u.email,
-    COALESCE(a.titre_projet, p.titre_projet, g.titre_projet) AS titre_projet,
-    COALESCE(a.recherche_partenariat, p.recherche_partenariat, g.recherche_partenariat) AS recherche_partenariat,
-    COALESCE(a.statut_moderation, p.statut_moderation, g.statut_moderation) AS statut_moderation
+    COALESCE(p.titre_projet, g.titre_projet) AS titre_projet,
+    COALESCE(p.recherche_partenariat, g.recherche_partenariat) AS recherche_partenariat,
+    COALESCE(p.statut_moderation, g.statut_moderation) AS statut_moderation
 FROM utilisateurs u
-LEFT JOIN artisans a ON u.id_users = a.id_users
 LEFT JOIN promoteurs p ON u.id_users = p.id_users
 LEFT JOIN guides g ON u.id_users = g.id_users
-WHERE COALESCE(a.recherche_partenariat, p.recherche_partenariat, g.recherche_partenariat) = TRUE;
+WHERE COALESCE(p.recherche_partenariat, g.recherche_partenariat) = TRUE;

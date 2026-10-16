@@ -70,5 +70,20 @@ public class ReligionController {
         religionService.deleteReligion(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/toggle-publication")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Basculer la publication d'une fiche de religion (Admin)")
+    public ResponseEntity<ReligionResponseDTO> togglePublication(@PathVariable Long id) {
+        if (religionService instanceof com.maliexplorer_backend.serviceimpl.ReligionServiceImpl impl) {
+            return ResponseEntity.ok(impl.togglePublication(id));
+        }
+        ReligionResponseDTO current = religionService.getReligionById(id);
+        ReligionRequestDTO req = ReligionRequestDTO.builder()
+                .nom(current.getNom())
+                .publie(current.getPublie() == null || !current.getPublie())
+                .build();
+        return ResponseEntity.ok(religionService.updateReligion(id, req));
+    }
 }
 

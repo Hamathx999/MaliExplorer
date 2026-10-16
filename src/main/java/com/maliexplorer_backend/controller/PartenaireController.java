@@ -20,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/partenaires")
 @RequiredArgsConstructor
-@Tag(name = "Espace Partenaire", description = "Gestion des fiches et soumissions de partenariats par les partenaires (Artisans, Guides, Promoteurs)")
+@Tag(name = "Espace Partenaire", description = "Gestion des fiches et soumissions de partenariats par les partenaires (Guides, Promoteurs)")
 @SecurityRequirement(name = "Bearer Authentication")
 public class PartenaireController {
 

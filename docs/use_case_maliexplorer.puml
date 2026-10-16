@@ -35,14 +35,12 @@ skinparam usecase {
 actor "Visiteur\n(Non connecté)" as Visiteur
 actor "Utilisateur\n(Connecté / Touriste)" as User
 actor "Promoteur\n(Événements)" as Promoteur
-actor "Artisan\n(Produits)" as Artisan
 actor "Guide\n(Touristique)" as Guide
 actor "Administrateur\n(Modération & Gestion)" as Admin
 
 ' Arbre de généralisation (validé par l'encadreur)
 Visiteur <|-- User
 User <|-- Promoteur
-User <|-- Artisan
 User <|-- Guide
 User <|-- Admin
 
@@ -91,12 +89,9 @@ rectangle "Système MaliExplorer" {
     ' 4. SERVICES MÉTIERS & PARTENARIATS
     ' ----------------------------------------------------
     package "4. Services Métiers & Partenariats" {
-        usecase "Contacter un partenaire\n(Guide / Artisan)" as UC_Contact
+        usecase "Contacter un partenaire\n(Guide / Promoteur)" as UC_Contact
         usecase "Proposer un événement\nculturel" as UC_Event
         usecase "Modifier / Annuler\nl'événement" as UC_EditEvent #FFFBEB;line:D97706;line.dashed
-
-        usecase "Publier un produit\nartisanal local" as UC_Product
-        usecase "Modifier / Mettre à\njour le produit" as UC_EditProduct #FFFBEB;line:D97706;line.dashed
 
         usecase "Proposer ses prestations\nde guidage" as UC_GuideServ
         usecase "Gérer langues &\ndisponibilités" as UC_EditGuide #FFFBEB;line:D97706;line.dashed
@@ -113,7 +108,7 @@ rectangle "Système MaliExplorer" {
         usecase "Valider l'événement\n(Publication)" as UC_ValEvent #FFFBEB;line:D97706;line.dashed
         usecase "Rejeter l'événement\n(Avec motif)" as UC_RejEvent #FFFBEB;line:D97706;line.dashed
 
-        usecase "Traiter candidatures\npartenaires (Guide/Artisan)" as UC_ModPart
+        usecase "Traiter candidatures\npartenaires (Guide / Promoteur)" as UC_ModPart
         usecase "Valider & certifier\nle partenaire" as UC_ValPart #FFFBEB;line:D97706;line.dashed
         usecase "Rejeter la candidature\n(Dossier incomplet)" as UC_RejPart #FFFBEB;line:D97706;line.dashed
     }
@@ -139,9 +134,6 @@ User --> UC_Contact
 
 ' Promoteur
 Promoteur --> UC_Event
-
-' Artisan
-Artisan --> UC_Product
 
 ' Guide
 Guide --> UC_GuideServ
@@ -174,7 +166,6 @@ UC_Fav ..> UC_ViewLieu : <<extend>> #D97706
 
 ' Métiers & Partenaires
 UC_EditEvent ..> UC_Event : <<extend>> #D97706
-UC_EditProduct ..> UC_Product : <<extend>> #D97706
 UC_EditGuide ..> UC_GuideServ : <<extend>> #D97706
 
 ' Administration & Modération

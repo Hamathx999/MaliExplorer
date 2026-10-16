@@ -24,7 +24,7 @@ public class OpportuniteResponseDTO {
     private String adresse;
     private String photoUrl;
     private RoleModel role;
-    private String typePartenaire; // "ARTISAN", "PROMOTEUR", "GUIDE"
+    private String typePartenaire; // "PROMOTEUR", "GUIDE"
     private String specialiteOuOrganisation; // Métier ou Organisation
 
     private boolean recherchePartenariat;
@@ -33,4 +33,20 @@ public class OpportuniteResponseDTO {
     private StatutModeration statutModeration;
     private String motifRejet;
     private Date dateCreation;
+
+    public boolean isRecherchePartenariat() {
+        return recherchePartenariat;
+    }
+
+    public void setRecherchePartenariat(boolean recherchePartenariat) {
+        this.recherchePartenariat = recherchePartenariat;
+    }
+
+    public StatutModeration getStatutModeration() {
+        return statutModeration;
+    }
+
+    public void setStatutModeration(StatutModeration statutModeration) {
+        this.statutModeration = statutModeration;
+    }
 }

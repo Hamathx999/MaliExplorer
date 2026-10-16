@@ -62,7 +62,7 @@ class AuthServiceRegistrationTest {
     }
 
     @Test
-    @DisplayName("Devrait accepter les rôles publics autorisés : guide, artisan, promoteur")
+    @DisplayName("Devrait accepter les rôles publics autorisés : guide, promoteur, investisseur")
     void testInscriptionRolesPublicsAutorises() {
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.save(any(utilisateurModel.class))).thenAnswer(invocation -> {
@@ -71,7 +71,7 @@ class AuthServiceRegistrationTest {
             return u;
         });
 
-        RoleModel[] allowedRoles = {RoleModel.touriste, RoleModel.guide, RoleModel.artisan, RoleModel.promoteur};
+        RoleModel[] allowedRoles = {RoleModel.touriste, RoleModel.guide, RoleModel.promoteur, RoleModel.investisseur};
 
         for (RoleModel role : allowedRoles) {
             baseRequest.setRole(role);

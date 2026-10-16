@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum RoleModel {
     touriste,
-    artisan,
     guide,
     promoteur,
     partenaire,
@@ -22,7 +21,7 @@ public enum RoleModel {
         if (clean.contains("super")) return superAdmin;
         if (clean.contains("admin")) return admin;
         if (clean.contains("guide")) return guide;
-        if (clean.contains("artisan")) return artisan;
+        if (clean.contains("artisan")) return touriste;
         if (clean.contains("promoteur")) return promoteur;
         if (clean.contains("partenaire")) return partenaire;
         if (clean.contains("investisseur")) return investisseur;

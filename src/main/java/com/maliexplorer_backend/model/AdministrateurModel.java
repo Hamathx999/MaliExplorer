@@ -11,4 +11,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class AdministrateurModel extends utilisateurModel {
 
+    public AdministrateurModel() {
+        super();
+    }
 }

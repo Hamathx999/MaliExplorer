@@ -5,6 +5,7 @@ import com.maliexplorer_backend.dto.GuideResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
 import com.maliexplorer_backend.model.GuideModel;
 import com.maliexplorer_backend.model.RoleModel;
+import com.maliexplorer_backend.model.StatutModeration;
 import com.maliexplorer_backend.repository.GuideRepository;
 import com.maliexplorer_backend.service.GuideService;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ public class GuideServiceImpl implements GuideService {
 
     @Override
     public List<GuideResponseDTO> obtenirTousLesGuides() {
-        return repository.findAll()
+        return repository.findByStatutModeration(StatutModeration.VALIDE)
                 .stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
@@ -64,6 +65,7 @@ public class GuideServiceImpl implements GuideService {
     public List<GuideResponseDTO> rechercherParLangue(String langue) {
         return repository.findByLangueContainingIgnoreCase(langue)
                 .stream()
+                .filter(g -> g.getStatutModeration() == StatutModeration.VALIDE)
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }

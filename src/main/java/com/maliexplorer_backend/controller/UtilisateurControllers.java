@@ -27,7 +27,7 @@ public class UtilisateurControllers {
     }
 
     /**
-     * READ ME : Récupérer son propre profil connecté
+     * Récupérer son propre profil connecté
      * GET /api/utilisateurs/me
      */
     @PreAuthorize("isAuthenticated()")

@@ -19,8 +19,10 @@ public class AdministrateurResponseDTO {
     private String prenom;
     private String nom;
     private String email;
+    private String telephone;
     private String adresse;
     private String photoUrl;
     private Date dateCreation;
     private RoleModel role;
+    private String statut;
 }

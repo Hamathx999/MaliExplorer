@@ -38,8 +38,14 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional(readOnly = true)
     public List<QuizResponseDTO> getAllQuizzes() {
+        java.util.Set<String> seen = new java.util.HashSet<>();
         return quizRepository.findAll()
                 .stream()
+                .filter(q -> !isTestOrOrphanTitle(q.getNomQuiz()))
+                .filter(q -> {
+                    String key = normalizeTitleKey(q.getNomQuiz());
+                    return !key.isEmpty() && seen.add(key);
+                })
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -47,8 +53,14 @@ public class QuizServiceImpl implements QuizService {
     @Override
     @Transactional(readOnly = true)
     public List<QuizSummaryDTO> getQuizSummaries() {
+        java.util.Set<String> seen = new java.util.HashSet<>();
         return quizRepository.findAll()
                 .stream()
+                .filter(q -> !isTestOrOrphanTitle(q.getNomQuiz()))
+                .filter(q -> {
+                    String key = normalizeTitleKey(q.getNomQuiz());
+                    return !key.isEmpty() && seen.add(key);
+                })
                 .map(q -> QuizSummaryDTO.builder()
                         .idQuiz(q.getIdQuiz())
                         .nomQuiz(q.getNomQuiz())
@@ -218,8 +230,23 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public QuizResponseDTO createQuiz(QuizRequestDTO requestDTO) {
+        String trimmedName = requestDTO.getNomQuiz() != null ? requestDTO.getNomQuiz().trim() : "";
+        if (isTestOrOrphanTitle(trimmedName)) {
+            log.warn("Tentative de création d'un quiz avec titre parasite ou de test ignorée : '{}'", trimmedName);
+            throw new IllegalArgumentException("Le titre du quiz est invalide ou correspond à une entrée de test réservée.");
+        }
+
+        // Vérification d'existence pour empêcher l'insertion de doublons par double-clic
+        var existingQuizOpt = quizRepository.findByNomQuizIgnoreCase(trimmedName);
+        if (existingQuizOpt.isPresent()) {
+            QuizModel existing = existingQuizOpt.get();
+            log.info("Un quiz avec le titre '{}' existe déjà (ID={}). Renvoi de l'existant pour prévenir les doublons.",
+                    trimmedName, existing.getIdQuiz());
+            return mapToResponseDTO(existing);
+        }
+
         QuizModel quiz = QuizModel.builder()
-                .nomQuiz(requestDTO.getNomQuiz())
+                .nomQuiz(trimmedName)
                 .description(requestDTO.getDescription())
                 .imageQuiz(requestDTO.getImageQuiz())
                 .categorie(requestDTO.getCategorie())
@@ -280,6 +307,7 @@ public class QuizServiceImpl implements QuizService {
     public List<QuizResponseDTO> getQuizzesByCategorie(String categorie) {
         return quizRepository.findByCategorieIgnoreCase(categorie)
                 .stream()
+                .filter(q -> !isTestOrOrphanTitle(q.getNomQuiz()))
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -289,11 +317,30 @@ public class QuizServiceImpl implements QuizService {
     public List<QuizResponseDTO> searchQuizzes(String keyword) {
         return quizRepository.findByNomQuizContainingIgnoreCase(keyword)
                 .stream()
+                .filter(q -> !isTestOrOrphanTitle(q.getNomQuiz()))
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
     // ======================== PRIVATE HELPERS ========================
+
+    private boolean isTestOrOrphanTitle(String title) {
+        if (title == null || title.isBlank()) {
+            return true;
+        }
+        String clean = title.trim().toLowerCase();
+        return clean.contains("qui sommes-nous") ||
+               clean.contains("qui sommes nous") ||
+               clean.equals("test") ||
+               clean.startsWith("test ");
+    }
+
+    private String normalizeTitleKey(String title) {
+        if (title == null) return "";
+        return title.trim().toLowerCase()
+                .replaceFirst("^(el|le|la|les)\\s+", "")
+                .replaceAll("[^a-z0-9]", "");
+    }
 
     private QuizModel findQuizOrThrow(Long id) {
         return quizRepository.findById(id)

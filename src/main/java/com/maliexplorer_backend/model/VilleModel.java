@@ -29,8 +29,6 @@ public class VilleModel {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(length = 500)
-    private String imageUrl;
 
     @Column(length = 50)
     private String superficie;

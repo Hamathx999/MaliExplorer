@@ -21,13 +21,10 @@ public class PlatResponseDTO {
     private Integer nbrePersonnes;
     private Integer tempsPreparation;
     private String imageUrl;
-<<<<<<< HEAD
     private String ingredientPrincipal;
     private String region;
     private String difficulte;
-=======
     private List<String> images;
->>>>>>> 81c82d1b135213e0cb34fa3b6388b507d7f1b919
     private Set<IngredientModel> ingredientModelList;
     private List<RegionSummaryDTO> regions;
     private List<EthnieSummaryDTO> ethnies;

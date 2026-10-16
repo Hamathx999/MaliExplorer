@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/recherche")
 @RequiredArgsConstructor
-@Tag(name = "Recherche Globale", description = "Endpoint de recherche transversale (villes, régions, sites, plats, ethnies, religions, présidents, artisans)")
+@Tag(name = "Recherche Globale", description = "Endpoint de recherche transversale (villes, régions, sites, plats, ethnies, religions, présidents, guides)")
 public class RechercheGlobaleController {
 
     private final RechercheGlobaleService rechercheGlobaleService;

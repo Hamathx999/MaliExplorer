@@ -77,5 +77,21 @@ public class EvenementModel {
     public String getType() {
         return "festivalEvenement";
     }
+
+    public Long getVues() {
+        return vues;
+    }
+
+    public void setVues(Long vues) {
+        this.vues = vues;
+    }
+
+    public Long getNombreCommentaires() {
+        return nombreCommentaires;
+    }
+
+    public void setNombreCommentaires(Long nombreCommentaires) {
+        this.nombreCommentaires = nombreCommentaires;
+    }
 }
 
