@@ -40,7 +40,7 @@ public class StorageController {
             @Parameter(description = "Nom du sous-dossier de destination (ex: lieux, villes, avatars)")
             @RequestParam(value = "folder", defaultValue = "general") String folder) {
 
-        if (!SecurityUtils.isAdmin() && !"general".equalsIgnoreCase(folder) && !"avatars".equalsIgnoreCase(folder)) {
+        if (!SecurityUtils.isAdmin() && !"general".equalsIgnoreCase(folder) && !"avatars".equalsIgnoreCase(folder) && !"documents".equalsIgnoreCase(folder)) {
             throw new AccessDeniedException("Accès refusé : seuls les administrateurs peuvent téléverser dans le dossier '" + folder + "'.");
         }
 
@@ -61,6 +61,7 @@ public class StorageController {
     }
 
     @PostMapping(value = "/upload/panoramas", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Téléverser une image ou vidéo panoramique 360°",
             description = "Stocke les panoramas immersifs des lieux historiques dans le dossier 'panoramas_360'")
     public ResponseEntity<FileUploadResponseDTO> uploadPanorama(
@@ -71,6 +72,7 @@ public class StorageController {
     }
 
     @PostMapping(value = "/upload/lieux", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Téléverser une photographie de lieu historique",
             description = "Stocke les photos illustrant les monuments et sites historiques dans 'lieux_historiques'")
     public ResponseEntity<FileUploadResponseDTO> uploadPhotoLieu(
@@ -81,6 +83,7 @@ public class StorageController {
     }
 
     @PostMapping(value = "/upload/villes", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Téléverser une photographie de ville",
             description = "Stocke les photos illustrant les villes du Mali dans 'villes'")
     public ResponseEntity<FileUploadResponseDTO> uploadPhotoVille(

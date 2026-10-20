@@ -1,5 +1,6 @@
 package com.maliexplorer_backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.model.StatutModeration;
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import java.sql.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class OpportuniteResponseDTO {
 
     private int idUsers;
@@ -33,6 +35,7 @@ public class OpportuniteResponseDTO {
     private StatutModeration statutModeration;
     private String motifRejet;
     private Date dateCreation;
+    private String pieceIdentite;
 
     public boolean isRecherchePartenariat() {
         return recherchePartenariat;

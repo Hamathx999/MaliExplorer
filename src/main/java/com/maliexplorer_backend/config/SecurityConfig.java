@@ -72,8 +72,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/v3/api-docs.yaml")
                         .permitAll()
-                        // Endpoints d'authentification publics
-                        .requestMatchers("/api/auth/**").permitAll()
+                        // Endpoints d'authentification publics (connexion et inscription uniquement)
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
                         // Requêtes GET de consultation publiques
                         .requestMatchers(HttpMethod.GET, "/api/articles/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/plats/**").permitAll()
@@ -95,13 +95,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/evenements/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/home-slides/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/religions/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/langues/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/infos-pratiques/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/recherche/**").permitAll()
-                        // Téléversement d'images, stockage Supabase et ressources statiques locales
+                        // Consultation publique des images et ressources statiques hébergées
                         .requestMatchers(HttpMethod.GET, "/api/images", "/api/images/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/images", "/api/images/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/upload", "/api/upload/**").permitAll()
-                        .requestMatchers("/api/uploads/**").permitAll()
-                        .requestMatchers("/api/storage/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/uploads/**").permitAll()
                         // Toutes autres requêtes doivent être authentifiées
                         .anyRequest().authenticated())
                 .addFilterBefore(firebaseAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

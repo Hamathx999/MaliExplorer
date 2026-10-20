@@ -82,6 +82,7 @@ public class UtilisateurControllers {
                     if (payload.containsKey("prenom")) user.setPrenom(payload.get("prenom"));
                     if (payload.containsKey("nom")) user.setNom(payload.get("nom"));
                     if (payload.containsKey("adresse")) user.setAdresse(payload.get("adresse"));
+                    if (payload.containsKey("telephone")) user.setTelephone(payload.get("telephone"));
                     if (payload.containsKey("photoUrl") && payload.get("photoUrl") != null && !payload.get("photoUrl").isBlank()) {
                         user.setPhotoUrl(payload.get("photoUrl"));
                     }

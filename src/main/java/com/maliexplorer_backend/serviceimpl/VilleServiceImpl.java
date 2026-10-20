@@ -67,12 +67,28 @@ public class VilleServiceImpl implements VilleService {
             resolvedImageUrl = String.join(",", requestDTO.getImages());
         }
 
+        Double lat = requestDTO.getLatitude();
+        Double lng = requestDTO.getLongitude();
+        String cordonnees = requestDTO.getCordonnees();
+        if ((lat == null || lng == null) && StringUtils.hasText(cordonnees) && cordonnees.contains(",")) {
+            try {
+                String[] parts = cordonnees.split(",");
+                lat = Double.parseDouble(parts[0].trim());
+                lng = Double.parseDouble(parts[1].trim());
+            } catch (Exception ignored) {}
+        }
+        if ((cordonnees == null || cordonnees.isBlank()) && lat != null && lng != null) {
+            cordonnees = lat + ", " + lng;
+        }
+
         VilleModel ville = VilleModel.builder()
                 .nomVille(requestDTO.getNom())
                 .region(requestDTO.getRegion() != null ? requestDTO.getRegion() : (regionParent != null ? regionParent.getNomRegion() : "Mali"))
                 .nbreHbt(requestDTO.getNbreHbt())
                 .description(requestDTO.getDescription())
-                .cordonnees(requestDTO.getCordonnees())
+                .cordonnees(cordonnees)
+                .latitude(lat)
+                .longitude(lng)
                 .imageUrl(resolvedImageUrl)
                 .superficie(requestDTO.getSuperficie())
                 .misEnAvantHome(requestDTO.getMisEnAvantHome() != null ? requestDTO.getMisEnAvantHome() : false)
@@ -103,7 +119,24 @@ public class VilleServiceImpl implements VilleService {
         ville.setRegion(requestDTO.getRegion());
         ville.setNbreHbt(requestDTO.getNbreHbt());
         ville.setDescription(requestDTO.getDescription());
-        ville.setCordonnees(requestDTO.getCordonnees());
+
+        Double lat = requestDTO.getLatitude();
+        Double lng = requestDTO.getLongitude();
+        String cordonnees = requestDTO.getCordonnees();
+        if ((lat == null || lng == null) && StringUtils.hasText(cordonnees) && cordonnees.contains(",")) {
+            try {
+                String[] parts = cordonnees.split(",");
+                lat = Double.parseDouble(parts[0].trim());
+                lng = Double.parseDouble(parts[1].trim());
+            } catch (Exception ignored) {}
+        }
+        if ((cordonnees == null || cordonnees.isBlank()) && lat != null && lng != null) {
+            cordonnees = lat + ", " + lng;
+        }
+        if (lat != null) ville.setLatitude(lat);
+        if (lng != null) ville.setLongitude(lng);
+        if (cordonnees != null) ville.setCordonnees(cordonnees);
+
         if (requestDTO.getImages() != null && !requestDTO.getImages().isEmpty()) {
             ville.setImageUrl(String.join(",", requestDTO.getImages()));
         } else if (requestDTO.getImageUrl() != null) {
@@ -195,6 +228,8 @@ public class VilleServiceImpl implements VilleService {
                 .nbreHbt(ville.getNbreHbt())
                 .description(ville.getDescription())
                 .cordonnees(ville.getCordonnees())
+                .latitude(ville.getLatitude())
+                .longitude(ville.getLongitude())
                 .imageUrl(mainImageUrl != null ? mainImageUrl : ville.getImageUrl())
                 .superficie(ville.getSuperficie())
                 .misEnAvantHome(ville.getMisEnAvantHome())
