@@ -189,11 +189,11 @@ public class CultureDataInitializer implements CommandLineRunner {
         record QuizRef(String nom, String desc, String image, String cat, int pts) {}
 
         List<QuizRef> refs = List.of(
-            new QuizRef("Histoire & Grands Empires du Mali", "Testez vos connaissances sur l'empire du Mali, Soundiata Keïta, Kankou Moussa et la dynastie des Askia.", "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80", "Histoire", 40),
-            new QuizRef("Villes Mythiques & Patrimoine", "Explorez Djenné, Tombouctou, le pays Dogon et les merveilles architecturales classées à l'UNESCO.", "https://images.unsplash.com/photo-1579783902614-a3fb3927b675?auto=format&fit=crop&w=800&q=80", "Patrimoine", 40),
-            new QuizRef("Cuisine et Délices du Terroir", "Êtes-vous incollable sur le Tigadèguèna, le Fakoye et les saveurs maliennes ?", "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80", "Gastronomie", 40),
-            new QuizRef("Présidents & République du Mali", "Revivez les grandes dates républicaines et les figures présidentielles du Mali indépendant.", "https://images.unsplash.com/photo-1572949645841-094f3a9c4c94?auto=format&fit=crop&w=800&q=80", "Histoire", 40),
-            new QuizRef("Cultures, Arts & Traditions", "Plongez dans l'âme du Mali : kora, bogolan, masques dogons et traditions séculaires.", "https://images.unsplash.com/photo-1489749798305-4fea3ae63d43?auto=format&fit=crop&w=800&q=80", "Culture", 40)
+            new QuizRef("Histoire & Grands Empires du Mali", "Testez vos connaissances sur l'empire du Mali, Soundiata Keïta, Kankou Moussa et la dynastie des Askia.", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/quiz/7bbb2668-fadc-4cd1-bccd-de93aed2f9bf_quiz-histoire-empire-mali.jpg", "Histoire", 40),
+            new QuizRef("Villes Mythiques & Patrimoine", "Explorez Djenné, Tombouctou, le pays Dogon et les merveilles architecturales classées à l'UNESCO.", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/quiz/a8a790f8-419f-459d-ab02-a56516a71b4f_quiz-villes-patrimoine.jpg", "Patrimoine", 40),
+            new QuizRef("Cuisine et Délices du Terroir", "Êtes-vous incollable sur le Tigadèguèna, le Fakoye et les saveurs maliennes ?", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/quiz/35314f13-0179-4e41-9779-2d64ce0a5fc3_quiz-delices.jpeg", "Gastronomie", 40),
+            new QuizRef("Présidents & République du Mali", "Revivez les grandes dates républicaines et les figures présidentielles du Mali indépendant.", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/quiz/e705b3d2-21e1-4d72-b179-9cfad36e67f3_quiz-presidents.jpeg", "Histoire", 40),
+            new QuizRef("Cultures, Arts & Traditions", "Plongez dans l'âme du Mali : kora, bogolan, masques dogons et traditions séculaires.", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/quiz/5ba00149-9b46-4698-ad1e-c044ba55ba57_quiz-culture.jpg", "Culture", 40)
         );
 
         List<QuizModel> currentQuizzes = quizRepository.findAll();
@@ -210,7 +210,7 @@ public class CultureDataInitializer implements CommandLineRunner {
             if (found.isPresent()) {
                 QuizModel q = found.get();
                 boolean changed = false;
-                if (q.getImageQuiz() == null || q.getImageQuiz().trim().isEmpty() || q.getImageQuiz().contains("ccdf2147-5998-4f94-8db4-683bc327e128")) {
+                if (q.getImageQuiz() == null || q.getImageQuiz().trim().isEmpty() || q.getImageQuiz().contains("ccdf2147-5998-4f94-8db4-683bc327e128") || q.getImageQuiz().contains("unsplash.com")) {
                     q.setImageQuiz(ref.image());
                     changed = true;
                 }

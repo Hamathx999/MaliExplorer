@@ -47,4 +47,23 @@ public class RegisterRequestDTO {
 
     @Schema(description = "Rôle de l'utilisateur (par défaut: touriste)", example = "touriste")
     private RoleModel role;
+
+    // Champs professionnels optionnels pour les Promoteurs et Guides inscrits depuis le mobile
+    @Schema(description = "Numéro de téléphone professionnel", example = "+223 70 00 00 00")
+    private String telephone;
+
+    @Schema(description = "Nom de l'organisation ou agence (pour Promoteur)", example = "Agence Culture & Tourisme Mali")
+    private String nomOrganisation;
+
+    @Schema(description = "URL de la pièce d'identité ou du badge guide", example = "https://supabase.co/storage/v1/object/public/documents/id.pdf")
+    private String pieceIdentite;
+
+    @Schema(description = "Langues parlées par le guide", example = "Français, Bambara, Anglais")
+    private String langue;
+
+    @Schema(description = "Années d'expérience du guide", example = "5")
+    private Integer experience;
+
+    @Schema(description = "Description ou biographie professionnelle du guide/promoteur")
+    private String description;
 }

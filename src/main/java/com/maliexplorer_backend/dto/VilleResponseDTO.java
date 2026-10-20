@@ -19,6 +19,8 @@ public class VilleResponseDTO {
     private String nbreHbt;
     private String description;
     private String cordonnees;
+    private Double latitude;
+    private Double longitude;
     private String imageUrl;
     private String superficie;
     private Boolean misEnAvantHome;

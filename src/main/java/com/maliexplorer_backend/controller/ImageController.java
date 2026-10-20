@@ -13,6 +13,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import com.maliexplorer_backend.config.SecurityUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,12 +46,22 @@ public class ImageController {
     private final Path localStorageLocation = Paths.get("uploads/images").toAbsolutePath().normalize();
 
     @PostMapping(value = {"/images/upload", "/upload"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Téléverser une image vers Supabase Storage et enregistrer en base de données")
     public ResponseEntity<Map<String, Object>> uploadImage(
             @RequestParam("file") MultipartFile file,
             @RequestParam(value = "folder", required = false, defaultValue = "general") String folder,
             @RequestParam(value = "entiteType", required = false) String entiteType,
             @RequestParam(value = "entiteId", required = false) Long entiteId) {
+
+        // Restriction des dossiers administratifs et patrimoniaux aux administrateurs
+        List<String> adminFolders = List.of(
+                "panoramas_360", "lieux_historiques", "villes", "regions",
+                "presidents", "ethnies", "religions", "langues", "infos_pratiques",
+                "infos-pratiques", "articles", "quiz");
+        if (!SecurityUtils.isAdmin() && (adminFolders.contains(folder.toLowerCase()) || (entiteType != null && adminFolders.contains(entiteType.toLowerCase())))) {
+            throw new AccessDeniedException("Accès refusé : seuls les administrateurs peuvent téléverser pour cette entité ou ce dossier.");
+        }
 
         if (file == null || file.isEmpty()) {
             Map<String, Object> error = new HashMap<>();

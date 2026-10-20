@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,6 +37,7 @@ public class AuthController {
     }
 
     @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Profil de l'utilisateur connecté", description = "Retourne les informations de l'utilisateur actuellement authentifié via son Bearer Token")
     public ResponseEntity<AuthResponseDTO> getCurrentUser() {
         AuthResponseDTO response = authService.getCurrentUser();

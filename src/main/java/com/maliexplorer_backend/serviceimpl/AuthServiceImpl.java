@@ -12,11 +12,13 @@ import com.maliexplorer_backend.exception.BadRequestException;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.sql.Date;
 import java.util.Optional;
@@ -137,11 +139,31 @@ public class AuthServiceImpl implements AuthService {
         utilisateurModel user;
         if (roleDemande == RoleModel.promoteur || roleDemande == RoleModel.partenaire) {
             PromoteurModel p = new PromoteurModel();
-            p.setNomOrganisation("Organisation Partenaire");
+            String orgName = StringUtils.hasText(requestDTO.getNomOrganisation())
+                    ? requestDTO.getNomOrganisation().trim()
+                    : "Organisation Partenaire";
+            p.setNomOrganisation(orgName);
+            p.setPieceIdentite(requestDTO.getPieceIdentite());
+            p.setRecherchePartenariat(true);
+            p.setTitreProjet("Demande d'adhésion : " + orgName);
+            p.setBesoinPartenariat(StringUtils.hasText(requestDTO.getDescription())
+                    ? requestDTO.getDescription().trim()
+                    : "Demande d'inscription et de partenariat culturel soumise depuis l'application mobile.");
+            p.setStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION);
             user = p;
         } else if (roleDemande == RoleModel.guide) {
             GuideModel g = new GuideModel();
-            g.setLangue("Français");
+            g.setLangue(StringUtils.hasText(requestDTO.getLangue()) ? requestDTO.getLangue().trim() : "Français");
+            g.setExperience(requestDTO.getExperience() != null ? requestDTO.getExperience() : 1);
+            String descGuide = StringUtils.hasText(requestDTO.getDescription())
+                    ? requestDTO.getDescription().trim()
+                    : "Guide touristique professionnel inscrit depuis l'application mobile.";
+            g.setDescription(descGuide);
+            g.setPieceIdentite(requestDTO.getPieceIdentite());
+            g.setRecherchePartenariat(true);
+            g.setTitreProjet("Candidature Guide Touristique : " + requestDTO.getPrenom() + " " + requestDTO.getNom());
+            g.setBesoinPartenariat(descGuide);
+            g.setStatutModeration(StatutModeration.EN_ATTENTE_VALIDATION);
             user = g;
         } else if (roleDemande == RoleModel.touriste) {
             user = new TouristeModel();
@@ -169,8 +191,9 @@ public class AuthServiceImpl implements AuthService {
     @Transactional(readOnly = true)
     public AuthResponseDTO getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new BadRequestException("Aucun utilisateur actuellement connecté");
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token d'authentification manquant ou session expirée");
         }
 
         Object principal = authentication.getPrincipal();
@@ -180,11 +203,11 @@ public class AuthServiceImpl implements AuthService {
 
         if (principal instanceof String email) {
             utilisateurModel user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new ResourceNotFoundException("Utilisateur non trouvé pour l'email: " + email));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Utilisateur introuvable pour la session courante"));
             return mapToAuthResponseDTO(user, "Profil récupéré avec succès");
         }
 
-        throw new BadRequestException("Impossible d'identifier l'utilisateur connecté");
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Impossible d'identifier l'utilisateur connecté");
     }
 
     private AuthResponseDTO mapToAuthResponseDTO(utilisateurModel user, String message) {

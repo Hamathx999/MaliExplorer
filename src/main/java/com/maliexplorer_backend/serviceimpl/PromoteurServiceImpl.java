@@ -1,5 +1,6 @@
 package com.maliexplorer_backend.serviceimpl;
 
+import com.maliexplorer_backend.config.SecurityUtils;
 import com.maliexplorer_backend.dto.PromoteurRequestDTO;
 import com.maliexplorer_backend.dto.PromoteurResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
@@ -95,23 +96,32 @@ public class PromoteurServiceImpl implements PromoteurService {
     }
 
     private PromoteurResponseDTO mapToResponseDTO(PromoteurModel model) {
-        return PromoteurResponseDTO.builder()
+        boolean isPrivileged = SecurityUtils.isAdmin() || SecurityUtils.isCurrentUserOrAdmin(model.getIdUsers());
+
+        PromoteurResponseDTO.PromoteurResponseDTOBuilder builder = PromoteurResponseDTO.builder()
                 .idUsers(model.getIdUsers())
-                .firebaseUid(model.getFirebaseUid())
                 .prenom(model.getPrenom())
                 .nom(model.getNom())
-                .email(model.getEmail())
-                .adresse(model.getAdresse())
                 .photoUrl(model.getPhotoUrl())
                 .dateCreation(model.getDateCreation())
                 .role(model.getRole())
                 .idPromoteur(model.getIdPromoteur())
                 .nomOrganisation(model.getNomOrganisation())
-                .pieceIdentite(model.getPieceIdentite())
                 .recherchePartenariat(model.isRecherchePartenariat())
                 .titreProjet(model.getTitreProjet())
                 .besoinPartenariat(model.getBesoinPartenariat())
-                .statutModeration(model.getStatutModeration())
-                .build();
+                .statutModeration(model.getStatutModeration());
+
+        // Seuls l'administrateur ou le titulaire du compte ont accès aux pièces et identifiants privés
+        if (isPrivileged) {
+            builder.firebaseUid(model.getFirebaseUid())
+                    .email(model.getEmail())
+                    .telephone(model.getTelephone())
+                    .adresse(model.getAdresse())
+                    .pieceIdentite(model.getPieceIdentite())
+                    .motifRejet(model.getMotifRejet());
+        }
+
+        return builder.build();
     }
 }

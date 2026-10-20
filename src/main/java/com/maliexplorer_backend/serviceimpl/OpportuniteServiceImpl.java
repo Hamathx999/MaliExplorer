@@ -1,5 +1,6 @@
 package com.maliexplorer_backend.serviceimpl;
 
+import com.maliexplorer_backend.config.SecurityUtils;
 import com.maliexplorer_backend.dto.OpportuniteResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
 import com.maliexplorer_backend.model.*;
@@ -141,6 +142,9 @@ public class OpportuniteServiceImpl implements OpportuniteService {
             guide.setRecherchePartenariat(recherchePartenariat);
             guide.setTitreProjet(titreProjet);
             guide.setBesoinPartenariat(besoinPartenariat);
+            if (besoinPartenariat != null && !besoinPartenariat.isBlank()) {
+                guide.setDescription(besoinPartenariat);
+            }
             guide.setStatutModeration(recherchePartenariat ? StatutModeration.EN_ATTENTE_VALIDATION : StatutModeration.VALIDE);
             guide.setMotifRejet(null);
             guideRepository.save(guide);
@@ -169,11 +173,11 @@ public class OpportuniteServiceImpl implements OpportuniteService {
     // ==================== MAPPERS PRIVÉS ====================
 
     private OpportuniteResponseDTO mapPromoteurToDTO(PromoteurModel p) {
+        boolean isPrivileged = SecurityUtils.isAdmin() || SecurityUtils.isCurrentUserOrAdmin(p.getIdUsers());
+
         return OpportuniteResponseDTO.builder()
                 .idUsers(p.getIdUsers())
                 .nomComplet(p.getPrenom() + " " + p.getNom())
-                .email(p.getEmail())
-                .adresse(p.getAdresse())
                 .photoUrl(p.getPhotoUrl())
                 .role(p.getRole())
                 .typePartenaire("PROMOTEUR")
@@ -184,15 +188,18 @@ public class OpportuniteServiceImpl implements OpportuniteService {
                 .statutModeration(p.getStatutModeration())
                 .motifRejet(p.getMotifRejet())
                 .dateCreation(p.getDateCreation())
+                .email(isPrivileged ? p.getEmail() : null)
+                .adresse(isPrivileged ? p.getAdresse() : null)
+                .pieceIdentite(isPrivileged ? p.getPieceIdentite() : null)
                 .build();
     }
 
     private OpportuniteResponseDTO mapGuideToDTO(GuideModel g) {
+        boolean isPrivileged = SecurityUtils.isAdmin() || SecurityUtils.isCurrentUserOrAdmin(g.getIdUsers());
+
         return OpportuniteResponseDTO.builder()
                 .idUsers(g.getIdUsers())
                 .nomComplet(g.getPrenom() + " " + g.getNom())
-                .email(g.getEmail())
-                .adresse(g.getAdresse())
                 .photoUrl(g.getPhotoUrl())
                 .role(g.getRole())
                 .typePartenaire("GUIDE")
@@ -203,6 +210,9 @@ public class OpportuniteServiceImpl implements OpportuniteService {
                 .statutModeration(g.getStatutModeration())
                 .motifRejet(g.getMotifRejet())
                 .dateCreation(g.getDateCreation())
+                .email(isPrivileged ? g.getEmail() : null)
+                .adresse(isPrivileged ? g.getAdresse() : null)
+                .pieceIdentite(isPrivileged ? g.getPieceIdentite() : null)
                 .build();
     }
 }

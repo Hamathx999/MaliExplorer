@@ -1,5 +1,6 @@
 package com.maliexplorer_backend.serviceimpl;
 
+import com.maliexplorer_backend.config.SecurityUtils;
 import com.maliexplorer_backend.dto.GuideRequestDTO;
 import com.maliexplorer_backend.dto.GuideResponseDTO;
 import com.maliexplorer_backend.exception.ResourceNotFoundException;
@@ -103,13 +104,12 @@ public class GuideServiceImpl implements GuideService {
     }
 
     private GuideResponseDTO mapToResponseDTO(GuideModel model) {
-        return GuideResponseDTO.builder()
+        boolean isPrivileged = SecurityUtils.isAdmin() || SecurityUtils.isCurrentUserOrAdmin(model.getIdUsers());
+
+        GuideResponseDTO.GuideResponseDTOBuilder builder = GuideResponseDTO.builder()
                 .idUsers(model.getIdUsers())
-                .firebaseUid(model.getFirebaseUid())
                 .prenom(model.getPrenom())
                 .nom(model.getNom())
-                .email(model.getEmail())
-                .adresse(model.getAdresse())
                 .photoUrl(model.getPhotoUrl())
                 .dateCreation(model.getDateCreation())
                 .role(model.getRole())
@@ -117,12 +117,22 @@ public class GuideServiceImpl implements GuideService {
                 .experience(model.getExperience())
                 .description(model.getDescription())
                 .langue(model.getLangue())
-                .pieceIdentite(model.getPieceIdentite())
-                .idAdministrateur(model.getIdAdministrateur())
                 .recherchePartenariat(model.isRecherchePartenariat())
                 .titreProjet(model.getTitreProjet())
                 .besoinPartenariat(model.getBesoinPartenariat())
-                .statutModeration(model.getStatutModeration())
-                .build();
+                .statutModeration(model.getStatutModeration());
+
+        // Seuls l'administrateur ou le titulaire du compte ont accès aux pièces et identifiants privés
+        if (isPrivileged) {
+            builder.firebaseUid(model.getFirebaseUid())
+                    .email(model.getEmail())
+                    .telephone(model.getTelephone())
+                    .adresse(model.getAdresse())
+                    .pieceIdentite(model.getPieceIdentite())
+                    .idAdministrateur(model.getIdAdministrateur())
+                    .motifRejet(model.getMotifRejet());
+        }
+
+        return builder.build();
     }
 }

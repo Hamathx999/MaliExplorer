@@ -1,5 +1,6 @@
 package com.maliexplorer_backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.maliexplorer_backend.model.RoleModel;
 import com.maliexplorer_backend.model.StatutModeration;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,7 @@ import java.sql.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PromoteurResponseDTO {
 
     private int idUsers;
@@ -20,6 +22,7 @@ public class PromoteurResponseDTO {
     private String prenom;
     private String nom;
     private String email;
+    private String telephone;
     private String adresse;
     private String photoUrl;
     private Date dateCreation;
@@ -31,4 +34,5 @@ public class PromoteurResponseDTO {
     private String titreProjet;
     private String besoinPartenariat;
     private StatutModeration statutModeration;
+    private String motifRejet;
 }
