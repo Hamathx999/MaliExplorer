@@ -17,6 +17,7 @@ public class VilleResponseDTO {
     private String nom;
     private String region;
     private String nbreHbt;
+    private String population;
     private String description;
     private String cordonnees;
     private Double latitude;

@@ -226,6 +226,7 @@ public class VilleServiceImpl implements VilleService {
                 .nom(ville.getNomVille())
                 .region(ville.getRegion())
                 .nbreHbt(ville.getNbreHbt())
+                .population(ville.getNbreHbt())
                 .description(ville.getDescription())
                 .cordonnees(ville.getCordonnees())
                 .latitude(ville.getLatitude())
