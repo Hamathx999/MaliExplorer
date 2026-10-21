@@ -2,6 +2,7 @@ package com.maliexplorer_backend.serviceimpl;
 
 import com.maliexplorer_backend.dto.MarqueurCarteDTO;
 import com.maliexplorer_backend.repository.LieuHistoriqueRepository;
+import com.maliexplorer_backend.repository.RegionRepository;
 import com.maliexplorer_backend.repository.VilleRepository;
 import com.maliexplorer_backend.service.CarteService;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,24 @@ public class CarteServiceImpl implements CarteService {
 
     private final LieuHistoriqueRepository lieuHistoriqueRepository;
     private final VilleRepository villeRepository;
+    private final RegionRepository regionRepository;
 
     @Override
     public List<MarqueurCarteDTO> getAllMarqueurs() {
         List<MarqueurCarteDTO> marqueurs = new ArrayList<>();
+
+        // Marqueurs des Régions (avec coordonnées)
+        regionRepository.findAll().stream()
+                .filter(r -> r.getLatitude() != null && r.getLongitude() != null)
+                .forEach(r -> marqueurs.add(MarqueurCarteDTO.builder()
+                        .id("REGION_" + r.getIdRegion())
+                        .nom(r.getNomRegion())
+                        .type("REGION")
+                        .latitude(r.getLatitude())
+                        .longitude(r.getLongitude())
+                        .description(r.getDescription())
+                        .referenceId(r.getIdRegion())
+                        .build()));
 
         // Marqueurs des Lieux Historiques (avec coordonnées)
         lieuHistoriqueRepository.findAll().stream()

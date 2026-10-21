@@ -30,6 +30,7 @@ public class DataInitializer implements CommandLineRunner {
         initHomeSlides();
         initReligions();
         initHomeFeaturedVilles();
+        cleanupAndEnrichPatrimonialModules();
     }
 
     private void initHomeSlides() {
@@ -238,7 +239,13 @@ public class DataInitializer implements CommandLineRunner {
                 java.util.Map.entry("kenieba", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/20c147b6-b759-4b58-b974-3c4611f2b1cb_kenieba.jpeg"),
                 java.util.Map.entry("kéniéba", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/20c147b6-b759-4b58-b974-3c4611f2b1cb_kenieba.jpeg"),
                 java.util.Map.entry("kita", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/8a2b87e9-7ef4-4298-8698-ac341176f1ce_kita.jpeg"),
-                java.util.Map.entry("bandiagara", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/092d8b10-62e7-4254-9e2e-3b97571beb46_badiangara.jpeg")
+                java.util.Map.entry("bandiagara", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/092d8b10-62e7-4254-9e2e-3b97571beb46_badiangara.jpeg"),
+                java.util.Map.entry("gao", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/Gao1.jpg"),
+                java.util.Map.entry("kidal", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/Kidal1.jpg"),
+                java.util.Map.entry("taoudeni", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/Taoudeni1.JPG"),
+                java.util.Map.entry("taoudéni", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/Taoudeni1.JPG"),
+                java.util.Map.entry("menaka", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/Menaka1.jpg"),
+                java.util.Map.entry("ménaka", "https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/Menaka1.jpg")
         );
 
         boolean hasFeatured = villes.stream().anyMatch(v -> Boolean.TRUE.equals(v.getMisEnAvantHome()));
@@ -272,6 +279,33 @@ public class DataInitializer implements CommandLineRunner {
             if (modified) {
                 villeRepository.save(v);
             }
+        }
+    }
+
+    private void cleanupAndEnrichPatrimonialModules() {
+        try {
+            // 1. Présidents : suppression des entrées de test et enrichissement des dates historiques
+            jdbcTemplate.execute("DELETE FROM presidents WHERE nom LIKE '%Sissoko%' AND prenom LIKE '%Joshua%'");
+            jdbcTemplate.execute("DELETE FROM images WHERE image_url LIKE '%1791996092072_fff5b2bd.jpeg%'");
+            jdbcTemplate.execute("UPDATE presidents SET date_naissance = '1915-06-04', date_deces = '1977-05-16' WHERE nom LIKE '%Keïta%' AND prenom LIKE '%Modibo%' AND date_naissance IS NULL");
+            jdbcTemplate.execute("UPDATE presidents SET date_naissance = '1936-09-25', date_deces = '2020-09-15' WHERE nom LIKE '%Traoré%' AND prenom LIKE '%Moussa%' AND date_naissance IS NULL");
+            jdbcTemplate.execute("UPDATE presidents SET date_naissance = '1946-02-02' WHERE nom LIKE '%Konaré%' AND prenom LIKE '%Alpha%' AND date_naissance IS NULL");
+            jdbcTemplate.execute("UPDATE presidents SET date_naissance = '1948-11-04', date_deces = '2020-11-10' WHERE nom LIKE '%Touré%' AND prenom LIKE '%Amadou%' AND date_naissance IS NULL");
+            jdbcTemplate.execute("UPDATE presidents SET date_naissance = '1945-01-29', date_deces = '2022-01-16' WHERE nom LIKE '%Keïta%' AND prenom LIKE '%Ibrahim%' AND date_naissance IS NULL");
+            jdbcTemplate.execute("UPDATE presidents SET date_naissance = '1983-11-09' WHERE nom LIKE '%Goïta%' AND prenom LIKE '%Assimi%' AND date_naissance IS NULL");
+
+            // 2. Événements : nettoyage des données de test sur Festi Dibi
+            jdbcTemplate.execute("UPDATE evenements SET categorie = 'Festival culturel & gastronomique', date_debut = '2026-11-15', date_fin = '2026-11-17', description = 'Festival gastronomique et culturel célébrant l''art de la grillade malienne (dibi), la musique acoustique et la convivialité à Bamako.', lieu = 'Palais de la Culture Amadou Hampâté Bâ, Bamako', nom_organisateur = 'Collectif Festi Dibi Mali' WHERE titre LIKE '%Festi Dibi%' AND (description = 'khk' OR date_debut = '00')");
+
+            // 3. Langues nationales : activer Bamanankan (Bambara) et renseigner l'image de couverture
+            jdbcTemplate.execute("UPDATE langues_nationales SET publie = 1 WHERE nom LIKE '%Bamanankan%'");
+            jdbcTemplate.execute("UPDATE langues_nationales SET image_url = 'https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/langues/languages_cover.jpeg' WHERE image_url IS NULL OR image_url = ''");
+
+            // 4. Lieux historiques : compléter les images, panoramas 360 et statut UNESCO
+            jdbcTemplate.execute("UPDATE lieux_historiques SET image_url = 'https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/0d45c4b9-ddcb-4bfe-89fe-226739aacf74_Djenn_.jpg', panorama360url = 'assets/pannellum/djenne_360_panorama.jpg', classe_unesco = 1 WHERE nom_lieu LIKE '%Grande Mosquée de Djenné%' AND (image_url IS NULL OR image_url = '')");
+            jdbcTemplate.execute("UPDATE lieux_historiques SET image_url = 'https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/3984e765-781e-4966-9c04-90b19fd64403_deuxieme_imagehome.jpeg', classe_unesco = 1 WHERE nom_lieu LIKE '%Djingareyber%' AND (image_url IS NULL OR image_url = '')");
+        } catch (Exception e) {
+            log.debug("Note nettoyage patrimonial : {}", e.getMessage());
         }
     }
 }

@@ -51,6 +51,8 @@ public class RegionServiceImpl implements RegionService {
                                 .description(requestDTO.getDescription())
                                 .chefLieu(requestDTO.getChefLieu())
                                 .superficie(requestDTO.getSuperficie())
+                                .latitude(requestDTO.getLatitude())
+                                .longitude(requestDTO.getLongitude())
                                 .imageUrl(requestDTO.getImageUrl())
                                 .build();
 
@@ -69,10 +71,12 @@ public class RegionServiceImpl implements RegionService {
                 }
 
                 region.setNomRegion(requestDTO.getNom());
-                region.setNbreHbt(requestDTO.getNbreHbt());
+                if (requestDTO.getNbreHbt() != null) region.setNbreHbt(requestDTO.getNbreHbt());
                 if (requestDTO.getDescription() != null) region.setDescription(requestDTO.getDescription());
                 if (requestDTO.getChefLieu() != null) region.setChefLieu(requestDTO.getChefLieu());
                 if (requestDTO.getSuperficie() != null) region.setSuperficie(requestDTO.getSuperficie());
+                if (requestDTO.getLatitude() != null) region.setLatitude(requestDTO.getLatitude());
+                if (requestDTO.getLongitude() != null) region.setLongitude(requestDTO.getLongitude());
                 if (requestDTO.getImageUrl() != null) region.setImageUrl(requestDTO.getImageUrl());
 
                 RegionModel updated = regionRepository.save(region);
@@ -150,8 +154,11 @@ public class RegionServiceImpl implements RegionService {
                                 .description(region.getDescription())
                                 .chefLieu(region.getChefLieu())
                                 .superficie(region.getSuperficie())
+                                .latitude(region.getLatitude())
+                                .longitude(region.getLongitude())
                                 .imageUrl(region.getImageUrl())
                                 .nbreHbt(region.getNbreHbt())
+                                .population(region.getNbreHbt())
                                 .villes(villes)
                                 .ethnies(ethnies)
                                 .plats(plats)

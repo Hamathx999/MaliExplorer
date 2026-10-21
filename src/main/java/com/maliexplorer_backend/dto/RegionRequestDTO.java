@@ -31,7 +31,11 @@ public class RegionRequestDTO {
 
     private String superficie;
 
-    @Size(max = 500, message = "L'URL de l'image ne peut pas dépasser 500 caractères")
+    private Double latitude;
+
+    private Double longitude;
+
+    @Size(max = 5000, message = "L'URL de l'image ne peut pas dépasser 5000 caractères")
     private String imageUrl;
 
     private List<Long> ethnieIds;

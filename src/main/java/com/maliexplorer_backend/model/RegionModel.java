@@ -33,7 +33,11 @@ public class RegionModel {
     @Column(length = 50)
     private String superficie;
 
-    @Column(length = 500)
+    private Double latitude;
+
+    private Double longitude;
+
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     @OneToMany(mappedBy = "regionParent", cascade = CascadeType.ALL, orphanRemoval = true)

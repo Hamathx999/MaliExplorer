@@ -1,17 +1,23 @@
 package com.maliexplorer_backend.service;
 
-import lombok.extern.slf4j.Slf4j;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 
 @Service
@@ -20,7 +26,7 @@ public class SupabaseStorageService {
     @Value("${supabase.url:https://dzhqwkpwaljqsjwoqvso.supabase.co}")
     private String supabaseUrl;
 
-    @Value("${supabase.key}")
+    @Value("${supabase.key:}")
     private String supabaseKey;
 
     @Value("${supabase.bucket:maliexplorer-media}")
@@ -35,6 +41,96 @@ public class SupabaseStorageService {
                 .build();
     }
 
+    @PostConstruct
+    public void init() {
+        if (!StringUtils.hasText(this.supabaseKey)) {
+            List<Path> candidates = List.of(
+                    Paths.get("application-local.properties"),
+                    Paths.get("maliexplorer-backend/application-local.properties"),
+                    Paths.get("src/main/resources/application-local.properties"),
+                    Paths.get("maliexplorer-backend/src/main/resources/application-local.properties")
+            );
+            for (Path candidate : candidates) {
+                if (Files.exists(candidate)) {
+                    try (InputStream in = Files.newInputStream(candidate)) {
+                        Properties props = new Properties();
+                        props.load(in);
+                        String key = props.getProperty("supabase.key");
+                        if (StringUtils.hasText(key)) {
+                            this.supabaseKey = key.trim();
+                            log.info("Clé Supabase Storage chargée depuis {}", candidate.toAbsolutePath());
+                            break;
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        }
+    }
+
+    public String getPublicUrl(String folder, String cleanFileName) {
+        String baseUrl = (this.supabaseUrl != null ? this.supabaseUrl : "https://dzhqwkpwaljqsjwoqvso.supabase.co")
+                .replaceAll("/+$", "");
+        String targetBucket = (this.bucket != null && !this.bucket.isBlank()) ? this.bucket : "maliexplorer-media";
+        String targetFolder = (folder != null && !folder.trim().isEmpty())
+                ? folder.trim().replaceAll("[^a-zA-Z0-9_-]", "") + "/"
+                : "";
+        return baseUrl + "/storage/v1/object/public/" + targetBucket + "/" + targetFolder + cleanFileName;
+    }
+
+    /**
+     * Téléverse un fichier local vers Supabase Storage avec un nom déterministe (upsert)
+     * et retourne son URL publique permanente.
+     */
+    public String uploadLocalFileDeterministic(Path filePath, String folder, String targetFileName) {
+        String cleanName = targetFileName.replaceAll("[^a-zA-Z0-9._-]", "_");
+        String publicUrl = getPublicUrl(folder, cleanName);
+
+        if (filePath == null || !Files.exists(filePath)) {
+            return publicUrl;
+        }
+        init();
+        if (!StringUtils.hasText(this.supabaseKey)) {
+            return publicUrl;
+        }
+
+        try {
+            String baseUrl = this.supabaseUrl.replaceAll("/+$", "");
+            String targetFolder = (folder != null && !folder.trim().isEmpty())
+                    ? folder.trim().replaceAll("[^a-zA-Z0-9_-]", "") + "/"
+                    : "";
+            String uploadEndpoint = baseUrl + "/storage/v1/object/" + this.bucket + "/" + targetFolder + cleanName;
+
+            String contentType = Files.probeContentType(filePath);
+            if (contentType == null || contentType.isBlank()) {
+                String lower = cleanName.toLowerCase();
+                if (lower.endsWith(".png")) contentType = "image/png";
+                else if (lower.endsWith(".webp")) contentType = "image/webp";
+                else contentType = "image/jpeg";
+            }
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(uploadEndpoint))
+                    .timeout(Duration.ofSeconds(30))
+                    .header("Authorization", "Bearer " + this.supabaseKey)
+                    .header("apikey", this.supabaseKey)
+                    .header("Content-Type", contentType)
+                    .header("x-upsert", "true")
+                    .POST(HttpRequest.BodyPublishers.ofByteArray(Files.readAllBytes(filePath)))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                log.info("Asset local synchronisé vers Supabase Storage : {}", publicUrl);
+            } else {
+                log.debug("Réponse Supabase Storage ({}) pour {} : {}", response.statusCode(), cleanName, response.body());
+            }
+        } catch (Exception e) {
+            log.debug("Note synchronisation Supabase pour {} : {}", cleanName, e.getMessage());
+        }
+        return publicUrl;
+    }
+
     /**
      * Téléverse un fichier vers Supabase Storage et retourne l'URL publique directe.
      *
@@ -46,6 +142,8 @@ public class SupabaseStorageService {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("Le fichier à téléverser est vide.");
         }
+
+        init();
 
         String rawName = file.getOriginalFilename() != null ? file.getOriginalFilename() : "image.jpg";
         String cleanName = StringUtils.cleanPath(rawName).replaceAll("[^a-zA-Z0-9._-]", "_");
@@ -92,4 +190,3 @@ public class SupabaseStorageService {
         }
     }
 }
-//

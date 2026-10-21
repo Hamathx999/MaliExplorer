@@ -114,7 +114,9 @@ public class CultureDataInitializer implements CommandLineRunner {
                     p.setImageUrl(seed.imageUrl());
                     changed = true;
                 }
-                if (p.getIngredientPrincipal() == null || p.getIngredientPrincipal().trim().isEmpty()) {
+                if (p.getIngredientPrincipal() == null
+                        || p.getIngredientPrincipal().trim().isEmpty()
+                        || p.getIngredientPrincipal().toLowerCase().contains("grais en bois")) {
                     p.setIngredientPrincipal(seed.ingredients());
                     changed = true;
                 }
