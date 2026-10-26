@@ -24,10 +24,14 @@ public class OpportuniteResponseDTO {
     private String nomComplet;
     private String email;
     private String adresse;
+    private String telephone;
     private String photoUrl;
     private RoleModel role;
     private String typePartenaire; // "PROMOTEUR", "GUIDE"
     private String specialiteOuOrganisation; // Métier ou Organisation
+    private String nomOrganisation;
+    private String langue;
+    private Integer experience;
 
     private boolean recherchePartenariat;
     private String titreProjet;

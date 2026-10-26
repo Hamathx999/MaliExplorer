@@ -25,5 +25,5 @@ public interface QuizService {
     List<QuizResponseDTO> getQuizzesByCategorie(String categorie);
     List<QuizResponseDTO> searchQuizzes(String keyword);
 
-    void recordQuizAbandon(Long quizId, String sessionId);
+    void recordQuizAbandon(Long quizId, String sessionId, Integer userId);
 }

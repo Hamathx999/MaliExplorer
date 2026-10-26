@@ -157,6 +157,17 @@ public class CultureDataInitializer implements CommandLineRunner {
     }
 
     private void cleanupAndInitQuizzes() {
+        // Purge préventive et définitive des quiz de test polluants (R7)
+        try {
+            jdbcTemplate.execute("DELETE FROM touriste_quiz WHERE id_quiz IN (SELECT id_quiz FROM quizzes WHERE nom_quiz LIKE '%MaliExplorereeee%' OR nom_quiz LIKE '%rbjwbhrw%' OR nom_quiz LIKE 'Quiz MaliExplorer%')");
+            jdbcTemplate.execute("DELETE FROM propositions WHERE questions_id_question IN (SELECT id_question FROM questions WHERE id_quiz IN (SELECT id_quiz FROM quizzes WHERE nom_quiz LIKE '%MaliExplorereeee%' OR nom_quiz LIKE '%rbjwbhrw%' OR nom_quiz LIKE 'Quiz MaliExplorer%'))");
+            jdbcTemplate.execute("DELETE FROM questions WHERE id_quiz IN (SELECT id_quiz FROM quizzes WHERE nom_quiz LIKE '%MaliExplorereeee%' OR nom_quiz LIKE '%rbjwbhrw%' OR nom_quiz LIKE 'Quiz MaliExplorer%')");
+            jdbcTemplate.execute("DELETE FROM quizzes WHERE nom_quiz LIKE '%MaliExplorereeee%' OR nom_quiz LIKE '%rbjwbhrw%' OR nom_quiz LIKE 'Quiz MaliExplorer%'");
+            log.info("Purge de sécurité des quiz de test polluants exécutée avec succès.");
+        } catch (Exception e) {
+            log.debug("Note purge quiz test : {}", e.getMessage());
+        }
+
         List<QuizModel> allQuizzes = quizRepository.findAll();
 
         // 1. Déduplication : Regrouper par clé nettoyée

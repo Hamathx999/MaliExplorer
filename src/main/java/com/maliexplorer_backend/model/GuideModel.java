@@ -28,9 +28,9 @@ public class GuideModel extends utilisateurModel {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @NotBlank(message = "La langue parlée est obligatoire !")
-    private String langue;
+    private String langue = "Français, Bambara";
 
+    @Column(name = "piece_identite", columnDefinition = "TEXT")
     private String pieceIdentite;
 
     private Integer idAdministrateur;
@@ -46,8 +46,16 @@ public class GuideModel extends utilisateurModel {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "statut_moderation", length = 30)
-    private StatutModeration statutModeration = StatutModeration.VALIDE;
+    private StatutModeration statutModeration = StatutModeration.EN_ATTENTE_VALIDATION;
 
     @Column(name = "motif_rejet", length = 500)
     private String motifRejet;
+
+    @PrePersist
+    @PreUpdate
+    void ensureDefaults() {
+        if (this.langue == null || this.langue.isBlank()) {
+            this.langue = "Français, Bambara";
+        }
+    }
 }

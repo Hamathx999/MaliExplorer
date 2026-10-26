@@ -40,7 +40,11 @@ public class StorageController {
             @Parameter(description = "Nom du sous-dossier de destination (ex: lieux, villes, avatars)")
             @RequestParam(value = "folder", defaultValue = "general") String folder) {
 
-        if (!SecurityUtils.isAdmin() && !"general".equalsIgnoreCase(folder) && !"avatars".equalsIgnoreCase(folder) && !"documents".equalsIgnoreCase(folder)) {
+        if (!SecurityUtils.isAdmin()
+                && !"general".equalsIgnoreCase(folder)
+                && !"avatars".equalsIgnoreCase(folder)
+                && !"documents".equalsIgnoreCase(folder)
+                && !"evenements".equalsIgnoreCase(folder)) {
             throw new AccessDeniedException("Accès refusé : seuls les administrateurs peuvent téléverser dans le dossier '" + folder + "'.");
         }
 

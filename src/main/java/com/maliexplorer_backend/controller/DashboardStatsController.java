@@ -47,4 +47,13 @@ public class DashboardStatsController {
         DashboardStatsResponseDTO stats = dashboardStatsService.getDashboardStats();
         return ResponseEntity.ok(stats);
     }
+
+    @GetMapping("/activites-recentes")
+    @Operation(
+            summary = "Consulter le flux complet des activités récentes de la plateforme (Admin mobile & web)",
+            description = "Retourne les dernières actions métier persistées en base, triées de la plus récente à la plus ancienne"
+    )
+    public ResponseEntity<java.util.List<com.maliexplorer_backend.dto.ActiviteRecenteDTO>> getActivitesRecentes() {
+        return ResponseEntity.ok(dashboardStatsService.getActivitesRecentesCompletes());
+    }
 }

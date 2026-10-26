@@ -17,4 +17,8 @@ public interface DashboardStatsService {
      * @return Le DTO consolidé DashboardStatsResponseDTO avec données 100% réelles
      */
     DashboardStatsResponseDTO getDashboardStats();
+
+    default java.util.List<com.maliexplorer_backend.dto.ActiviteRecenteDTO> getActivitesRecentesCompletes() {
+        return java.util.Collections.emptyList();
+    }
 }

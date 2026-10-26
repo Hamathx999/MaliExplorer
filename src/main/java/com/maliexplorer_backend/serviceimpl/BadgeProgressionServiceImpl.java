@@ -30,17 +30,19 @@ public class BadgeProgressionServiceImpl implements BadgeProgressionService {
     private final HistoriquePointRepository historiquePointRepository;
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ProgressionResponseDTO getProgressionUtilisateur(int userId) {
         utilisateurModel user = findUserOrThrow(userId);
-        return calculerProgression(user.getPoints(), user);
+        int pointsSynchronises = synchroniserPointsDepuisHistorique(user);
+        return calculerProgression(pointsSynchronises, user);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ProgressionResponseDTO getProgressionCurrentUtilisateur() {
         utilisateurModel user = getCurrentAuthenticatedUser();
-        return calculerProgression(user.getPoints(), user);
+        int pointsSynchronises = synchroniserPointsDepuisHistorique(user);
+        return calculerProgression(pointsSynchronises, user);
     }
 
     @Override
@@ -48,20 +50,18 @@ public class BadgeProgressionServiceImpl implements BadgeProgressionService {
     public List<HistoriquePointResponseDTO> getHistoriquePoints(int userId) {
         // Valide que l'utilisateur existe
         findUserOrThrow(userId);
-        return historiquePointRepository.findByUtilisateurIdUsersOrderByDateGainDesc(userId)
-                .stream()
-                .map(this::mapToHistoriqueDTO)
-                .collect(Collectors.toList());
+        return deduplicateHistorique(
+                historiquePointRepository.findByUtilisateurIdUsersOrderByDateGainDesc(userId)
+        );
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<HistoriquePointResponseDTO> getHistoriquePointsCurrentUtilisateur() {
         utilisateurModel user = getCurrentAuthenticatedUser();
-        return historiquePointRepository.findByUtilisateurIdUsersOrderByDateGainDesc(user.getIdUsers())
-                .stream()
-                .map(this::mapToHistoriqueDTO)
-                .collect(Collectors.toList());
+        return deduplicateHistorique(
+                historiquePointRepository.findByUtilisateurIdUsersOrderByDateGainDesc(user.getIdUsers())
+        );
     }
 
     @Override
@@ -201,6 +201,8 @@ public class BadgeProgressionServiceImpl implements BadgeProgressionService {
         }
 
         historiquePointRepository.delete(item);
+        historiquePointRepository.flush();
+        synchroniserPointsDepuisHistorique(user);
         log.info("Entrée d'historique ID={} supprimée pour l'utilisateur ID={}", idHistorique, user.getIdUsers());
     }
 
@@ -209,7 +211,48 @@ public class BadgeProgressionServiceImpl implements BadgeProgressionService {
     public void viderMonHistorique() {
         utilisateurModel user = getCurrentAuthenticatedUser();
         historiquePointRepository.deleteByUtilisateurIdUsers(user.getIdUsers());
-        log.info("Historique complet vidé pour l'utilisateur ID={}", user.getIdUsers());
+        user.setPoints(0);
+        userRepo.save(user);
+        log.info("Historique complet vidé et points réinitialisés pour l'utilisateur ID={}", user.getIdUsers());
+    }
+
+    private int synchroniserPointsDepuisHistorique(utilisateurModel user) {
+        if (user == null || historiquePointRepository == null || userRepo == null) {
+            return user != null ? user.getPoints() : 0;
+        }
+        List<HistoriquePointModel> rows = historiquePointRepository.findByUtilisateurIdUsersOrderByDateGainDesc(user.getIdUsers());
+        java.util.Set<String> seenRefs = new java.util.HashSet<>();
+        int totalCalcule = 0;
+        if (rows != null) {
+            for (HistoriquePointModel h : rows) {
+                String ref = h.getReferenceActivite();
+                if (ref != null && !ref.isBlank() && !seenRefs.add(ref)) {
+                    continue;
+                }
+                totalCalcule += Math.max(0, h.getPointsGagnes());
+            }
+        }
+        if (user.getPoints() != totalCalcule) {
+            user.setPoints(totalCalcule);
+            userRepo.save(user);
+        }
+        return totalCalcule;
+    }
+
+    private List<HistoriquePointResponseDTO> deduplicateHistorique(List<HistoriquePointModel> rows) {
+        if (rows == null || rows.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        java.util.Set<String> seenRefs = new java.util.HashSet<>();
+        List<HistoriquePointResponseDTO> result = new java.util.ArrayList<>();
+        for (HistoriquePointModel h : rows) {
+            String ref = h.getReferenceActivite();
+            if (ref != null && !ref.isBlank() && !seenRefs.add(ref)) {
+                continue;
+            }
+            result.add(mapToHistoriqueDTO(h));
+        }
+        return result;
     }
 
     private HistoriquePointResponseDTO mapToHistoriqueDTO(HistoriquePointModel h) {

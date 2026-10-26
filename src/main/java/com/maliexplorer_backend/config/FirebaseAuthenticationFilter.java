@@ -144,12 +144,6 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
                 authorities.add(new SimpleGrantedAuthority("ROLE_INVESTISSEUR"));
             }
         }
-        if (user.getEmail() != null && (user.getEmail().equalsIgnoreCase("famoryjosuesissoko@gmail.com") || user.getEmail().equalsIgnoreCase("hamath.o.diallo18@gmail.com"))) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-            authorities.add(new SimpleGrantedAuthority("ROLE_admin"));
-            authorities.add(new SimpleGrantedAuthority("ROLE_SUPERADMIN"));
-            authorities.add(new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"));
-        }
         authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
         return authorities;
     }
