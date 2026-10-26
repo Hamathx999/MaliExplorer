@@ -43,6 +43,14 @@ public class EvenementController {
         return ResponseEntity.ok(service.getByStatut(EvenementModel.Statut.EN_ATTENTE));
     }
 
+    @GetMapping("/mes-evenements")
+    @PreAuthorize("hasRole('PROMOTEUR') or hasRole('PARTENAIRE') or hasRole('ADMIN')")
+    @Operation(summary = "Lister les événements créés par le promoteur connecté")
+    public ResponseEntity<List<EvenementModel>> getMesEvenements() {
+        String email = com.maliexplorer_backend.config.SecurityUtils.getCurrentUserEmail();
+        return ResponseEntity.ok(service.getMesEvenements(email));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Détail d'un événement")
     public ResponseEntity<EvenementModel> getById(@PathVariable Long id) {
@@ -50,15 +58,15 @@ public class EvenementController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('PROMOTEUR') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('PROMOTEUR') or hasRole('PARTENAIRE') or hasRole('ADMIN')")
     @Operation(summary = "Soumettre un événement (Promoteur ou Admin)")
     public ResponseEntity<EvenementModel> create(@Valid @RequestBody EvenementModel evenement) {
         return new ResponseEntity<>(service.create(evenement), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Modifier un événement (Admin)")
+    @PreAuthorize("hasRole('PROMOTEUR') or hasRole('PARTENAIRE') or hasRole('ADMIN')")
+    @Operation(summary = "Modifier un événement (Promoteur propriétaire ou Admin)")
     public ResponseEntity<EvenementModel> update(@PathVariable Long id, @Valid @RequestBody EvenementModel evenement) {
         return ResponseEntity.ok(service.update(id, evenement));
     }

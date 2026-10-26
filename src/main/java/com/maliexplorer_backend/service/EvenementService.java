@@ -10,6 +10,10 @@ public interface EvenementService {
 
     List<EvenementModel> getByStatut(EvenementModel.Statut statut);
 
+    default List<EvenementModel> getMesEvenements(String email) {
+        return java.util.Collections.emptyList();
+    }
+
     EvenementModel getById(Long id);
 
     EvenementModel create(EvenementModel evenement);

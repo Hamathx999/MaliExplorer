@@ -27,6 +27,7 @@ public class PartenaireController {
     private final OpportuniteService opportuniteService;
     private final utilisateurRepository userRepository;
     private final com.maliexplorer_backend.repository.EvenementRepository evenementRepository;
+    private final com.maliexplorer_backend.repository.CommandeBilletSimulationRepository commandeRepository;
 
     @PutMapping("/mon-projet")
     @PreAuthorize("hasRole('PARTENAIRE') or hasRole('ADMIN')")
@@ -63,22 +64,33 @@ public class PartenaireController {
         long vues = 0L;
         long commentaires = 0L;
         long publications = 0L;
+        long billetsVendus = 0L;
 
-        if (projet != null && projet.isRecherchePartenariat()) {
-            publications++;
-        }
         if (currentUser.getRole() == com.maliexplorer_backend.model.RoleModel.promoteur) {
             java.util.List<com.maliexplorer_backend.model.EvenementModel> events =
                     evenementRepository.findByEmailOrganisateur(currentUser.getEmail());
-            publications += events.size();
+            publications = events.size();
             for (com.maliexplorer_backend.model.EvenementModel ev : events) {
                 if (ev.getVues() != null) vues += ev.getVues();
                 if (ev.getNombreCommentaires() != null) commentaires += ev.getNombreCommentaires();
+                billetsVendus += commandeRepository.sumBilletsVendusByEvenement(ev.getId());
+            }
+            if (events.isEmpty()) {
+                billetsVendus = commandeRepository.sumBilletsVendusByEmailPromoteur(currentUser.getEmail());
+            }
+        } else if (currentUser.getRole() == com.maliexplorer_backend.model.RoleModel.guide) {
+            if (projet != null
+                    && projet.getTitreProjet() != null
+                    && !projet.getTitreProjet().isBlank()
+                    && !projet.getTitreProjet().startsWith("Candidature Guide")) {
+                publications = 1L;
             }
         }
+
         stats.put("vues", vues);
         stats.put("commentaires", commentaires);
         stats.put("publications", publications);
+        stats.put("billetsVendus", billetsVendus);
         stats.put("statutModeration", projet != null && projet.getStatutModeration() != null ? projet.getStatutModeration().name() : "VALIDE");
         return ResponseEntity.ok(stats);
     }

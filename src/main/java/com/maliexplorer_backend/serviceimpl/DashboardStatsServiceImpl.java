@@ -44,6 +44,9 @@ public class DashboardStatsServiceImpl implements DashboardStatsService {
     private final FavoriRepository favoriRepository;
     private final RegionRepository regionRepository;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private CommandeBilletSimulationRepository commandeRepository;
+
     /** Formats reconnus pour l'analyse multi-formats des dates d'événements */
     private static final List<DateTimeFormatter> FORMATTEURS_DATES = List.of(
             DateTimeFormatter.ISO_LOCAL_DATE,                    // yyyy-MM-dd
@@ -661,6 +664,15 @@ public class DashboardStatsServiceImpl implements DashboardStatsService {
         return liste.stream().limit(10).collect(Collectors.toList());
     }
 
+    @Override
+    public List<ActiviteRecenteDTO> getActivitesRecentesCompletes() {
+        List<utilisateurModel> allUsers = utilisateurRepository.findAll();
+        List<EvenementModel> allEvents = evenementRepository.findAll();
+        List<HistoriquePointModel> allPoints = historiquePointRepository.findAll();
+        List<ArticleModel> allArticles = articleRepository.findAll();
+        return extraireActivitesRecentesInterne(allUsers, allEvents, allPoints, allArticles, 30);
+    }
+
     /**
      * Agrège et extrait les 5 dernières actions réelles de la plateforme pour la timeline.
      */
@@ -668,6 +680,14 @@ public class DashboardStatsServiceImpl implements DashboardStatsService {
                                                               List<EvenementModel> allEvents,
                                                               List<HistoriquePointModel> allPoints,
                                                               List<ArticleModel> allArticles) {
+        return extraireActivitesRecentesInterne(allUsers, allEvents, allPoints, allArticles, 5);
+    }
+
+    private List<ActiviteRecenteDTO> extraireActivitesRecentesInterne(List<utilisateurModel> allUsers,
+                                                                      List<EvenementModel> allEvents,
+                                                                      List<HistoriquePointModel> allPoints,
+                                                                      List<ArticleModel> allArticles,
+                                                                      int limit) {
 
         List<ActiviteRecenteDTO> candidates = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
@@ -677,30 +697,86 @@ public class DashboardStatsServiceImpl implements DashboardStatsService {
                 if (u.getDateCreation() != null) {
                     LocalDateTime dt = u.getDateCreation().toLocalDate().atTime(12, 0);
                     String nomComplet = ((u.getPrenom() != null ? u.getPrenom() : "") + " " + (u.getNom() != null ? u.getNom() : "")).trim();
+                    RoleModel role = u.getRole() != null ? u.getRole() : RoleModel.touriste;
+                    String titreAction;
+                    String descAction;
+                    String icone = "user-plus";
+                    String couleur = "#0E8F76";
+
+                    if (role == RoleModel.guide) {
+                        StatutModeration sm = u.getStatutModeration();
+                        String statutLabel = sm == StatutModeration.VALIDE ? "Validé" : (sm == StatutModeration.REJETE ? "Rejeté" : "En attente");
+                        titreAction = "Inscription Guide : " + (!nomComplet.isEmpty() ? nomComplet : u.getEmail());
+                        descAction = "Statut du dossier : " + statutLabel;
+                        icone = "compass";
+                    } else if (role == RoleModel.promoteur || role == RoleModel.partenaire) {
+                        StatutModeration sm = u.getStatutModeration();
+                        String statutLabel = sm == StatutModeration.VALIDE ? "Validé" : (sm == StatutModeration.REJETE ? "Rejeté" : "En attente");
+                        String org = u.getNomOrganisation() != null && !u.getNomOrganisation().isBlank() ? " (" + u.getNomOrganisation() + ")" : "";
+                        titreAction = "Inscription Promoteur" + org;
+                        descAction = "Statut du dossier : " + statutLabel;
+                        icone = "briefcase";
+                    } else {
+                        titreAction = "Nouveau compte Touriste";
+                        descAction = "Inscription au rôle " + role.name();
+                    }
+
                     candidates.add(ActiviteRecenteDTO.builder()
                             .id("USR_" + u.getIdUsers())
                             .type("INSCRIPTION")
-                            .titre("Nouvel utilisateur inscrit")
+                            .titre(titreAction)
                             .auteur(!nomComplet.isEmpty() ? nomComplet : u.getEmail())
-                            .description("Inscription au rôle " + (u.getRole() != null ? u.getRole().name() : "touriste"))
+                            .description(descAction)
                             .dateIso(dt.toString())
                             .date(formaterDateRelative(dt, now))
-                            .icone("user-plus")
-                            .couleur("#0E8F76")
+                            .icone(icone)
+                            .couleur(couleur)
                             .build());
                 }
             }
         }
 
+        if (guideRepository != null) {
+            try {
+                List<GuideModel> allGuides = guideRepository.findAll();
+                if (allGuides != null) {
+                    for (GuideModel g : allGuides) {
+                        if (g.getTitreProjet() != null && !g.getTitreProjet().isBlank()
+                                && !g.getTitreProjet().startsWith("Candidature Guide")) {
+                            LocalDateTime dt = g.getDateCreation() != null
+                                    ? g.getDateCreation().toLocalDate().atTime(14, 30)
+                                    : now.minusHours(4);
+                            String nomComplet = ((g.getPrenom() != null ? g.getPrenom() : "") + " " + (g.getNom() != null ? g.getNom() : "")).trim();
+                            String statutStr = g.getStatutModeration() != null ? g.getStatutModeration().name() : "VALIDE";
+                            candidates.add(ActiviteRecenteDTO.builder()
+                                    .id("CIR_" + g.getIdUsers())
+                                    .type("CIRCUIT")
+                                    .titre("Circuit publié : " + g.getTitreProjet())
+                                    .auteur(!nomComplet.isEmpty() ? nomComplet : "Guide touristique")
+                                    .description("Statut : " + statutStr + (g.getLangue() != null ? " • Langues : " + g.getLangue() : ""))
+                                    .dateIso(dt.toString())
+                                    .date(formaterDateRelative(dt, now))
+                                    .icone("map")
+                                    .couleur("#075E4D")
+                                    .build());
+                        }
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+
         if (allEvents != null) {
             for (EvenementModel e : allEvents) {
                 LocalDateTime dt = e.getDateSoumission() != null ? e.getDateSoumission() : now.minusDays(2);
+                String statutEvt = (e.getStatut() == EvenementModel.Statut.VALIDE || e.getStatut() == EvenementModel.Statut.APPROUVE)
+                        ? "Publié"
+                        : (e.getStatut() == EvenementModel.Statut.REFUSE ? "Rejeté" : "En attente");
                 candidates.add(ActiviteRecenteDTO.builder()
                         .id("EVT_" + e.getId())
                         .type("EVENEMENT")
-                        .titre("Événement soumis : " + (e.getTitre() != null ? e.getTitre() : "Festival"))
+                        .titre("Événement (" + statutEvt + ") : " + (e.getTitre() != null ? e.getTitre() : "Festival"))
                         .auteur(e.getNomOrganisateur() != null ? e.getNomOrganisateur() : "Promoteur culturel")
-                        .description(e.getVille() != null ? ("Lieu : " + e.getVille()) : "Événement culturel")
+                        .description((e.getVille() != null ? ("Lieu : " + e.getVille()) : "Événement culturel") + " • Statut : " + statutEvt)
                         .dateIso(dt.toString())
                         .date(formaterDateRelative(dt, now))
                         .icone("calendar")
@@ -709,23 +785,58 @@ public class DashboardStatsServiceImpl implements DashboardStatsService {
             }
         }
 
+        if (commandeRepository != null) {
+            try {
+                List<CommandeBilletSimulationModel> commandes = commandeRepository.findAll();
+                if (commandes != null) {
+                    for (CommandeBilletSimulationModel c : commandes) {
+                        LocalDateTime dt = c.getDateCreation() != null ? c.getDateCreation() : now.minusHours(1);
+                        candidates.add(ActiviteRecenteDTO.builder()
+                                .id("BIL_" + c.getId())
+                                .type("BILLET")
+                                .titre("Achat de " + c.getQuantiteBillets() + " billet(s) : " + (c.getTitreEvenement() != null ? c.getTitreEvenement() : "Événement"))
+                                .auteur(c.getNomAcheteur() != null ? c.getNomAcheteur() : "Touriste")
+                                .description(String.format(Locale.US, "%.0f FCFA via %s • Statut : %s",
+                                        c.getMontantTotal(),
+                                        c.getCanalPaiement() != null ? c.getCanalPaiement().name() : "Paiement",
+                                        c.getStatutSimulation() != null ? c.getStatutSimulation().name() : "CONFIRMED"))
+                                .dateIso(dt.toString())
+                                .date(formaterDateRelative(dt, now))
+                                .icone("ticket")
+                                .couleur("#0D9488")
+                                .build());
+                    }
+                }
+            } catch (Exception ignored) {}
+        }
+
         if (allPoints != null) {
+            java.util.Set<String> seenRefs = new java.util.HashSet<>();
             for (HistoriquePointModel hp : allPoints) {
+                String ref = hp.getReferenceActivite();
+                if (ref != null && !ref.isBlank() && !seenRefs.add(ref)) {
+                    continue;
+                }
                 LocalDateTime dt = hp.getDateGain() != null ? hp.getDateGain() : now.minusHours(3);
                 String auteur = hp.getUtilisateur() != null
                         ? ((hp.getUtilisateur().getPrenom() != null ? hp.getUtilisateur().getPrenom() : "") + " "
                         + (hp.getUtilisateur().getNom() != null ? hp.getUtilisateur().getNom() : "")).trim()
                         : "Explorateur";
+                boolean isAbandon = "QUIZ_ABANDON".equalsIgnoreCase(hp.getAction())
+                        || (hp.getDescription() != null && hp.getDescription().contains("Abandonné"));
+                String descPoints = isAbandon
+                        ? "Tentative de quiz abandonnée (0 pt)"
+                        : "Attribution de " + hp.getPointsGagnes() + " points de découverte";
                 candidates.add(ActiviteRecenteDTO.builder()
                         .id("HP_" + hp.getIdHistorique())
                         .type("QUIZ")
                         .titre(hp.getDescription() != null && !hp.getDescription().isBlank() ? hp.getDescription() : "Défi Quiz complété")
                         .auteur(!auteur.isEmpty() ? auteur : "Explorateur")
-                        .description("Attribution de " + hp.getPointsGagnes() + " points de découverte")
+                        .description(descPoints)
                         .dateIso(dt.toString())
                         .date(formaterDateRelative(dt, now))
                         .icone("award")
-                        .couleur("#8E24AA")
+                        .couleur(isAbandon ? "#DC2626" : "#8E24AA")
                         .build());
             }
         }
@@ -750,7 +861,7 @@ public class DashboardStatsServiceImpl implements DashboardStatsService {
         // Tri par date décroissante (les actions les plus récentes en premier)
         candidates.sort(Comparator.comparing(ActiviteRecenteDTO::getDateIso, Comparator.nullsLast(Comparator.reverseOrder())));
 
-        return candidates.stream().limit(5).collect(Collectors.toList());
+        return candidates.stream().limit(limit).collect(Collectors.toList());
     }
 
     /**

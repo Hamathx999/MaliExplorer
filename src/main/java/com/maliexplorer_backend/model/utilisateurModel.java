@@ -47,12 +47,7 @@ public class utilisateurModel {
     private String telephone = "";
 
     @Builder.Default
-    private String pieceIdentite = "";
-
-    @Builder.Default
-    private String nomOrganisation = "";
-
-    @Builder.Default
+    @Column(columnDefinition = "TEXT")
     private String photoUrl = "";
 
     private Date dateCreation;
@@ -65,6 +60,42 @@ public class utilisateurModel {
 
     @Builder.Default
     private String statut = "ACTIF";
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String transientNomOrganisation;
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String transientPieceIdentite;
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String transientLangues;
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Integer transientExperience;
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private String transientDescription;
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private StatutModeration transientStatutModeration;
+
+    @Transient
+    private String nomEvenement;
+
+    @Transient
+    private String dateEvenement;
+
+    @Transient
+    private String descriptionEvenement;
+
+    @Transient
+    private java.util.List<String> photosEvenement;
 
     @com.fasterxml.jackson.annotation.JsonProperty("id")
     public int getId() {
@@ -97,5 +128,125 @@ public class utilisateurModel {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @com.fasterxml.jackson.annotation.JsonProperty("statutModeration")
+    public StatutModeration getStatutModeration() {
+        if (this instanceof PromoteurModel p && p.getStatutModeration() != null) {
+            return p.getStatutModeration();
+        }
+        if (this instanceof GuideModel g && g.getStatutModeration() != null) {
+            return g.getStatutModeration();
+        }
+        if (this.transientStatutModeration != null) {
+            return this.transientStatutModeration;
+        }
+        if (this.role == RoleModel.promoteur || this.role == RoleModel.guide || this.role == RoleModel.partenaire) {
+            if ("EN_ATTENTE".equalsIgnoreCase(this.statut)) {
+                return StatutModeration.EN_ATTENTE_VALIDATION;
+            }
+            if ("REJETE".equalsIgnoreCase(this.statut) || "REFUSE".equalsIgnoreCase(this.statut)) {
+                return StatutModeration.REJETE;
+            }
+            return StatutModeration.VALIDE;
+        }
+        return null;
+    }
+
+    public void setStatutModeration(StatutModeration statutModeration) {
+        this.transientStatutModeration = statutModeration;
+        if (this instanceof PromoteurModel p) {
+            p.setStatutModeration(statutModeration);
+        } else if (this instanceof GuideModel g) {
+            g.setStatutModeration(statutModeration);
+        }
+    }
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonProperty("nomOrganisation")
+    public String getNomOrganisation() {
+        if (this instanceof PromoteurModel p && p.getNomOrganisation() != null) {
+            return p.getNomOrganisation();
+        }
+        return this.transientNomOrganisation;
+    }
+
+    public void setNomOrganisation(String nomOrganisation) {
+        this.transientNomOrganisation = nomOrganisation;
+        if (this instanceof PromoteurModel p) {
+            p.setNomOrganisation(nomOrganisation);
+        }
+    }
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonProperty("pieceIdentite")
+    public String getPieceIdentite() {
+        if (this instanceof PromoteurModel p && p.getPieceIdentite() != null) {
+            return p.getPieceIdentite();
+        }
+        if (this instanceof GuideModel g && g.getPieceIdentite() != null) {
+            return g.getPieceIdentite();
+        }
+        return this.transientPieceIdentite;
+    }
+
+    public void setPieceIdentite(String pieceIdentite) {
+        this.transientPieceIdentite = pieceIdentite;
+        if (this instanceof PromoteurModel p) {
+            p.setPieceIdentite(pieceIdentite);
+        } else if (this instanceof GuideModel g) {
+            g.setPieceIdentite(pieceIdentite);
+        }
+    }
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonProperty("langues")
+    public String getLangues() {
+        if (this instanceof GuideModel g && g.getLangue() != null) {
+            return g.getLangue();
+        }
+        return this.transientLangues;
+    }
+
+    public void setLangues(String langues) {
+        this.transientLangues = langues;
+        if (this instanceof GuideModel g && langues != null && !langues.isBlank()) {
+            g.setLangue(langues);
+        }
+    }
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonProperty("experience")
+    public int getExperience() {
+        if (this instanceof GuideModel g) {
+            return g.getExperience();
+        }
+        return this.transientExperience != null ? this.transientExperience : 1;
+    }
+
+    public void setExperience(int experience) {
+        this.transientExperience = experience;
+        if (this instanceof GuideModel g) {
+            g.setExperience(experience);
+        }
+    }
+
+    @Transient
+    @com.fasterxml.jackson.annotation.JsonProperty("description")
+    public String getDescription() {
+        if (this instanceof GuideModel g && g.getDescription() != null) {
+            return g.getDescription();
+        }
+        if (this instanceof PromoteurModel p && p.getBesoinPartenariat() != null) {
+            return p.getBesoinPartenariat();
+        }
+        return this.transientDescription;
+    }
+
+    public void setDescription(String description) {
+        this.transientDescription = description;
+        if (this instanceof GuideModel g) {
+            g.setDescription(description);
+        }
     }
 }

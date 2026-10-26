@@ -149,13 +149,9 @@ public class QuizServiceImpl implements QuizService {
         }
 
         // ==================== BARÈME DE POINTS & GAMIFICATION ====================
-        // - Bonne réponse : points réels de chaque question (+10 pts par défaut)
-        // - Bonus quiz terminé : +20 points
-        // - Bonus quiz parfait (100% de réussite) : +20 points supplémentaires
-        int bonusTermine = 20;
+        // Points gagnés = score réel obtenu aux questions du quiz (ex: 40/40 -> +40 pts, 10/40 -> +10 pts)
         boolean estParfait = (scoreQuestionsObtenu > 0 && scoreQuestionsObtenu == scoreMaxPossible);
-        int bonusParfait = estParfait ? 20 : 0;
-        int pointsGagnesTotal = scoreQuestionsObtenu + bonusTermine + bonusParfait;
+        int pointsGagnesTotal = scoreQuestionsObtenu;
 
         int pointsTotauxUtilisateur = 0;
         String badgeActuel = "Kalanden";
@@ -332,7 +328,11 @@ public class QuizServiceImpl implements QuizService {
         return clean.contains("qui sommes-nous") ||
                clean.contains("qui sommes nous") ||
                clean.equals("test") ||
-               clean.startsWith("test ");
+               clean.startsWith("test ") ||
+               clean.contains("maliexplorereeee") ||
+               clean.contains("rbjwbhrw") ||
+               clean.equals("quiz maliexplorer") ||
+               clean.startsWith("quiz maliexplorer");
     }
 
     private String normalizeTitleKey(String title) {
@@ -394,11 +394,14 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public void recordQuizAbandon(Long quizId, String sessionId) {
+    public void recordQuizAbandon(Long quizId, String sessionId, Integer fallbackUserId) {
         if (quizId == null) return;
         QuizModel quiz = findQuizOrThrow(quizId);
         utilisateurModel user = com.maliexplorer_backend.config.SecurityUtils.getCurrentUser();
-        if (user == null || user.getIdUsers() <= 0) {
+        Integer targetUserId = (user != null && user.getIdUsers() > 0)
+                ? Integer.valueOf(user.getIdUsers())
+                : (fallbackUserId != null && fallbackUserId > 0 ? fallbackUserId : null);
+        if (targetUserId == null || targetUserId <= 0) {
             log.info("Abandon de quiz non enregistré : aucun utilisateur connecté.");
             return;
         }
@@ -407,12 +410,12 @@ public class QuizServiceImpl implements QuizService {
         String description = "Quiz : " + quiz.getNomQuiz() + " • Résultat : Abandonné (0 pt)";
 
         badgeProgressionService.attribuerPoints(
-                user.getIdUsers(),
+                targetUserId,
                 "QUIZ_ABANDON",
                 0,
                 description,
                 refActivite
         );
-        log.info("Quiz abandonné consigné dans l'historique : Utilisateur ID={}, Quiz ID={}", user.getIdUsers(), quiz.getIdQuiz());
+        log.info("Quiz abandonné consigné dans l'historique : Utilisateur ID={}, Quiz ID={}", targetUserId, quiz.getIdQuiz());
     }
 }

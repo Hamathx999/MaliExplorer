@@ -57,7 +57,8 @@ public class QuizController {
     public ResponseEntity<java.util.Map<String, Object>> abandonQuiz(@RequestBody java.util.Map<String, Object> body) {
         Long quizId = body.get("quizId") != null ? Long.valueOf(body.get("quizId").toString()) : null;
         String sessionId = body.get("sessionId") != null ? body.get("sessionId").toString() : null;
-        quizService.recordQuizAbandon(quizId, sessionId);
+        Integer userId = body.get("userId") != null ? Integer.valueOf(body.get("userId").toString()) : null;
+        quizService.recordQuizAbandon(quizId, sessionId, userId);
         return ResponseEntity.ok(java.util.Map.of("message", "Abandon de quiz enregistré dans l'historique"));
     }
 

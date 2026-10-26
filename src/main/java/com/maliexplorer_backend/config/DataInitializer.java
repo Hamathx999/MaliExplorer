@@ -301,9 +301,14 @@ public class DataInitializer implements CommandLineRunner {
             jdbcTemplate.execute("UPDATE langues_nationales SET publie = 1 WHERE nom LIKE '%Bamanankan%'");
             jdbcTemplate.execute("UPDATE langues_nationales SET image_url = 'https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/langues/languages_cover.jpeg' WHERE image_url IS NULL OR image_url = ''");
 
-            // 4. Lieux historiques : compléter les images, panoramas 360 et statut UNESCO
             jdbcTemplate.execute("UPDATE lieux_historiques SET image_url = 'https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/0d45c4b9-ddcb-4bfe-89fe-226739aacf74_Djenn_.jpg', panorama360url = 'assets/pannellum/djenne_360_panorama.jpg', classe_unesco = 1 WHERE nom_lieu LIKE '%Grande Mosquée de Djenné%' AND (image_url IS NULL OR image_url = '')");
             jdbcTemplate.execute("UPDATE lieux_historiques SET image_url = 'https://dzhqwkpwaljqsjwoqvso.supabase.co/storage/v1/object/public/maliexplorer-media/villes/3984e765-781e-4966-9c04-90b19fd64403_deuxieme_imagehome.jpeg', classe_unesco = 1 WHERE nom_lieu LIKE '%Djingareyber%' AND (image_url IS NULL OR image_url = '')");
+
+            // 5. Ethnies : suppression de l'ethnie parasite de test gdhng (id 7)
+            jdbcTemplate.execute("DELETE FROM touriste_ethnie WHERE id_ethnie = 7");
+            jdbcTemplate.execute("DELETE FROM region_ethnie WHERE ethnie_id = 7");
+            jdbcTemplate.execute("DELETE FROM plat_ethnie WHERE ethnie_id = 7");
+            jdbcTemplate.execute("DELETE FROM ethnies WHERE id_ethnie = 7 OR nom_ethnie LIKE '%gdhng%'");
         } catch (Exception e) {
             log.debug("Note nettoyage patrimonial : {}", e.getMessage());
         }
