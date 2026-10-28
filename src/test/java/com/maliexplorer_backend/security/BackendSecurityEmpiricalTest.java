@@ -202,24 +202,26 @@ public class BackendSecurityEmpiricalTest {
 
         GuideResponseDTO responseDTO = service.obtenirGuideParId(42);
 
-        // Verify DTO fields are stripped
+        // Verify strictly confidential fields are stripped
         assertNull(responseDTO.getPieceIdentite());
         assertNull(responseDTO.getFirebaseUid());
-        assertNull(responseDTO.getEmail());
-        assertNull(responseDTO.getTelephone());
         assertNull(responseDTO.getAdresse());
         assertNull(responseDTO.getIdAdministrateur());
         assertNull(responseDTO.getMotifRejet());
 
-        // Verify JSON serialization omits null fields (@JsonInclude(NON_NULL))
+        // Canaux de contact publics autorisés pour joindre le guide certifié
+        assertEquals("secret.ousmane@guide.ml", responseDTO.getEmail());
+        assertEquals("+223 70 00 11 22", responseDTO.getTelephone());
+
+        // Verify JSON serialization omits null confidential fields (@JsonInclude(NON_NULL))
         String json = objectMapper.writeValueAsString(responseDTO);
         assertFalse(json.contains("pieceIdentite"));
         assertFalse(json.contains("firebaseUid"));
-        assertFalse(json.contains("email"));
-        assertFalse(json.contains("telephone"));
         assertFalse(json.contains("adresse"));
         assertFalse(json.contains("idAdministrateur"));
         assertFalse(json.contains("motifRejet"));
+        assertTrue(json.contains("secret.ousmane@guide.ml"));
+        assertTrue(json.contains("+223 70 00 11 22"));
         assertTrue(json.contains("Ousmane"));
         assertTrue(json.contains("Keita"));
     }

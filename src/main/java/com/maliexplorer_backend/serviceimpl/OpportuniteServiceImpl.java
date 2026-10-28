@@ -43,11 +43,15 @@ public class OpportuniteServiceImpl implements OpportuniteService {
 
         if (includePromoteurs) {
             promoteurRepository.findByRecherchePartenariatTrueAndStatutModeration(StatutModeration.VALIDE)
+                    .stream()
+                    .filter(p -> !"BLOQUE".equalsIgnoreCase(p.getStatut()))
                     .forEach(p -> result.add(mapPromoteurToDTO(p)));
         }
 
         if (includeGuides) {
             guideRepository.findByRecherchePartenariatTrueAndStatutModeration(StatutModeration.VALIDE)
+                    .stream()
+                    .filter(g -> !"BLOQUE".equalsIgnoreCase(g.getStatut()))
                     .forEach(g -> result.add(mapGuideToDTO(g)));
         }
 

@@ -26,26 +26,44 @@ public class TouristeModel extends utilisateurModel {
 
     private Long idTouriste;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany
     @JoinTable(name = "touriste_article", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_article"))
     private List<ArticleModel> articlesLus;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany
     @JoinTable(name = "touriste_lieu_historique", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_lieu"))
     private List<LieuHistoriqueModel> lieuxVisites;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany
     @JoinTable(name = "touriste_ville", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_ville"))
     private List<VilleModel> villesVisitees;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany
     @JoinTable(name = "touriste_ethnie", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_ethnie"))
     private List<EthnieModel> ethniesVues;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany
     @JoinTable(name = "touriste_plat", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_plat"))
     private List<PlatModel> platsVus;
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @ManyToMany
     @JoinTable(name = "touriste_quiz", joinColumns = @JoinColumn(name = "id_touriste"), inverseJoinColumns = @JoinColumn(name = "id_quiz"))
     private List<QuizModel> quizJoues;

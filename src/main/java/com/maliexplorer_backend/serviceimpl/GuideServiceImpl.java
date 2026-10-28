@@ -51,6 +51,7 @@ public class GuideServiceImpl implements GuideService {
     public List<GuideResponseDTO> obtenirTousLesGuides() {
         return repository.findByStatutModeration(StatutModeration.VALIDE)
                 .stream()
+                .filter(g -> !"BLOQUE".equalsIgnoreCase(g.getStatut()))
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -59,6 +60,9 @@ public class GuideServiceImpl implements GuideService {
     public GuideResponseDTO obtenirGuideParId(int id) {
         GuideModel guide = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("GuideModel", "id", id));
+        if ("BLOQUE".equalsIgnoreCase(guide.getStatut())) {
+            throw new ResourceNotFoundException("GuideModel", "id", id);
+        }
         return mapToResponseDTO(guide);
     }
 
@@ -66,7 +70,7 @@ public class GuideServiceImpl implements GuideService {
     public List<GuideResponseDTO> rechercherParLangue(String langue) {
         return repository.findByLangueContainingIgnoreCase(langue)
                 .stream()
-                .filter(g -> g.getStatutModeration() == StatutModeration.VALIDE)
+                .filter(g -> g.getStatutModeration() == StatutModeration.VALIDE && !"BLOQUE".equalsIgnoreCase(g.getStatut()))
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
@@ -110,6 +114,8 @@ public class GuideServiceImpl implements GuideService {
                 .idUsers(model.getIdUsers())
                 .prenom(model.getPrenom())
                 .nom(model.getNom())
+                .email(model.getEmail())
+                .telephone(model.getTelephone())
                 .photoUrl(model.getPhotoUrl())
                 .dateCreation(model.getDateCreation())
                 .role(model.getRole())
@@ -120,13 +126,12 @@ public class GuideServiceImpl implements GuideService {
                 .recherchePartenariat(model.isRecherchePartenariat())
                 .titreProjet(model.getTitreProjet())
                 .besoinPartenariat(model.getBesoinPartenariat())
-                .statutModeration(model.getStatutModeration());
+                .statutModeration(model.getStatutModeration())
+                .statut(model.getStatut());
 
         // Seuls l'administrateur ou le titulaire du compte ont accès aux pièces et identifiants privés
         if (isPrivileged) {
             builder.firebaseUid(model.getFirebaseUid())
-                    .email(model.getEmail())
-                    .telephone(model.getTelephone())
                     .adresse(model.getAdresse())
                     .pieceIdentite(model.getPieceIdentite())
                     .idAdministrateur(model.getIdAdministrateur())

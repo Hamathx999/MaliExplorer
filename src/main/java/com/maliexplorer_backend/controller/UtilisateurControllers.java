@@ -5,6 +5,7 @@ import com.maliexplorer_backend.model.utilisateurModel;
 import com.maliexplorer_backend.repository.utilisateurRepository;
 import com.maliexplorer_backend.service.UtilisateurService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/utilisateurs")
 @CrossOrigin(origins = "*")
@@ -94,6 +96,7 @@ public class UtilisateurControllers {
 
     /**
      * TOGGLE STATUS : Bloquer ou débloquer un utilisateur (Admin)
+     * Répercute immédiatement l'état sur Firebase Cloud si l'utilisateur possède un compte Firebase.
      * PATCH /api/utilisateurs/{id}/toggle-status
      */
     @PreAuthorize("hasRole('ADMIN')")
@@ -101,12 +104,26 @@ public class UtilisateurControllers {
     public ResponseEntity<utilisateurModel> toggleStatutUtilisateur(@PathVariable int id) {
         return userRepository.findById(id).map(user -> {
             String current = user.getStatut();
-            if ("BLOQUE".equalsIgnoreCase(current)) {
-                user.setStatut("ACTIF");
-            } else {
-                user.setStatut("BLOQUE");
-            }
+            boolean bloquer = !"BLOQUE".equalsIgnoreCase(current);
+            user.setStatut(bloquer ? "BLOQUE" : "ACTIF");
             utilisateurModel saved = userRepository.save(user);
+
+            // Synchronisation avec Firebase Cloud en arrière-plan (asynchrone, ne bloque pas la réponse HTTP)
+            String uid = saved.getFirebaseUid();
+            if (uid != null && !uid.isBlank() && !com.google.firebase.FirebaseApp.getApps().isEmpty()) {
+                java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    try {
+                        com.google.firebase.auth.UserRecord.UpdateRequest updateRequest =
+                                new com.google.firebase.auth.UserRecord.UpdateRequest(uid)
+                                        .setDisabled(bloquer);
+                        com.google.firebase.auth.FirebaseAuth.getInstance().updateUser(updateRequest);
+                        log.info("Statut Firebase synchronisé en arrière-plan pour UID={}: disabled={}", uid, bloquer);
+                    } catch (Exception ex) {
+                        log.warn("Notice: Impossible de mettre à jour le statut Firebase Cloud pour UID={}: {}", uid, ex.getMessage());
+                    }
+                });
+            }
+
             return ResponseEntity.ok(saved);
         }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
