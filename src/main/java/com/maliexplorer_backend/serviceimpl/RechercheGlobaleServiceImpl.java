@@ -168,6 +168,9 @@ public class RechercheGlobaleServiceImpl implements RechercheGlobaleService {
         try {
             List<GuideModel> guides = guideRepository.findByStatutModeration(StatutModeration.VALIDE);
             for (GuideModel g : guides) {
+                if ("BLOQUE".equalsIgnoreCase(g.getStatut())) {
+                    continue;
+                }
                 String nomGuide = (g.getPrenom() != null ? g.getPrenom() + " " : "") + (g.getNom() != null ? g.getNom() : "");
                 String langue = g.getLangue() != null ? g.getLangue() : "Français";
                 String desc = g.getDescription() != null ? g.getDescription() : "";

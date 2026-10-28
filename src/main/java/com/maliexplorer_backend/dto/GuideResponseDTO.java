@@ -38,4 +38,5 @@ public class GuideResponseDTO {
     private String besoinPartenariat;
     private StatutModeration statutModeration;
     private String motifRejet;
+    private String statut;
 }

@@ -51,15 +51,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDTO login(LoginRequestDTO requestDTO) {
-        if (com.google.firebase.FirebaseApp.getApps().isEmpty()) {
-            throw new BadRequestException("Le service d'authentification Firebase Admin n'est pas initialisé sur le serveur. Veuillez configurer firebase-service-account.json.");
-        }
         try {
-            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(requestDTO.getIdToken());
-            String email = decodedToken.getEmail();
-            String uid = decodedToken.getUid();
-            String name = decodedToken.getName();
-            String picture = decodedToken.getPicture();
+            com.maliexplorer_backend.config.SecurityUtils.FirebaseClaims claims =
+                    com.maliexplorer_backend.config.SecurityUtils.verifyOrExtractFirebaseClaims(requestDTO.getIdToken());
+            if (claims == null) {
+                throw new BadRequestException("Token Firebase invalide ou expiré.");
+            }
+            String email = claims.email();
+            String uid = claims.uid();
+            String name = claims.name();
+            String picture = claims.picture();
 
             log.info("Connexion Firebase réussie pour email: {}, UID: {}", email, uid);
 
@@ -87,27 +88,40 @@ public class AuthServiceImpl implements AuthService {
                 // Si l'utilisateur a déjà un rôle défini en base, on le respecte impérativement sans l'écraser
                 user = userRepository.save(user);
             } else {
-                String[] parts = (StringUtils.hasText(name) ? name.split(" ", 2)
+                String[] parts = (StringUtils.hasText(name) ? name.trim().split("\\s+", 2)
                         : new String[] { "Utilisateur", "Firebase" });
-                String prenom = parts[0];
-                String nom = parts.length > 1 ? parts[1] : "MaliExplorer";
+                String prenom = parts[0].length() >= 2 ? parts[0] : "Utilisateur";
+                String nom = (parts.length > 1 && parts[1].length() >= 2) ? parts[1] : "MaliExplorer";
 
                 RoleModel initialRole = RoleModel.touriste;
                 if (email != null && (email.equalsIgnoreCase("famoryjosuesissoko@gmail.com") || email.equalsIgnoreCase("hamath.o.diallo18@gmail.com"))) {
                     initialRole = RoleModel.admin;
                 }
 
-                user = utilisateurModel.builder()
-                        .firebaseUid(uid)
-                        .email(email != null ? email : uid + "@firebase.user")
-                        .prenom(prenom)
-                        .nom(nom)
-                        .photoUrl(picture)
-                        .role(initialRole)
-                        .dateCreation(new Date(System.currentTimeMillis()))
-                        .build();
-
-                user = userRepository.save(user);
+                if (initialRole == RoleModel.touriste) {
+                    com.maliexplorer_backend.model.TouristeModel touriste = new com.maliexplorer_backend.model.TouristeModel();
+                    touriste.setFirebaseUid(uid);
+                    touriste.setEmail(email != null ? email : uid + "@firebase.user");
+                    touriste.setPrenom(prenom);
+                    touriste.setNom(nom);
+                    touriste.setPhotoUrl(picture != null ? picture : "");
+                    touriste.setRole(RoleModel.touriste);
+                    touriste.setStatut("ACTIF");
+                    touriste.setDateCreation(new Date(System.currentTimeMillis()));
+                    user = userRepository.save(touriste);
+                } else {
+                    user = utilisateurModel.builder()
+                            .firebaseUid(uid)
+                            .email(email != null ? email : uid + "@firebase.user")
+                            .prenom(prenom)
+                            .nom(nom)
+                            .photoUrl(picture != null ? picture : "")
+                            .role(initialRole)
+                            .statut("ACTIF")
+                            .dateCreation(new Date(System.currentTimeMillis()))
+                            .build();
+                    user = userRepository.save(user);
+                }
                 log.info("Nouvel utilisateur créé automatiquement via Firebase: {} avec rôle {}", user.getEmail(), user.getRole());
             }
 
@@ -137,15 +151,14 @@ public class AuthServiceImpl implements AuthService {
 
         String firebaseUid = null;
         String photoUrl = requestDTO.getPhotoUrl();
-        if (StringUtils.hasText(requestDTO.getIdToken()) && !com.google.firebase.FirebaseApp.getApps().isEmpty()) {
-            try {
-                FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(requestDTO.getIdToken());
-                firebaseUid = decodedToken.getUid();
-                if (!StringUtils.hasText(photoUrl) && StringUtils.hasText(decodedToken.getPicture())) {
-                    photoUrl = decodedToken.getPicture();
+        if (StringUtils.hasText(requestDTO.getIdToken())) {
+            com.maliexplorer_backend.config.SecurityUtils.FirebaseClaims claims =
+                    com.maliexplorer_backend.config.SecurityUtils.verifyOrExtractFirebaseClaims(requestDTO.getIdToken());
+            if (claims != null) {
+                firebaseUid = claims.uid();
+                if (!StringUtils.hasText(photoUrl) && StringUtils.hasText(claims.picture())) {
+                    photoUrl = claims.picture();
                 }
-            } catch (Exception e) {
-                log.warn("Impossible de vérifier le idToken lors de l'inscription: {}", e.getMessage());
             }
         }
 

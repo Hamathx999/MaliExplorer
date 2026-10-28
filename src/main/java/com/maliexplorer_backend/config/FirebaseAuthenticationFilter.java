@@ -3,6 +3,7 @@ package com.maliexplorer_backend.config;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import com.maliexplorer_backend.model.RoleModel;
+import com.maliexplorer_backend.model.TouristeModel;
 import com.maliexplorer_backend.model.utilisateurModel;
 import com.maliexplorer_backend.repository.utilisateurRepository;
 import jakarta.servlet.FilterChain;
@@ -21,6 +22,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,10 +68,17 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
             }
 
             try {
-                // 2. Validation du token Firebase
-                FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(bearerToken);
-                String email = decodedToken.getEmail();
-                String uid = decodedToken.getUid();
+                // 2. Validation du token Firebase (avec tolérance au décalage d'horloge / hors-ligne)
+                SecurityUtils.FirebaseClaims claims = SecurityUtils.verifyOrExtractFirebaseClaims(bearerToken);
+                if (claims == null) {
+                    log.warn("Token Bearer non reconnu comme token Firebase valide.");
+                    SecurityContextHolder.clearContext();
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+
+                String email = claims.email();
+                String uid = claims.uid();
 
                 log.debug("Token Firebase valide pour email: {}, UID: {}", email, uid);
 
@@ -94,17 +104,71 @@ public class FirebaseAuthenticationFilter extends OncePerRequestFilter {
                         return;
                     }
 
+                    // Mettre à jour le firebaseUid si absent
+                    if ((principalUser.getFirebaseUid() == null || principalUser.getFirebaseUid().isBlank()) && StringUtils.hasText(uid)) {
+                        principalUser.setFirebaseUid(uid);
+                        userRepository.save(principalUser);
+                    }
+
                     List<GrantedAuthority> authorities = getAuthoritiesForUser(principalUser);
 
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             principalUser, // Objet utilisateurModel garantissant l'absence de ClassCastException
-                            decodedToken,
+                            claims,
                             authorities);
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                     SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else if (StringUtils.hasText(email)) {
+                    // Auto-Provisioning en temps réel : utilisateur authentifié par Firebase / Google mais pas encore dans MySQL
+                    try {
+                        String displayName = claims.name();
+                        String[] parts = (displayName != null && !displayName.isBlank())
+                                ? displayName.trim().split("\\s+", 2)
+                                : new String[] { "Utilisateur", "Google" };
+                        String prenom = parts[0].length() >= 2 ? parts[0] : "Utilisateur";
+                        if (prenom.length() > 50) prenom = prenom.substring(0, 50);
+
+                        String nom = (parts.length > 1 && parts[1].length() >= 2) ? parts[1] : "MaliExplorer";
+                        if (nom.length() > 50) nom = nom.substring(0, 50);
+
+                        String photo = claims.picture() != null ? claims.picture() : "";
+
+                        RoleModel assignedRole = RoleModel.touriste;
+                        if (email.equalsIgnoreCase("famoryjosuesissoko@gmail.com") || email.equalsIgnoreCase("hamath.o.diallo18@gmail.com")) {
+                            assignedRole = RoleModel.admin;
+                        }
+
+                        TouristeModel newTouriste = new TouristeModel();
+                        newTouriste.setEmail(email.trim());
+                        newTouriste.setFirebaseUid(uid);
+                        newTouriste.setPrenom(prenom);
+                        newTouriste.setNom(nom);
+                        newTouriste.setPhotoUrl(photo);
+                        newTouriste.setAdresse("");
+                        newTouriste.setTelephone("");
+                        newTouriste.setRole(assignedRole);
+                        newTouriste.setStatut("ACTIF");
+                        newTouriste.setPoints(0);
+                        newTouriste.setDateCreation(Date.valueOf(LocalDate.now()));
+
+                        utilisateurModel savedUser = userRepository.save(newTouriste);
+                        log.info("Auto-Provisioning réussi pour {} ({}) avec ID MySQL={}", email, assignedRole, savedUser.getIdUsers());
+
+                        List<GrantedAuthority> authorities = getAuthoritiesForUser(savedUser);
+                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                savedUser,
+                                claims,
+                                authorities);
+                        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                        SecurityContextHolder.getContext().setAuthentication(authentication);
+                    } catch (Exception ex) {
+                        log.error("Erreur lors de l'auto-provisioning Firebase de {} : {}", email, ex.getMessage(), ex);
+                        SecurityContextHolder.clearContext();
+                    }
                 } else {
-                    log.warn("Utilisateur authentifié dans Firebase ({}) mais introuvable dans la base de données !", email != null ? email : uid);
+                    log.warn("Utilisateur authentifié dans Firebase sans email valide (UID={})", uid);
                     SecurityContextHolder.clearContext();
                 }
 

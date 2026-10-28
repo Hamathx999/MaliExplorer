@@ -78,11 +78,103 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     /**
-     * READ ALL : Obtenir la liste de tous les utilisateurs
+     * READ ALL : Obtenir la liste de tous les utilisateurs (en synchronisant automatiquement les comptes Firebase Auth)
      */
     @Override
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.NOT_SUPPORTED)
     public List<utilisateurModel> obtenirTousLesUtilisateurs() {
+        synchroniserUtilisateursDepuisFirebase();
         return repository.findAll();
+    }
+
+    /**
+     * Récupère tous les comptes présents dans Firebase Authentication (Google Sign-In, Email/Password)
+     * et crée automatiquement dans MySQL ceux qui n'y figurent pas encore, sans jamais compromettre
+     * la transaction courante en cas d'erreur sur un enregistrement.
+     */
+    private void synchroniserUtilisateursDepuisFirebase() {
+        if (com.google.firebase.FirebaseApp.getApps().isEmpty()) {
+            return;
+        }
+        try {
+            com.google.firebase.auth.ListUsersPage page = com.google.firebase.auth.FirebaseAuth.getInstance().listUsers(null);
+            for (com.google.firebase.auth.ExportedUserRecord record : page.iterateAll()) {
+                try {
+                    String rawEmail = record.getEmail();
+                    String uid = record.getUid();
+                    if (rawEmail == null || rawEmail.isBlank()) {
+                        continue;
+                    }
+                    String email = rawEmail.trim();
+
+                    java.util.Optional<utilisateurModel> existingOpt = repository.findByEmail(email);
+                    if (existingOpt.isEmpty() && uid != null && !uid.isBlank()) {
+                        existingOpt = repository.findByFirebaseUid(uid);
+                    }
+
+                    if (existingOpt.isEmpty()) {
+                        String displayName = record.getDisplayName();
+                        String[] parts = (displayName != null && !displayName.isBlank())
+                                ? displayName.trim().split("\\s+", 2)
+                                : new String[] { "Utilisateur", "Google" };
+                        String prenom = parts[0].length() >= 2 ? parts[0] : "Utilisateur";
+                        if (prenom.length() > 50) prenom = prenom.substring(0, 50);
+
+                        String nom = (parts.length > 1 && parts[1].length() >= 2) ? parts[1] : "MaliExplorer";
+                        if (nom.length() > 50) nom = nom.substring(0, 50);
+
+                        String photoUrl = record.getPhotoUrl() != null ? record.getPhotoUrl() : "";
+                        String tel = record.getPhoneNumber() != null ? record.getPhoneNumber() : "";
+
+                        RoleModel initialRole = RoleModel.touriste;
+                        if (email.equalsIgnoreCase("famoryjosuesissoko@gmail.com")
+                                || email.equalsIgnoreCase("hamath.o.diallo18@gmail.com")) {
+                            initialRole = RoleModel.admin;
+                        }
+
+                        long creationMillis = record.getUserMetadata() != null && record.getUserMetadata().getCreationTimestamp() > 0
+                                ? record.getUserMetadata().getCreationTimestamp()
+                                : System.currentTimeMillis();
+
+                        utilisateurModel newUser = utilisateurModel.builder()
+                                .firebaseUid(uid)
+                                .email(email)
+                                .prenom(prenom)
+                                .nom(nom)
+                                .photoUrl(photoUrl)
+                                .telephone(tel)
+                                .adresse("")
+                                .role(initialRole)
+                                .statut(record.isDisabled() ? "BLOQUE" : "ACTIF")
+                                .points(0)
+                                .dateCreation(new Date(creationMillis))
+                                .build();
+
+                        repository.save(newUser);
+                        log.info("Compte Firebase importé automatiquement dans MySQL : {} (UID={})", email, uid);
+                    } else {
+                        utilisateurModel existing = existingOpt.get();
+                        boolean updated = false;
+                        if ((existing.getFirebaseUid() == null || existing.getFirebaseUid().isBlank()) && uid != null && !uid.isBlank()) {
+                            existing.setFirebaseUid(uid);
+                            updated = true;
+                        }
+                        if ((existing.getPhotoUrl() == null || existing.getPhotoUrl().isBlank())
+                                && record.getPhotoUrl() != null && !record.getPhotoUrl().isBlank()) {
+                            existing.setPhotoUrl(record.getPhotoUrl());
+                            updated = true;
+                        }
+                        if (updated) {
+                            repository.save(existing);
+                        }
+                    }
+                } catch (Exception itemEx) {
+                    log.warn("Ignoré lors de l'import d'un compte Firebase ({}): {}", record.getEmail(), itemEx.getMessage());
+                }
+            }
+        } catch (Throwable e) {
+            log.warn("Synchronisation Firebase -> MySQL ignorée : {}", e.getMessage());
+        }
     }
 
     /**
@@ -347,12 +439,14 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
     /**
      * DELETE : Supprimer un utilisateur par son identifiant et cascader proprement
+     * Supprime également le compte dans Firebase Authentication pour une synchronisation totale.
      */
     @Override
     public void supprimerUtilisateur(int id) {
-        if (!repository.existsById(id)) {
-            throw new ResourceNotFoundException("utilisateurModel", "id", id);
-        }
+        utilisateurModel user = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("utilisateurModel", "id", id));
+
+        String firebaseUid = user.getFirebaseUid();
 
         // 1. Tables enfants de touristes (liaisons N-N)
         entityManager.createNativeQuery("DELETE FROM touriste_article WHERE id_touriste = :id").setParameter("id", id).executeUpdate();
@@ -373,5 +467,17 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
         // 3. Suppression de la ligne principale dans utilisateurs
         repository.deleteById(id);
+
+        // 4. Suppression bilatérale dans Firebase Cloud (si compte Firebase lié) en tâche de fond asynchrone
+        if (firebaseUid != null && !firebaseUid.isBlank() && !com.google.firebase.FirebaseApp.getApps().isEmpty()) {
+            java.util.concurrent.CompletableFuture.runAsync(() -> {
+                try {
+                    com.google.firebase.auth.FirebaseAuth.getInstance().deleteUser(firebaseUid);
+                    log.info("Compte Firebase UID={} supprimé avec succès depuis Firebase Cloud.", firebaseUid);
+                } catch (Exception ex) {
+                    log.warn("Notice: Impossible de supprimer le compte Firebase {} : {}", firebaseUid, ex.getMessage());
+                }
+            });
+        }
     }
 }
